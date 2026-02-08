@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { Loader2, Phone, MessageCircle, ArrowLeft } from 'lucide-react';
+import { Loader2, Phone, MessageCircle, ArrowLeft, Info, CheckCircle2 } from 'lucide-react';
 
 const phoneSchema = z.object({
   phone: z.string()
@@ -16,17 +17,19 @@ const phoneSchema = z.object({
 
 interface PhoneAuthFormProps {
   onSuccess: () => void;
+  showTestHint?: boolean;
 }
 
 type OtpChannel = 'sms' | 'whatsapp';
 
-export function PhoneAuthForm({ onSuccess }: PhoneAuthFormProps) {
+export function PhoneAuthForm({ onSuccess, showTestHint = true }: PhoneAuthFormProps) {
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
   const [loading, setLoading] = useState(false);
   const [channel, setChannel] = useState<OtpChannel>('sms');
   const [error, setError] = useState('');
+  const [otpSent, setOtpSent] = useState(false);
 
   const validatePhone = () => {
     try {
@@ -59,12 +62,15 @@ export function PhoneAuthForm({ onSuccess }: PhoneAuthFormProps) {
       });
 
       if (error) {
+        setError(error.message);
         toast.error(error.message);
       } else {
         setStep('otp');
+        setOtpSent(true);
         toast.success(`OTP sent via ${selectedChannel === 'whatsapp' ? 'WhatsApp' : 'SMS'}!`);
       }
     } catch (err) {
+      setError('Failed to send OTP. Please try again.');
       toast.error('Failed to send OTP. Please try again.');
     } finally {
       setLoading(false);
@@ -129,13 +135,16 @@ export function PhoneAuthForm({ onSuccess }: PhoneAuthFormProps) {
         </Button>
 
         <div className="text-center space-y-2">
-          <h3 className="font-medium">Enter verification code</h3>
+          <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+            <CheckCircle2 className="h-6 w-6 text-primary" />
+          </div>
+          <h3 className="font-medium text-lg">Enter verification code</h3>
           <p className="text-sm text-muted-foreground">
-            We sent a code to {phone} via {channel === 'whatsapp' ? 'WhatsApp' : 'SMS'}
+            We sent a 6-digit code to <span className="font-medium text-foreground">{phone}</span> via {channel === 'whatsapp' ? 'WhatsApp' : 'SMS'}
           </p>
         </div>
 
-        <div className="flex justify-center">
+        <div className="flex justify-center py-4">
           <InputOTP
             maxLength={6}
             value={otp}
@@ -153,7 +162,20 @@ export function PhoneAuthForm({ onSuccess }: PhoneAuthFormProps) {
           </InputOTP>
         </div>
 
-        {error && <p className="text-sm text-destructive text-center">{error}</p>}
+        {error && (
+          <Alert variant="destructive">
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        {showTestHint && (
+          <Alert className="bg-muted/50 border-muted">
+            <Info className="h-4 w-4" />
+            <AlertDescription className="text-xs">
+              <strong>Test Mode:</strong> If using a test phone number configured in Supabase, enter the corresponding test OTP (e.g., 123456).
+            </AlertDescription>
+          </Alert>
+        )}
 
         <Button
           type="button"
@@ -167,19 +189,21 @@ export function PhoneAuthForm({ onSuccess }: PhoneAuthFormProps) {
               Verifying...
             </>
           ) : (
-            'Verify OTP'
+            'Verify & Sign In'
           )}
         </Button>
 
-        <Button
-          type="button"
-          variant="link"
-          className="w-full"
-          onClick={handleResendOtp}
-          disabled={loading}
-        >
-          Didn't receive code? Resend
-        </Button>
+        <div className="text-center">
+          <Button
+            type="button"
+            variant="link"
+            size="sm"
+            onClick={handleResendOtp}
+            disabled={loading}
+          >
+            Didn't receive code? Resend
+          </Button>
+        </div>
       </div>
     );
   }
@@ -195,28 +219,40 @@ export function PhoneAuthForm({ onSuccess }: PhoneAuthFormProps) {
             type="tel"
             placeholder="+91XXXXXXXXXX"
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            onChange={(e) => {
+              setPhone(e.target.value);
+              setError('');
+            }}
             className="pl-10"
             disabled={loading}
           />
         </div>
         {error && <p className="text-sm text-destructive">{error}</p>}
         <p className="text-xs text-muted-foreground">
-          Include country code (e.g., +91 for India)
+          Include country code (e.g., +91 for India, +971 for UAE)
         </p>
       </div>
+
+      {showTestHint && (
+        <Alert className="bg-muted/50 border-muted">
+          <Info className="h-4 w-4" />
+          <AlertDescription className="text-xs">
+            <strong>Test Mode:</strong> Use test numbers like <code className="bg-background px-1 rounded">+971501234567</code> with OTP <code className="bg-background px-1 rounded">123456</code> (configure in Supabase Dashboard → Authentication → Phone).
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="space-y-2">
         <Button
           type="button"
           className="w-full"
           onClick={() => handleSendOtp('sms')}
-          disabled={loading}
+          disabled={loading || !phone.trim()}
         >
           {loading && channel === 'sms' ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Sending...
+              Sending OTP...
             </>
           ) : (
             <>
@@ -231,12 +267,12 @@ export function PhoneAuthForm({ onSuccess }: PhoneAuthFormProps) {
           variant="outline"
           className="w-full"
           onClick={() => handleSendOtp('whatsapp')}
-          disabled={loading}
+          disabled={loading || !phone.trim()}
         >
           {loading && channel === 'whatsapp' ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Sending...
+              Sending OTP...
             </>
           ) : (
             <>
@@ -248,6 +284,12 @@ export function PhoneAuthForm({ onSuccess }: PhoneAuthFormProps) {
           )}
         </Button>
       </div>
+
+      {otpSent && (
+        <p className="text-xs text-center text-muted-foreground">
+          OTP sent! Check your {channel === 'whatsapp' ? 'WhatsApp' : 'SMS'} messages.
+        </p>
+      )}
     </div>
   );
 }
