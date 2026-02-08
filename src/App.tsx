@@ -25,6 +25,25 @@ import ProfilePage from "./pages/ProfilePage";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
+// Admin Pages
+import {
+  AdminDashboard,
+  AdminProducts,
+  AdminCategories,
+  AdminOrders,
+  AdminEnquiries,
+  AdminEstimations,
+  AdminReviews,
+  AdminTestimonials,
+  AdminServices,
+  AdminCatalogs,
+  AdminBanners,
+  AdminCarousel,
+  AdminLocations,
+  AdminUsers,
+  AdminAnalytics,
+} from "./pages/admin";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -54,6 +73,23 @@ const App = () => (
                 <Route path="/orders" element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
                 <Route path="/orders/:orderId" element={<ProtectedRoute><OrderDetailPage /></ProtectedRoute>} />
                 <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+
+                {/* Admin Routes */}
+                <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
+                <Route path="/admin/products" element={<ProtectedRoute requiredRole="admin"><AdminProducts /></ProtectedRoute>} />
+                <Route path="/admin/categories" element={<ProtectedRoute requiredRole="admin"><AdminCategories /></ProtectedRoute>} />
+                <Route path="/admin/orders" element={<ProtectedRoute requiredRole="admin"><AdminOrders /></ProtectedRoute>} />
+                <Route path="/admin/enquiries" element={<ProtectedRoute requiredRole="admin"><AdminEnquiries /></ProtectedRoute>} />
+                <Route path="/admin/estimations" element={<ProtectedRoute requiredRole="admin"><AdminEstimations /></ProtectedRoute>} />
+                <Route path="/admin/reviews" element={<ProtectedRoute requiredRole="admin"><AdminReviews /></ProtectedRoute>} />
+                <Route path="/admin/testimonials" element={<ProtectedRoute requiredRole="admin"><AdminTestimonials /></ProtectedRoute>} />
+                <Route path="/admin/services" element={<ProtectedRoute requiredRole="admin"><AdminServices /></ProtectedRoute>} />
+                <Route path="/admin/catalogs" element={<ProtectedRoute requiredRole="admin"><AdminCatalogs /></ProtectedRoute>} />
+                <Route path="/admin/banners" element={<ProtectedRoute requiredRole="admin"><AdminBanners /></ProtectedRoute>} />
+                <Route path="/admin/carousel" element={<ProtectedRoute requiredRole="admin"><AdminCarousel /></ProtectedRoute>} />
+                <Route path="/admin/locations" element={<ProtectedRoute requiredRole="admin"><AdminLocations /></ProtectedRoute>} />
+                <Route path="/admin/users" element={<ProtectedRoute requiredRole="admin"><AdminUsers /></ProtectedRoute>} />
+                <Route path="/admin/analytics" element={<ProtectedRoute requiredRole="admin"><AdminAnalytics /></ProtectedRoute>} />
 
                 {/* Catch-all */}
                 <Route path="*" element={<NotFound />} />

@@ -1,0 +1,15 @@
+export { default as AdminDashboard } from './AdminDashboard';
+export { default as AdminProducts } from './AdminProducts';
+export { default as AdminCategories } from './AdminCategories';
+export { default as AdminOrders } from './AdminOrders';
+export { default as AdminEnquiries } from './AdminEnquiries';
+export { default as AdminEstimations } from './AdminEstimations';
+export { default as AdminReviews } from './AdminReviews';
+export { default as AdminTestimonials } from './AdminTestimonials';
+export { default as AdminServices } from './AdminServices';
+export { default as AdminCatalogs } from './AdminCatalogs';
+export { default as AdminBanners } from './AdminBanners';
+export { default as AdminCarousel } from './AdminCarousel';
+export { default as AdminLocations } from './AdminLocations';
+export { default as AdminUsers } from './AdminUsers';
+export { default as AdminAnalytics } from './AdminAnalytics';
