@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
-import { WhatsAppButton } from './WhatsAppButton';
+import { FloatingActionButton } from './FloatingActionButton';
 import { MiniCart } from '@/components/cart/MiniCart';
 import { ChatWidget } from '@/components/chat/ChatWidget';
 
@@ -15,7 +15,6 @@ interface MainLayoutProps {
 export function MainLayout({ children, hideFooter = false }: MainLayoutProps) {
   const { pathname } = useLocation();
 
-  // Scroll to top on route change
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
@@ -33,7 +32,7 @@ export function MainLayout({ children, hideFooter = false }: MainLayoutProps) {
         {children}
       </motion.main>
       {!hideFooter && <Footer />}
-      <WhatsAppButton />
+      <FloatingActionButton />
       <MiniCart />
       <ChatWidget />
     </div>
