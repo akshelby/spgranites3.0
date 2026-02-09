@@ -1,8 +1,5 @@
-import { MessageCircle, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useChatStore } from "./useChatStore";
+import { useChat } from "./ChatContext";
 import { ChatWindow } from "./ChatWindow";
-import { cn } from "@/lib/utils";
 
 export function ChatWidget() {
   const {
@@ -14,7 +11,7 @@ export function ChatWidget() {
     toggleNotifications,
     setSession,
     clearSession,
-  } = useChatStore();
+  } = useChat();
 
   return (
     <>

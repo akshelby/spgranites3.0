@@ -6,6 +6,7 @@ import { Footer } from './Footer';
 import { FloatingActionButton } from './FloatingActionButton';
 import { MiniCart } from '@/components/cart/MiniCart';
 import { ChatWidget } from '@/components/chat/ChatWidget';
+import { ChatProvider } from '@/components/chat/ChatContext';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -20,21 +21,23 @@ export function MainLayout({ children, hideFooter = false }: MainLayoutProps) {
   }, [pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <motion.main
-        key={pathname}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="flex-1 pt-16 lg:pt-20"
-      >
-        {children}
-      </motion.main>
-      {!hideFooter && <Footer />}
-      <FloatingActionButton />
-      <MiniCart />
-      <ChatWidget />
-    </div>
+    <ChatProvider>
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <motion.main
+          key={pathname}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="flex-1 pt-16 lg:pt-20"
+        >
+          {children}
+        </motion.main>
+        {!hideFooter && <Footer />}
+        <FloatingActionButton />
+        <MiniCart />
+        <ChatWidget />
+      </div>
+    </ChatProvider>
   );
 }

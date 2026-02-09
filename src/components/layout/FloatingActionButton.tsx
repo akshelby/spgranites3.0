@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { MessageCircle, X, Headset } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useChatStore } from '@/components/chat/useChatStore';
+import { useChat } from '@/components/chat/ChatContext';
 
 export function FloatingActionButton() {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { toggleOpen: toggleChat } = useChatStore();
+  const { toggleOpen: toggleChat } = useChat();
 
   const phoneNumber = '919876543210';
   const message = encodeURIComponent('Hello! I would like to inquire about your granite products.');
