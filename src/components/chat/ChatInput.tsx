@@ -119,7 +119,7 @@ export function ChatInput({ onSendMessage, onSendMedia, disabled }: ChatInputPro
   };
 
   return (
-    <div className="border-t bg-white p-3 space-y-2">
+    <div className="border-t border-[#222D34] bg-[#1F2C33] p-2 space-y-2">
       {isRecording && (
         <div className="flex items-center justify-between bg-red-50 rounded-xl px-4 py-2">
           <div className="flex items-center gap-2">
@@ -145,8 +145,8 @@ export function ChatInput({ onSendMessage, onSendMedia, disabled }: ChatInputPro
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Type a message..."
-            className="min-h-[44px] max-h-[120px] resize-none rounded-2xl pr-12 border-muted"
+            placeholder="Type a message"
+            className="min-h-[40px] max-h-[120px] resize-none rounded-2xl pr-4 bg-[#2A3942] border-none text-[#E9EDEF] placeholder:text-[#8696A0] focus-visible:ring-0 focus-visible:ring-offset-0"
             disabled={disabled || isSending || isRecording}
             rows={1}
           />
@@ -171,7 +171,7 @@ export function ChatInput({ onSendMessage, onSendMedia, disabled }: ChatInputPro
           <Button
             size="icon"
             variant="ghost"
-            className="h-10 w-10 rounded-full text-muted-foreground hover:text-[#001F3F]"
+            className="h-9 w-9 rounded-full text-[#8696A0] hover:text-[#E9EDEF] hover:bg-[#2A3942]"
             onClick={() => fileInputRef.current?.click()}
             disabled={disabled || isSending || isRecording}
           >
@@ -181,7 +181,7 @@ export function ChatInput({ onSendMessage, onSendMedia, disabled }: ChatInputPro
           <Button
             size="icon"
             variant="ghost"
-            className="h-10 w-10 rounded-full text-muted-foreground hover:text-[#001F3F]"
+            className="h-9 w-9 rounded-full text-[#8696A0] hover:text-[#E9EDEF] hover:bg-[#2A3942]"
             onClick={() => videoInputRef.current?.click()}
             disabled={disabled || isSending || isRecording}
           >
@@ -192,10 +192,10 @@ export function ChatInput({ onSendMessage, onSendMedia, disabled }: ChatInputPro
             size="icon"
             variant="ghost"
             className={cn(
-              "h-10 w-10 rounded-full",
+              "h-9 w-9 rounded-full",
               isRecording 
-                ? "text-[#E60000] bg-red-50" 
-                : "text-muted-foreground hover:text-[#001F3F]"
+                ? "text-[#E60000] bg-red-950/40" 
+                : "text-[#8696A0] hover:text-[#E9EDEF] hover:bg-[#2A3942]"
             )}
             onClick={isRecording ? stopRecording : startRecording}
             disabled={disabled || isSending}
@@ -205,7 +205,7 @@ export function ChatInput({ onSendMessage, onSendMedia, disabled }: ChatInputPro
 
           <Button
             size="icon"
-            className="h-10 w-10 rounded-full bg-[#E60000] hover:bg-[#cc0000]"
+            className="h-10 w-10 rounded-full bg-[#00A884] hover:bg-[#00A884]/90"
             onClick={handleSend}
             disabled={!message.trim() || disabled || isSending || isRecording}
           >

@@ -16,7 +16,7 @@ export function DateDivider({ date }: DateDividerProps) {
 
   return (
     <div className="flex items-center justify-center my-3 sticky top-0 z-10">
-      <span className="bg-muted/80 backdrop-blur-sm text-muted-foreground text-[11px] font-bold px-3 py-1 rounded-full">
+      <span className="bg-[#182229] text-[#8696A0] text-[12px] font-medium px-3 py-1.5 rounded-lg shadow-sm">
         {label}
       </span>
     </div>
