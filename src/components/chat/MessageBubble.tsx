@@ -29,13 +29,13 @@ export function MessageBubble({ message }: MessageBubbleProps) {
   };
 
   return (
-    <div className={cn("flex w-full px-4 mb-2", isStaff ? "justify-start" : "justify-end")}>
+    <div className={cn("flex w-full px-3 mb-[2px]", isStaff ? "justify-start" : "justify-end")}>
       <div
         className={cn(
-          "relative max-w-[75%] rounded-2xl px-3 py-2 pb-5 shadow-sm flex flex-col",
+          "relative max-w-[80%] rounded-lg px-2.5 py-1.5 pb-4 shadow-sm flex flex-col",
           isStaff
-            ? "bg-gray-100 text-[#1A1A1A] rounded-tl-none"
-            : "bg-[#001F3F] text-white rounded-tr-none"
+            ? "bg-[#202C33] text-[#E9EDEF] rounded-tl-none"
+            : "bg-[#005C4B] text-[#E9EDEF] rounded-tr-none"
         )}
       >
         {/* Media content */}
@@ -44,7 +44,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
             <img
               src={message.media_url}
               alt="Shared image"
-              className="rounded-xl w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
+              className="rounded-lg w-full h-auto cursor-pointer hover:opacity-90 transition-opacity"
               onClick={() => window.open(message.media_url!, '_blank')}
             />
           </div>
@@ -54,14 +54,14 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           <div className="mb-1.5 max-w-[280px]">
             <video
               src={message.media_url}
-              className="rounded-xl w-full h-auto aspect-video"
+              className="rounded-lg w-full h-auto aspect-video"
               controls
             />
           </div>
         )}
 
         {message.media_url && message.media_type === 'audio' && (
-          <div className="mb-1.5 flex items-center gap-3 bg-black/10 rounded-xl p-2">
+          <div className="mb-1.5 flex items-center gap-3 bg-black/20 rounded-lg p-2">
             <button
               onClick={toggleAudio}
               className="w-10 h-10 rounded-full bg-black/10 flex items-center justify-center hover:bg-black/20 transition-colors"
@@ -92,10 +92,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         )}
 
         {/* Timestamp + status — absolute bottom-right */}
-        <span className={cn(
-          "absolute bottom-1 right-2 text-[10px] flex items-center gap-1",
-          isStaff ? "text-[#1A1A1A]/50" : "text-white/60"
-        )}>
+        <span className="absolute bottom-[3px] right-2 text-[11px] flex items-center gap-1 text-[#8696A0]">
           {format(new Date(message.created_at), "h:mm a")}
           {!isStaff && (
             message._status === 'sending' ? (
