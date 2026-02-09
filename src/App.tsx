@@ -18,6 +18,7 @@ import TestimonialsPage from "./pages/TestimonialsPage";
 import CatalogsPage from "./pages/CatalogsPage";
 import EstimationPage from "./pages/EstimationPage";
 import CartPage from "./pages/CartPage";
+import ChatPage from "./pages/ChatPage";
 import WishlistPage from "./pages/WishlistPage";
 import OrdersPage from "./pages/OrdersPage";
 import OrderDetailPage from "./pages/OrderDetailPage";
@@ -66,6 +67,7 @@ const App = () => (
                 <Route path="/testimonials" element={<TestimonialsPage />} />
                 <Route path="/catalogs" element={<CatalogsPage />} />
                 <Route path="/estimation" element={<EstimationPage />} />
+                <Route path="/chat" element={<ChatPage />} />
                 <Route path="/auth" element={<Auth />} />
 
                 {/* Protected Routes */}
