@@ -295,7 +295,7 @@ export function ChatWindow({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-50 w-full h-full md:w-[380px] md:h-[600px] md:max-h-[calc(100vh-100px)] flex flex-col bg-white rounded-none md:rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
+    <div className="fixed inset-0 md:inset-auto md:bottom-6 md:right-6 z-50 md:w-[380px] md:h-[600px] md:max-h-[calc(100vh-100px)] flex flex-col bg-white md:rounded-2xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-4 duration-300">
       {/* Header */}
       <div className="bg-[#001F3F] text-white p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
