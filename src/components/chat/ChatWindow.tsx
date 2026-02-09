@@ -399,13 +399,13 @@ export function ChatWindow({
         </div>
       ) : (
         <>
-          <ScrollArea className="flex-1 p-4">
+          <ScrollArea className="flex-1">
             {isLoading ? (
               <ChatLoadingSpinner />
             ) : messages.length === 0 ? (
               <ChatEmptyState refId={refId!} />
             ) : (
-              <div className="space-y-2">
+              <div className="py-2">
                 {messages.map((message, index) => {
                   const currentDate = new Date(message.created_at);
                   const prevDate = index > 0 ? new Date(messages[index - 1].created_at) : null;
