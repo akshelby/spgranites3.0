@@ -103,9 +103,19 @@ export default function AdminChat() {
         event: 'INSERT', schema: 'public', table: 'messages',
         filter: `ref_id=eq.${selectedConversation.ref_id}`,
       }, (payload) => {
+        const newMsg = payload.new as Message;
         setMessages(prev => {
-          if (prev.some(m => m.id === (payload.new as Message).id)) return prev;
-          return [...prev, payload.new as Message];
+          // Replace optimistic message if it matches
+          const optimisticIdx = prev.findIndex(
+            m => m._tempId && m.content_text === newMsg.content_text && m.sender_type === newMsg.sender_type
+          );
+          if (optimisticIdx !== -1) {
+            const updated = [...prev];
+            updated[optimisticIdx] = { ...newMsg, _status: 'sent' as const };
+            return updated;
+          }
+          if (prev.some(m => m.id === newMsg.id)) return prev;
+          return [...prev, newMsg];
         });
       })
       .subscribe();
@@ -122,19 +132,33 @@ export default function AdminChat() {
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedConversation || isSending) return;
+    const text = newMessage.trim();
+    const tempId = `temp-${Date.now()}-${Math.random()}`;
+    
+    // Optimistic update — show message immediately
+    const optimisticMsg: Message = {
+      id: tempId, conversation_id: selectedConversation.id, ref_id: selectedConversation.ref_id,
+      sender_type: 'staff', sender_name: 'Support Team', content_text: text,
+      media_url: null, media_type: null, created_at: new Date().toISOString(),
+      is_read: false, _status: 'sending', _tempId: tempId,
+    };
+    setMessages(prev => [...prev, optimisticMsg]);
+    setNewMessage("");
+    
     setIsSending(true);
     try {
-      const { error } = await supabase.from('messages').insert({
+      const { data, error } = await supabase.from('messages').insert({
         conversation_id: selectedConversation.id,
         ref_id: selectedConversation.ref_id,
         sender_type: 'staff',
         sender_name: 'Support Team',
-        content_text: newMessage.trim(),
-      });
+        content_text: text,
+      }).select().single();
       if (error) throw error;
-      setNewMessage("");
+      setMessages(prev => prev.map(m => m._tempId === tempId ? { ...data as Message, _status: 'sent' as const } : m));
     } catch (err) {
       console.error('Error sending message:', err);
+      setMessages(prev => prev.map(m => m._tempId === tempId ? { ...m, _status: 'failed' as const } : m));
       toast({ title: "Error", description: "Failed to send message.", variant: "destructive" });
     } finally {
       setIsSending(false);
@@ -472,7 +496,7 @@ export default function AdminChat() {
                         return (
                           <div key={message.id}>
                             {showDivider && <DateDivider date={currentDate} />}
-                            <MessageBubble message={message} />
+                            <MessageBubble message={message} isAdminView />
                           </div>
                         );
                       })}

@@ -6,10 +6,15 @@ import { cn } from "@/lib/utils";
 
 interface MessageBubbleProps {
   message: Message;
+  /** When true, staff messages appear on the right (outgoing) */
+  isAdminView?: boolean;
 }
 
-export function MessageBubble({ message }: MessageBubbleProps) {
+export function MessageBubble({ message, isAdminView = false }: MessageBubbleProps) {
   const isStaff = message.sender_type === 'staff';
+  // In admin view: staff = outgoing (right), customer = incoming (left)
+  // In customer view: customer = outgoing (right), staff = incoming (left)
+  const isOutgoing = isAdminView ? isStaff : !isStaff;
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -29,13 +34,13 @@ export function MessageBubble({ message }: MessageBubbleProps) {
   };
 
   return (
-    <div className={cn("flex w-full px-3 mb-[2px]", isStaff ? "justify-start" : "justify-end")}>
+    <div className={cn("flex w-full px-3 mb-[2px]", isOutgoing ? "justify-end" : "justify-start")}>
       <div
         className={cn(
           "relative max-w-[80%] rounded-lg px-2.5 pt-1.5 pb-1 shadow-sm flex flex-col",
-          isStaff
-            ? "bg-[#202C33] text-[#E9EDEF] rounded-tl-none"
-            : "bg-[#005C4B] text-[#E9EDEF] rounded-tr-none"
+          isOutgoing
+            ? "bg-[#005C4B] text-[#E9EDEF] rounded-tr-none"
+            : "bg-[#202C33] text-[#E9EDEF] rounded-tl-none"
         )}
       >
         {/* Media content */}
@@ -96,7 +101,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         {/* Timestamp + status — bottom-right, non-overlapping */}
         <span className="self-end text-[11px] flex items-center gap-1 text-[#8696A0] -mt-3.5 mr-0.5">
           {format(new Date(message.created_at), "h:mm a")}
-          {!isStaff && (
+          {isOutgoing && (
             message._status === 'sending' ? (
               <Clock className="w-3 h-3" />
             ) : message._status === 'failed' ? (
