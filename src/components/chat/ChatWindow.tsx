@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Message, Conversation } from "./types";
 import { MessageBubble } from "./MessageBubble";
+import { DateDivider } from "./DateDivider";
 import { ChatInput } from "./ChatInput";
 import { ChatLoadingSpinner } from "./ChatLoadingSpinner";
 import { ChatEmptyState } from "./ChatEmptyState";
@@ -47,7 +48,7 @@ export function ChatWindow({
   const [showStartScreen, setShowStartScreen] = useState(!refId);
   const [existingRefId, setExistingRefId] = useState("");
   const [copied, setCopied] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const notificationSoundRef = useRef<HTMLAudioElement | null>(null);
 
@@ -98,7 +99,11 @@ export function ChatWindow({
         },
         (payload) => {
           const newMessage = payload.new as Message;
-          setMessages(prev => [...prev, newMessage]);
+          setMessages(prev => {
+            // Deduplicate
+            if (prev.some(m => m.id === newMessage.id)) return prev;
+            return [...prev, newMessage];
+          });
 
           // Play notification sound for staff messages
           if (newMessage.sender_type === 'staff' && notificationsEnabled) {
@@ -114,11 +119,15 @@ export function ChatWindow({
   }, [refId, notificationsEnabled]);
 
   // Auto-scroll to bottom
+  const scrollToBottom = useCallback(() => {
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }, []);
+
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
+    scrollToBottom();
+  }, [messages, scrollToBottom]);
 
   const startNewConversation = async () => {
     const newRefId = generateRefId();
@@ -353,16 +362,26 @@ export function ChatWindow({
         </div>
       ) : (
         <>
-          <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+          <ScrollArea className="flex-1 p-4">
             {isLoading ? (
               <ChatLoadingSpinner />
             ) : messages.length === 0 ? (
               <ChatEmptyState refId={refId!} />
             ) : (
-              <div className="space-y-4">
-                {messages.map((message) => (
-                  <MessageBubble key={message.id} message={message} />
-                ))}
+              <div className="space-y-3">
+                {messages.map((message, index) => {
+                  const currentDate = new Date(message.created_at);
+                  const prevDate = index > 0 ? new Date(messages[index - 1].created_at) : null;
+                  const showDivider = !prevDate || currentDate.toDateString() !== prevDate.toDateString();
+
+                  return (
+                    <div key={message.id}>
+                      {showDivider && <DateDivider date={currentDate} />}
+                      <MessageBubble message={message} />
+                    </div>
+                  );
+                })}
+                <div ref={messagesEndRef} />
               </div>
             )}
           </ScrollArea>

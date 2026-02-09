@@ -36,10 +36,10 @@ export function MessageBubble({ message }: MessageBubbleProps) {
       
       <div
         className={cn(
-          "max-w-[280px] rounded-2xl px-4 py-2.5 shadow-sm",
+          "max-w-[280px] rounded-2xl px-4 py-2.5 pb-5 shadow-sm relative",
           isStaff
-            ? "bg-[#001F3F] text-white rounded-bl-md"
-            : "bg-[#E60000] text-white rounded-br-md"
+            ? "bg-[#E5E7EB] text-[#1A1A1A] rounded-bl-md"
+            : "bg-[#001F3F] text-white rounded-br-md"
         )}
       >
         {/* Media content */}
@@ -65,10 +65,10 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         )}
 
         {message.media_url && message.media_type === 'audio' && (
-          <div className="mb-2 flex items-center gap-3 bg-white/10 rounded-xl p-2">
+          <div className="mb-2 flex items-center gap-3 bg-black/10 rounded-xl p-2">
             <button
               onClick={toggleAudio}
-              className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors"
+              className="w-10 h-10 rounded-full bg-black/10 flex items-center justify-center hover:bg-black/20 transition-colors"
             >
               {isPlaying ? (
                 <Pause className="w-5 h-5" />
@@ -77,8 +77,8 @@ export function MessageBubble({ message }: MessageBubbleProps) {
               )}
             </button>
             <div className="flex-1">
-              <div className="h-1 bg-white/30 rounded-full">
-                <div className="h-1 bg-white rounded-full w-0" />
+              <div className="h-1 bg-black/20 rounded-full">
+                <div className="h-1 bg-current rounded-full w-0" />
               </div>
             </div>
             <audio
@@ -94,11 +94,15 @@ export function MessageBubble({ message }: MessageBubbleProps) {
         {message.content_text && (
           <p className="text-sm whitespace-pre-wrap break-words">{message.content_text}</p>
         )}
-      </div>
 
-      <span className="text-[10px] text-muted-foreground px-1">
-        {format(new Date(message.created_at), "h:mm a")}
-      </span>
+        {/* Timestamp inside bubble */}
+        <span className={cn(
+          "absolute bottom-1.5 right-3 text-[10px]",
+          isStaff ? "text-[#1A1A1A]/50" : "text-white/60"
+        )}>
+          {format(new Date(message.created_at), "h:mm a")}
+        </span>
+      </div>
     </div>
   );
 }

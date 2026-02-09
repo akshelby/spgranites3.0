@@ -1,6 +1,7 @@
 export { ChatWidget } from './ChatWidget';
 export { ChatWindow } from './ChatWindow';
 export { MessageBubble } from './MessageBubble';
+export { DateDivider } from './DateDivider';
 export { ChatInput } from './ChatInput';
 export { ChatLoadingSpinner } from './ChatLoadingSpinner';
 export { ChatEmptyState } from './ChatEmptyState';
