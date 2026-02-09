@@ -13,3 +13,4 @@ export { default as AdminCarousel } from './AdminCarousel';
 export { default as AdminLocations } from './AdminLocations';
 export { default as AdminUsers } from './AdminUsers';
 export { default as AdminAnalytics } from './AdminAnalytics';
+export { default as AdminChat } from './AdminChat';

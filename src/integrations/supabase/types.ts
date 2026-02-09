@@ -188,6 +188,42 @@ export type Database = {
         }
         Relationships: []
       }
+      conversations: {
+        Row: {
+          created_at: string
+          customer_name: string | null
+          customer_phone: string | null
+          id: string
+          last_message_at: string | null
+          last_message_preview: string | null
+          ref_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_name?: string | null
+          customer_phone?: string | null
+          id?: string
+          last_message_at?: string | null
+          last_message_preview?: string | null
+          ref_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_name?: string | null
+          customer_phone?: string | null
+          id?: string
+          last_message_at?: string | null
+          last_message_preview?: string | null
+          ref_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       customer_reviews: {
         Row: {
           area_name: string | null
@@ -550,6 +586,53 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      messages: {
+        Row: {
+          content_text: string | null
+          conversation_id: string
+          created_at: string
+          id: string
+          is_read: boolean
+          media_type: string | null
+          media_url: string | null
+          ref_id: string
+          sender_name: string | null
+          sender_type: string
+        }
+        Insert: {
+          content_text?: string | null
+          conversation_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          media_type?: string | null
+          media_url?: string | null
+          ref_id: string
+          sender_name?: string | null
+          sender_type: string
+        }
+        Update: {
+          content_text?: string | null
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          media_type?: string | null
+          media_url?: string | null
+          ref_id?: string
+          sender_name?: string | null
+          sender_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       order_items: {
         Row: {

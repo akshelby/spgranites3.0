@@ -5,6 +5,7 @@ import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { WhatsAppButton } from './WhatsAppButton';
 import { MiniCart } from '@/components/cart/MiniCart';
+import { ChatWidget } from '@/components/chat/ChatWidget';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -34,6 +35,7 @@ export function MainLayout({ children, hideFooter = false }: MainLayoutProps) {
       {!hideFooter && <Footer />}
       <WhatsAppButton />
       <MiniCart />
+      <ChatWidget />
     </div>
   );
 }

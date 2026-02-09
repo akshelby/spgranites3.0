@@ -34,6 +34,7 @@ import {
   User,
   Home,
   Settings,
+  MessageCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -48,6 +49,7 @@ const menuItems = [
   { icon: ShoppingCart, label: 'Orders', href: '/admin/orders' },
   { icon: MessageSquare, label: 'Enquiries', href: '/admin/enquiries' },
   { icon: Calculator, label: 'Estimations', href: '/admin/estimations' },
+  { icon: MessageCircle, label: 'Live Chat', href: '/admin/chat' },
   { icon: Star, label: 'Reviews', href: '/admin/reviews' },
   { icon: Quote, label: 'Testimonials', href: '/admin/testimonials' },
   { icon: Wrench, label: 'Services', href: '/admin/services' },
