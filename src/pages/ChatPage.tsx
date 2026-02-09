@@ -272,9 +272,12 @@ export default function ChatPage() {
 
   const handleBack = () => {
     if (!showStartScreen) {
-      clearSession();
-      setShowStartScreen(true);
       setMessages([]);
+      setRefId(null);
+      setConversationId(null);
+      saveSession({ refId: null, conversationId: null, notificationsEnabled });
+      setHistory(getHistory());
+      setShowStartScreen(true);
     } else {
       navigate(-1);
     }
