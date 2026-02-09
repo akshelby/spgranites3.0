@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Bell, BellOff, Copy, Check } from "lucide-react";
+import { ArrowLeft, Bell, BellOff, Copy, Check, MessageSquare, Clock, ChevronRight, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,8 +12,18 @@ import { DateDivider } from "@/components/chat/DateDivider";
 import { ChatInput } from "@/components/chat/ChatInput";
 import { ChatLoadingSpinner } from "@/components/chat/ChatLoadingSpinner";
 import { ChatEmptyState } from "@/components/chat/ChatEmptyState";
+import { format } from "date-fns";
 
 const STORAGE_KEY = 'spg_chat_state';
+const HISTORY_KEY = 'spg_chat_history';
+
+interface ChatHistoryEntry {
+  refId: string;
+  conversationId: string;
+  lastMessage: string;
+  lastMessageAt: string;
+  status: string;
+}
 
 function generateRefId(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -39,6 +49,34 @@ function saveSession(data: { refId: string | null; conversationId: string | null
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
+function getHistory(): ChatHistoryEntry[] {
+  try {
+    const saved = localStorage.getItem(HISTORY_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch {}
+  return [];
+}
+
+function saveHistory(history: ChatHistoryEntry[]) {
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+}
+
+function addToHistory(entry: ChatHistoryEntry) {
+  const history = getHistory();
+  const idx = history.findIndex(h => h.refId === entry.refId);
+  if (idx !== -1) {
+    history[idx] = entry;
+  } else {
+    history.unshift(entry);
+  }
+  saveHistory(history.slice(0, 50)); // keep max 50
+}
+
+function removeFromHistory(refId: string) {
+  const history = getHistory().filter(h => h.refId !== refId);
+  saveHistory(history);
+}
+
 export default function ChatPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -52,6 +90,7 @@ export default function ChatPage() {
   const [showStartScreen, setShowStartScreen] = useState(!saved.refId);
   const [existingRefId, setExistingRefId] = useState("");
   const [copied, setCopied] = useState(false);
+  const [history, setHistory] = useState<ChatHistoryEntry[]>(getHistory());
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const notificationSoundRef = useRef<HTMLAudioElement | null>(null);
 
@@ -66,10 +105,7 @@ export default function ChatPage() {
       setIsLoading(true);
       try {
         const { data, error } = await supabase
-          .from('messages')
-          .select('*')
-          .eq('ref_id', refId)
-          .order('created_at', { ascending: true });
+          .from('messages').select('*').eq('ref_id', refId).order('created_at', { ascending: true });
         if (error) throw error;
         setMessages((data as Message[]) || []);
       } catch (err) {
@@ -80,6 +116,20 @@ export default function ChatPage() {
     };
     loadMessages();
   }, [refId]);
+
+  // Update history when messages change
+  useEffect(() => {
+    if (!refId || !conversationId || messages.length === 0) return;
+    const lastMsg = messages[messages.length - 1];
+    addToHistory({
+      refId,
+      conversationId,
+      lastMessage: lastMsg.content_text || (lastMsg.media_type ? `📎 ${lastMsg.media_type}` : ''),
+      lastMessageAt: lastMsg.created_at,
+      status: 'open',
+    });
+    setHistory(getHistory());
+  }, [messages, refId, conversationId]);
 
   useEffect(() => {
     if (!refId) return;
@@ -144,6 +194,17 @@ export default function ChatPage() {
     } catch {
       toast({ title: "Error", description: "Failed to start conversation.", variant: "destructive" });
     }
+  };
+
+  const resumeFromHistory = (entry: ChatHistoryEntry) => {
+    setSession(entry.refId, entry.conversationId);
+    setShowStartScreen(false);
+  };
+
+  const deleteFromHistory = (e: React.MouseEvent, entryRefId: string) => {
+    e.stopPropagation();
+    removeFromHistory(entryRefId);
+    setHistory(getHistory());
   };
 
   const resumeConversation = async () => {
@@ -225,8 +286,7 @@ export default function ChatPage() {
       <div className="bg-[#001F3F] text-white p-4 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-3">
           <Button
-            size="icon"
-            variant="ghost"
+            size="icon" variant="ghost"
             className="h-8 w-8 text-white/80 hover:text-white hover:bg-white/10"
             onClick={handleBack}
           >
@@ -245,8 +305,7 @@ export default function ChatPage() {
           </div>
         </div>
         <Button
-          size="icon"
-          variant="ghost"
+          size="icon" variant="ghost"
           className="h-8 w-8 text-white/80 hover:text-white hover:bg-white/10"
           onClick={toggleNotifications}
         >
@@ -256,39 +315,93 @@ export default function ChatPage() {
 
       {/* Content */}
       {showStartScreen ? (
-        <div className="flex-1 flex flex-col items-center justify-center p-6 space-y-6">
-          <div className="text-center space-y-2">
-            <h3 className="text-xl font-semibold text-foreground">Welcome to S P Granites</h3>
-            <p className="text-sm text-muted-foreground">
-              Start a new conversation or resume an existing one
-            </p>
-          </div>
-          <Button
-            className="w-full max-w-sm bg-[#E60000] hover:bg-[#cc0000] text-white rounded-2xl h-12"
-            onClick={startNewConversation}
-          >
-            Start New Complaint
-          </Button>
-          <div className="w-full max-w-sm space-y-3">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">Or resume</span>
+        <ScrollArea className="flex-1">
+          <div className="p-6 space-y-6 max-w-lg mx-auto">
+            {/* Welcome */}
+            <div className="text-center space-y-2 pt-4">
+              <h3 className="text-xl font-semibold text-foreground">Welcome to S P Granites</h3>
+              <p className="text-sm text-muted-foreground">
+                Start a new conversation or resume an existing one
+              </p>
+            </div>
+
+            <Button
+              className="w-full bg-[#E60000] hover:bg-[#cc0000] text-white rounded-2xl h-12"
+              onClick={startNewConversation}
+            >
+              Start New Complaint
+            </Button>
+
+            {/* Previous Conversations */}
+            {history.length > 0 && (
+              <div className="space-y-3">
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-background px-2 text-muted-foreground">Previous Conversations</span>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  {history.map((entry) => (
+                    <button
+                      key={entry.refId}
+                      onClick={() => resumeFromHistory(entry)}
+                      className="w-full flex items-center gap-3 p-3 rounded-xl border border-border bg-card hover:bg-accent/50 transition-colors text-left group"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                        <MessageSquare className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="font-medium text-sm text-foreground">{entry.refId}</span>
+                          <span className="text-[10px] text-muted-foreground shrink-0">
+                            {(() => {
+                              try { return format(new Date(entry.lastMessageAt), 'dd MMM, hh:mm a'); } catch { return ''; }
+                            })()}
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground truncate mt-0.5">
+                          {entry.lastMessage || 'No messages yet'}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          onClick={(e) => deleteFromHistory(e, entry.refId)}
+                          className="p-1.5 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-destructive/10 transition-all"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 text-destructive" />
+                        </button>
+                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Manual Resume */}
+            <div className="space-y-3">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">Or enter Reference ID</span>
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Enter Reference ID (e.g., SPG-XXXXX)"
+                  value={existingRefId}
+                  onChange={(e) => setExistingRefId(e.target.value.toUpperCase())}
+                  className="rounded-xl"
+                />
+                <Button variant="outline" className="rounded-xl px-6" onClick={resumeConversation} disabled={!existingRefId.trim()}>
+                  Resume
+                </Button>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Input
-                placeholder="Enter Reference ID (e.g., SPG-XXXXX)"
-                value={existingRefId}
-                onChange={(e) => setExistingRefId(e.target.value.toUpperCase())}
-                className="rounded-xl"
-              />
-              <Button variant="outline" className="rounded-xl px-6" onClick={resumeConversation} disabled={!existingRefId.trim()}>
-                Resume
-              </Button>
-            </div>
           </div>
-        </div>
+        </ScrollArea>
       ) : (
         <>
           <ScrollArea className="flex-1 bg-[#0B141A]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'200\' height=\'200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cdefs%3E%3Cpattern id=\'p\' width=\'40\' height=\'40\' patternUnits=\'userSpaceOnUse\'%3E%3Cpath d=\'M20 2a2 2 0 110 4 2 2 0 010-4zM6 18a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM34 28a1 1 0 110 2 1 1 0 010-2z\' fill=\'%23ffffff\' fill-opacity=\'0.03\'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width=\'200\' height=\'200\' fill=\'url(%23p)\'/%3E%3C/svg%3E")' }}>
