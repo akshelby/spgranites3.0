@@ -100,7 +100,16 @@ export function ChatWindow({
         (payload) => {
           const newMessage = payload.new as Message;
           setMessages(prev => {
-            // Deduplicate
+            // If this message matches an optimistic one, replace it (mark as sent)
+            const optimisticIndex = prev.findIndex(
+              m => m._tempId && m.content_text === newMessage.content_text && m.sender_type === 'customer'
+            );
+            if (optimisticIndex !== -1) {
+              const updated = [...prev];
+              updated[optimisticIndex] = { ...newMessage, _status: 'sent' as const };
+              return updated;
+            }
+            // Deduplicate by id
             if (prev.some(m => m.id === newMessage.id)) return prev;
             return [...prev, newMessage];
           });
@@ -182,19 +191,47 @@ export function ChatWindow({
   const handleSendMessage = async (text: string) => {
     if (!refId || !conversationId) return;
 
+    const tempId = `temp-${Date.now()}-${Math.random()}`;
+    const optimisticMessage: Message = {
+      id: tempId,
+      conversation_id: conversationId,
+      ref_id: refId,
+      sender_type: 'customer',
+      sender_name: null,
+      content_text: text,
+      media_url: null,
+      media_type: null,
+      created_at: new Date().toISOString(),
+      is_read: false,
+      _status: 'sending',
+      _tempId: tempId,
+    };
+
+    setMessages(prev => [...prev, optimisticMessage]);
+
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('messages')
         .insert({
           conversation_id: conversationId,
           ref_id: refId,
           sender_type: 'customer',
           content_text: text,
-        });
+        })
+        .select()
+        .single();
 
       if (error) throw error;
+
+      // Replace optimistic message with confirmed one
+      setMessages(prev =>
+        prev.map(m => m._tempId === tempId ? { ...data as Message, _status: 'sent' as const } : m)
+      );
     } catch (err) {
       console.error('Error sending message:', err);
+      setMessages(prev =>
+        prev.map(m => m._tempId === tempId ? { ...m, _status: 'failed' as const } : m)
+      );
       toast({
         title: "Error",
         description: "Failed to send message. Please try again.",

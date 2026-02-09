@@ -9,6 +9,8 @@ export interface Message {
   media_type: 'image' | 'video' | 'audio' | null;
   created_at: string;
   is_read: boolean;
+  _status?: 'sending' | 'sent' | 'failed';
+  _tempId?: string;
 }
 
 export interface Conversation {

@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Play, Pause, Image as ImageIcon, Video } from "lucide-react";
+import { Play, Pause, Check, CheckCheck, Clock, AlertCircle } from "lucide-react";
 import { useState, useRef } from "react";
 import { Message } from "./types";
 import { cn } from "@/lib/utils";
@@ -95,12 +95,21 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           <p className="text-sm whitespace-pre-wrap break-words">{message.content_text}</p>
         )}
 
-        {/* Timestamp inside bubble */}
+        {/* Timestamp + status inside bubble */}
         <span className={cn(
-          "absolute bottom-1.5 right-3 text-[10px]",
+          "absolute bottom-1.5 right-3 text-[10px] flex items-center gap-1",
           isStaff ? "text-[#1A1A1A]/50" : "text-white/60"
         )}>
           {format(new Date(message.created_at), "h:mm a")}
+          {!isStaff && (
+            message._status === 'sending' ? (
+              <Clock className="w-3 h-3" />
+            ) : message._status === 'failed' ? (
+              <AlertCircle className="w-3 h-3 text-red-400" />
+            ) : (
+              <CheckCheck className="w-3 h-3" />
+            )
+          )}
         </span>
       </div>
     </div>

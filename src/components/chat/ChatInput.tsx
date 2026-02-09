@@ -33,10 +33,11 @@ export function ChatInput({ onSendMessage, onSendMedia, disabled }: ChatInputPro
   const handleSend = async () => {
     if (!message.trim() || isSending) return;
     
+    const text = message.trim();
+    setMessage(""); // Clear immediately
     setIsSending(true);
     try {
-      await onSendMessage(message.trim());
-      setMessage("");
+      await onSendMessage(text);
     } finally {
       setIsSending(false);
     }
