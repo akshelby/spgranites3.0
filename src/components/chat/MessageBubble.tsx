@@ -32,7 +32,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
     <div className={cn("flex w-full px-3 mb-[2px]", isStaff ? "justify-start" : "justify-end")}>
       <div
         className={cn(
-          "relative max-w-[80%] rounded-lg px-2.5 py-1.5 pb-4 shadow-sm flex flex-col",
+          "relative max-w-[80%] rounded-lg px-2.5 pt-1.5 pb-1 shadow-sm flex flex-col",
           isStaff
             ? "bg-[#202C33] text-[#E9EDEF] rounded-tl-none"
             : "bg-[#005C4B] text-[#E9EDEF] rounded-tr-none"
@@ -88,11 +88,13 @@ export function MessageBubble({ message }: MessageBubbleProps) {
 
         {/* Text content */}
         {message.content_text && (
-          <p className="text-sm whitespace-pre-wrap break-words">{message.content_text}</p>
+          <p className="text-[14px] leading-[19px] whitespace-pre-wrap break-words">{message.content_text}
+            <span className="inline-block w-[70px]" />
+          </p>
         )}
 
-        {/* Timestamp + status — absolute bottom-right */}
-        <span className="absolute bottom-[3px] right-2 text-[11px] flex items-center gap-1 text-[#8696A0]">
+        {/* Timestamp + status — bottom-right, non-overlapping */}
+        <span className="self-end text-[11px] flex items-center gap-1 text-[#8696A0] -mt-3.5 mr-0.5">
           {format(new Date(message.created_at), "h:mm a")}
           {!isStaff && (
             message._status === 'sending' ? (
