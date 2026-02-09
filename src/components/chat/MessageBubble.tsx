@@ -29,12 +29,12 @@ export function MessageBubble({ message }: MessageBubbleProps) {
   };
 
   return (
-    <div className={cn("flex w-full", isStaff ? "justify-start" : "justify-end")}>
+    <div className={cn("flex w-full px-4 mb-2", isStaff ? "justify-start" : "justify-end")}>
       <div
         className={cn(
-          "max-w-[280px] rounded-2xl px-3 py-2 shadow-sm flex flex-col",
+          "relative max-w-[75%] rounded-2xl px-3 py-2 pb-5 shadow-sm flex flex-col",
           isStaff
-            ? "bg-[#E5E7EB] text-[#1A1A1A] rounded-tl-none"
+            ? "bg-gray-100 text-[#1A1A1A] rounded-tl-none"
             : "bg-[#001F3F] text-white rounded-tr-none"
         )}
       >
@@ -91,9 +91,9 @@ export function MessageBubble({ message }: MessageBubbleProps) {
           <p className="text-sm whitespace-pre-wrap break-words">{message.content_text}</p>
         )}
 
-        {/* Timestamp + status */}
+        {/* Timestamp + status — absolute bottom-right */}
         <span className={cn(
-          "text-[10px] flex items-center gap-1 self-end mt-1",
+          "absolute bottom-1 right-2 text-[10px] flex items-center gap-1",
           isStaff ? "text-[#1A1A1A]/50" : "text-white/60"
         )}>
           {format(new Date(message.created_at), "h:mm a")}
