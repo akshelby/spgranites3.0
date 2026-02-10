@@ -10,9 +10,10 @@ interface CategoryItemProps {
   link: string;
   description: string;
   index: number;
+  gradient?: string;
 }
 
-export function CategoryItem({ name, icon: Icon, link, index }: CategoryItemProps) {
+export function CategoryItem({ name, icon: Icon, link, index, gradient }: CategoryItemProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
 
@@ -21,7 +22,6 @@ export function CategoryItem({ name, icon: Icon, link, index }: CategoryItemProp
     setTimeout(() => setIsClicked(false), 400);
   };
 
-  // Alternating colors: even = green, odd = red
   const clickColorClass = index % 2 === 0 ? 'text-success' : 'text-destructive';
 
   return (
@@ -33,7 +33,7 @@ export function CategoryItem({ name, icon: Icon, link, index }: CategoryItemProp
     >
       <Link
         to={link}
-        className="flex flex-col items-center gap-2 group"
+        className="flex flex-col items-center gap-3 group"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={handleClick}
@@ -41,43 +41,37 @@ export function CategoryItem({ name, icon: Icon, link, index }: CategoryItemProp
         {/* Icon Container */}
         <motion.div
           className={cn(
-            'relative w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20',
-            'rounded-full flex items-center justify-center',
-            'border-2 transition-all duration-300',
-            'bg-card border-border',
-            isHovered && 'bg-foreground/5 border-foreground/30'
+            'relative w-16 h-16 sm:w-18 sm:h-18 md:w-22 md:h-22',
+            'rounded-2xl flex items-center justify-center',
+            'border transition-all duration-300',
+            'bg-card border-border shadow-sm',
+            gradient && `bg-gradient-to-br ${gradient}`,
+            isHovered && 'border-primary/40 shadow-md shadow-primary/10'
           )}
-          whileHover={{ scale: 1.1 }}
+          whileHover={{ scale: 1.08, y: -4 }}
           whileTap={{ scale: 0.95 }}
           transition={{ type: 'spring', stiffness: 400, damping: 17 }}
         >
-          {/* Glow effect on hover */}
-          <motion.div
-            className="absolute inset-0 rounded-full bg-primary/20 blur-xl"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: isHovered ? 0.5 : 0 }}
-            transition={{ duration: 0.3 }}
-          />
-
           {/* Icon */}
           <Icon
             className={cn(
-              'w-6 h-6 sm:w-7 sm:h-7 md:w-9 md:h-9',
+              'w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10',
               'transition-colors duration-300 relative z-10',
               isClicked
                 ? clickColorClass
                 : isHovered
-                  ? 'text-foreground'
+                  ? 'text-primary'
                   : 'text-foreground/70'
             )}
+            strokeWidth={1.5}
           />
         </motion.div>
 
         {/* Label */}
         <span
           className={cn(
-            'text-xs sm:text-sm md:text-base font-medium text-center',
-            'transition-colors duration-300 leading-tight',
+            'text-xs sm:text-sm font-medium text-center',
+            'transition-colors duration-300 leading-tight max-w-[5rem]',
             isClicked
               ? clickColorClass
               : isHovered

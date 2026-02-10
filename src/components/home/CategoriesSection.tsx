@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ChefHat, Bath, UtensilsCrossed, Grid3X3, Phone, MapPin } from 'lucide-react';
+import { Gem, Bath, Utensils, LayoutGrid, Headset, Store } from 'lucide-react';
 import { CategoryItem } from './CategoryItem';
 import { BhrundhavanIcon } from './BhrundhavanIcon';
 import { ElementType } from 'react';
@@ -10,15 +10,17 @@ interface Category {
   icon: ElementType;
   link: string;
   description: string;
+  gradient: string;
 }
 
 const categories: Category[] = [
   {
     id: 'kitchen-slab',
     name: 'Kitchen Slab',
-    icon: ChefHat,
+    icon: Gem,
     link: '/products?category=kitchen-slab',
     description: 'Premium kitchen countertops',
+    gradient: 'from-amber-500/20 to-orange-500/20',
   },
   {
     id: 'vanity-top',
@@ -26,13 +28,15 @@ const categories: Category[] = [
     icon: Bath,
     link: '/products?category=vanity-top',
     description: 'Elegant bathroom vanities',
+    gradient: 'from-sky-500/20 to-cyan-500/20',
   },
   {
     id: 'dining-top',
     name: 'Dining Table Top',
-    icon: UtensilsCrossed,
+    icon: Utensils,
     link: '/products?category=dining-top',
     description: 'Stunning dining surfaces',
+    gradient: 'from-rose-500/20 to-pink-500/20',
   },
   {
     id: 'bhrundhavan',
@@ -40,27 +44,31 @@ const categories: Category[] = [
     icon: BhrundhavanIcon,
     link: '/products?category=bhrundhavan',
     description: 'Traditional tulsi planters',
+    gradient: 'from-emerald-500/20 to-green-500/20',
   },
   {
     id: 'tiles-fixing',
     name: 'Tiles Fixing',
-    icon: Grid3X3,
+    icon: LayoutGrid,
     link: '/services',
     description: 'Professional tile installation',
+    gradient: 'from-violet-500/20 to-purple-500/20',
   },
   {
     id: 'contact-us',
     name: 'Contact Us',
-    icon: Phone,
+    icon: Headset,
     link: '/contact',
     description: 'Get in touch with us',
+    gradient: 'from-blue-500/20 to-indigo-500/20',
   },
   {
     id: 'offline-stores',
     name: 'Offline Stores',
-    icon: MapPin,
+    icon: Store,
     link: '/stores',
     description: 'Visit our showrooms',
+    gradient: 'from-teal-500/20 to-emerald-500/20',
   },
 ];
 
@@ -100,7 +108,7 @@ export function CategoriesSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-50px' }}
-          className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-4 sm:gap-6 md:gap-8 justify-items-center"
+          className="flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-10"
         >
           {categories.map((category, index) => (
             <CategoryItem
