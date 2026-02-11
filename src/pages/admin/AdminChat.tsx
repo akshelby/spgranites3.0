@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Search, Send, Loader2, MessageCircle, Phone, X, Image,
   Mail, Clock, Users, CheckCircle, AlertCircle, ArrowLeft,
@@ -40,21 +40,7 @@ export default function AdminChat() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  // Load conversations
-  useEffect(() => {
-    loadConversations();
-
-    const channel = supabase
-      .channel('admin-conversations')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'conversations' }, () => {
-        loadConversations();
-      })
-      .subscribe();
-
-    return () => { supabase.removeChannel(channel); };
-  }, []);
-
-  const loadConversations = async () => {
+  const loadConversations = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('conversations')
@@ -74,54 +60,71 @@ export default function AdminChat() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  // Load messages for selected conversation
+  useEffect(() => {
+    loadConversations();
+    const interval = setInterval(loadConversations, 5000);
+
+    const channel = supabase
+      .channel('admin-conversations')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'conversations' }, () => {
+        loadConversations();
+      })
+      .subscribe();
+
+    return () => {
+      clearInterval(interval);
+      supabase.removeChannel(channel);
+    };
+  }, [loadConversations]);
+
+  const fetchMessages = useCallback(async () => {
+    if (!selectedConversation) return;
+    try {
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('ref_id', selectedConversation.ref_id)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      setMessages(prev => {
+        const confirmed = (data as Message[]) || [];
+        const pending = prev.filter(m => m._tempId && m._status === 'sending');
+        const merged = [...confirmed];
+        pending.forEach(p => {
+          if (!merged.some(m => m.content_text === p.content_text && m.sender_type === p.sender_type)) {
+            merged.push(p);
+          }
+        });
+        return merged;
+      });
+    } catch (err) {
+      console.error('Error loading messages:', err);
+    }
+  }, [selectedConversation]);
+
   useEffect(() => {
     if (!selectedConversation) return;
-
-    const loadMessages = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('messages')
-          .select('*')
-          .eq('ref_id', selectedConversation.ref_id)
-          .order('created_at', { ascending: true });
-
-        if (error) throw error;
-        setMessages((data as Message[]) || []);
-      } catch (err) {
-        console.error('Error loading messages:', err);
-      }
-    };
-
-    loadMessages();
+    fetchMessages();
+    const interval = setInterval(fetchMessages, 3000);
 
     const channel = supabase
       .channel(`admin-messages:${selectedConversation.ref_id}`)
       .on('postgres_changes', {
         event: 'INSERT', schema: 'public', table: 'messages',
         filter: `ref_id=eq.${selectedConversation.ref_id}`,
-      }, (payload) => {
-        const newMsg = payload.new as Message;
-        setMessages(prev => {
-          // Replace optimistic message if it matches
-          const optimisticIdx = prev.findIndex(
-            m => m._tempId && m.content_text === newMsg.content_text && m.sender_type === newMsg.sender_type
-          );
-          if (optimisticIdx !== -1) {
-            const updated = [...prev];
-            updated[optimisticIdx] = { ...newMsg, _status: 'sent' as const };
-            return updated;
-          }
-          if (prev.some(m => m.id === newMsg.id)) return prev;
-          return [...prev, newMsg];
-        });
+      }, () => {
+        fetchMessages();
       })
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
-  }, [selectedConversation]);
+    return () => {
+      clearInterval(interval);
+      supabase.removeChannel(channel);
+    };
+  }, [selectedConversation, fetchMessages]);
 
   // Auto-scroll
   useEffect(() => {

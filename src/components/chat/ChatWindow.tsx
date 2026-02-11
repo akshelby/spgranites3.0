@@ -58,32 +58,42 @@ export function ChatWindow({
     notificationSoundRef.current.volume = 0.5;
   }, []);
 
-  // Load messages when we have a refId
-  useEffect(() => {
+  const fetchMessages = useCallback(async (showLoader = false) => {
     if (!refId) return;
+    if (showLoader) setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('ref_id', refId)
+        .order('created_at', { ascending: true });
 
-    const loadMessages = async () => {
-      setIsLoading(true);
-      try {
-        const { data, error } = await supabase
-          .from('messages')
-          .select('*')
-          .eq('ref_id', refId)
-          .order('created_at', { ascending: true });
-
-        if (error) throw error;
-        setMessages((data as Message[]) || []);
-      } catch (err) {
-        console.error('Error loading messages:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadMessages();
+      if (error) throw error;
+      setMessages(prev => {
+        const confirmed = (data as Message[]) || [];
+        const pending = prev.filter(m => m._tempId && m._status === 'sending');
+        const merged = [...confirmed];
+        pending.forEach(p => {
+          if (!merged.some(m => m.content_text === p.content_text && m.sender_type === p.sender_type)) {
+            merged.push(p);
+          }
+        });
+        return merged;
+      });
+    } catch (err) {
+      console.error('Error loading messages:', err);
+    } finally {
+      if (showLoader) setIsLoading(false);
+    }
   }, [refId]);
 
-  // Real-time subscription
+  useEffect(() => {
+    if (!refId) return;
+    fetchMessages(true);
+    const interval = setInterval(() => fetchMessages(false), 3000);
+    return () => clearInterval(interval);
+  }, [refId, fetchMessages]);
+
   useEffect(() => {
     if (!refId) return;
 
@@ -97,25 +107,9 @@ export function ChatWindow({
           table: 'messages',
           filter: `ref_id=eq.${refId}`,
         },
-        (payload) => {
-          const newMessage = payload.new as Message;
-          setMessages(prev => {
-            // If this message matches an optimistic one, replace it (mark as sent)
-            const optimisticIndex = prev.findIndex(
-              m => m._tempId && m.content_text === newMessage.content_text && m.sender_type === 'customer'
-            );
-            if (optimisticIndex !== -1) {
-              const updated = [...prev];
-              updated[optimisticIndex] = { ...newMessage, _status: 'sent' as const };
-              return updated;
-            }
-            // Deduplicate by id
-            if (prev.some(m => m.id === newMessage.id)) return prev;
-            return [...prev, newMessage];
-          });
-
-          // Play notification sound for staff messages
-          if (newMessage.sender_type === 'staff' && notificationsEnabled) {
+        () => {
+          fetchMessages(false);
+          if (notificationsEnabled) {
             notificationSoundRef.current?.play().catch(() => {});
           }
         }
@@ -125,7 +119,7 @@ export function ChatWindow({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [refId, notificationsEnabled]);
+  }, [refId, notificationsEnabled, fetchMessages]);
 
   // Auto-scroll to bottom
   const scrollToBottom = useCallback(() => {
