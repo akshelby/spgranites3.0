@@ -48,12 +48,26 @@ export function PremiumCollection() {
 
   useEffect(() => {
     const fetchProducts = async () => {
-      const { data } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .limit(8);
-      if (data && data.length > 0) setProducts(data);
+      try {
+        const { data: featured, error: featuredErr } = await supabase
+          .from('products')
+          .select('*')
+          .eq('is_active', true)
+          .eq('is_featured', true)
+          .limit(8);
+        if (!featuredErr && featured && featured.length > 0) {
+          setProducts(featured);
+          return;
+        }
+        const { data: fallback } = await supabase
+          .from('products')
+          .select('*')
+          .eq('is_active', true)
+          .limit(8);
+        if (fallback && fallback.length > 0) setProducts(fallback);
+      } catch {
+        // silent fallback
+      }
     };
     fetchProducts();
   }, []);
@@ -130,6 +144,7 @@ export function PremiumCollection() {
             height: `${containerH}px`,
             perspective: isMobile ? '800px' : '1200px',
             cursor: isDragging ? 'grabbing' : 'grab',
+            touchAction: 'none',
           }}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
