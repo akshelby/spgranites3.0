@@ -30,8 +30,6 @@ export function TabBar() {
     }
   }, [activeTabId]);
 
-  if (tabs.length <= 1) return null;
-
   return (
     <div className="bg-muted/50 border-b border-border flex items-center" data-testid="tab-bar">
       <div
