@@ -57,11 +57,11 @@ export default function WishlistPage() {
   if (loading) {
     return (
       <MainLayout>
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-display font-bold mb-8">My Wishlist</h1>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
+          <h1 className="text-xl sm:text-2xl font-display font-bold mb-3 sm:mb-5">My Wishlist</h1>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-80 bg-muted animate-pulse rounded-xl" />
+              <div key={i} className="h-48 bg-muted animate-pulse rounded-lg" />
             ))}
           </div>
         </div>
@@ -72,15 +72,15 @@ export default function WishlistPage() {
   if (products.length === 0) {
     return (
       <MainLayout>
-        <div className="container mx-auto px-4 py-16 text-center">
-          <div className="w-24 h-24 mx-auto rounded-full bg-muted flex items-center justify-center mb-6">
-            <Heart className="h-12 w-12 text-muted-foreground" />
+        <div className="container mx-auto px-4 py-12 text-center">
+          <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center mb-4">
+            <Heart className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h1 className="text-2xl font-bold mb-4">Your wishlist is empty</h1>
-          <p className="text-muted-foreground mb-6">
-            Save items you love by clicking the heart icon on any product.
+          <h1 className="text-xl font-bold mb-2" data-testid="text-empty-wishlist">Your wishlist is empty</h1>
+          <p className="text-sm text-muted-foreground mb-4">
+            Save items you love by clicking the heart icon.
           </p>
-          <Button asChild size="lg">
+          <Button asChild size="default" data-testid="button-browse">
             <Link to="/products">Browse Products</Link>
           </Button>
         </div>
@@ -90,47 +90,51 @@ export default function WishlistPage() {
 
   return (
     <MainLayout>
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-display font-bold mb-8">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
+        <h1 className="text-xl sm:text-2xl font-display font-bold mb-3 sm:mb-5" data-testid="text-wishlist-title">
           My Wishlist ({products.length})
         </h1>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
           {products.map((product, index) => (
             <motion.div
               key={product.id}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className="group bg-card rounded-xl overflow-hidden border border-border hover:shadow-lg transition-all"
+              transition={{ delay: index * 0.03 }}
+              className="group bg-card rounded-lg overflow-hidden border border-border hover-elevate transition-all"
+              data-testid={`card-wishlist-${product.id}`}
             >
-              <div className="relative aspect-square overflow-hidden">
+              <div className="relative aspect-[4/3] overflow-hidden">
                 <img
                   src={product.images?.[0] || '/placeholder.svg'}
                   alt={product.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover"
                 />
                 <button
                   onClick={() => removeFromWishlist(product.id)}
-                  className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center text-destructive hover:bg-white transition-colors"
+                  className="absolute top-1.5 right-1.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/90 flex items-center justify-center text-destructive"
+                  data-testid={`button-remove-wishlist-${product.id}`}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                 </button>
               </div>
-              <div className="p-4">
+              <div className="p-2 sm:p-2.5">
                 <Link to={`/products/${product.slug}`}>
-                  <h3 className="font-semibold hover:text-primary transition-colors line-clamp-1">
+                  <h3 className="text-xs sm:text-sm font-medium line-clamp-1">
                     {product.name}
                   </h3>
                 </Link>
-                <p className="text-lg font-bold text-primary mt-2">
+                <p className="text-sm font-bold text-primary mt-0.5">
                   {formatPrice(product.price)}
                 </p>
                 <Button
-                  className="w-full mt-4"
+                  className="w-full mt-1.5 text-[10px] sm:text-xs"
+                  size="sm"
                   onClick={() => handleAddToCart(product)}
+                  data-testid={`button-add-cart-${product.id}`}
                 >
-                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
                   Add to Cart
                 </Button>
               </div>

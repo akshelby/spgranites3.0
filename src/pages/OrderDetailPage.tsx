@@ -66,11 +66,11 @@ export default function OrderDetailPage() {
   if (loading) {
     return (
       <MainLayout>
-        <div className="container mx-auto px-4 py-8">
-          <div className="h-8 w-48 bg-muted animate-pulse rounded mb-8" />
-          <div className="space-y-6">
-            <div className="h-32 bg-muted animate-pulse rounded-xl" />
-            <div className="h-64 bg-muted animate-pulse rounded-xl" />
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
+          <div className="h-5 w-32 bg-muted animate-pulse rounded mb-3" />
+          <div className="space-y-3">
+            <div className="h-20 bg-muted animate-pulse rounded-lg" />
+            <div className="h-40 bg-muted animate-pulse rounded-lg" />
           </div>
         </div>
       </MainLayout>
@@ -80,9 +80,9 @@ export default function OrderDetailPage() {
   if (!order) {
     return (
       <MainLayout>
-        <div className="container mx-auto px-4 py-16 text-center">
-          <h1 className="text-2xl font-bold mb-4">Order not found</h1>
-          <Button asChild>
+        <div className="container mx-auto px-4 py-12 text-center">
+          <h1 className="text-xl font-bold mb-3">Order not found</h1>
+          <Button asChild size="default">
             <Link to="/orders">Back to Orders</Link>
           </Button>
         </div>
@@ -92,60 +92,59 @@ export default function OrderDetailPage() {
 
   return (
     <MainLayout>
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
+      <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-6">
         <Link
           to="/orders"
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-8"
+          className="inline-flex items-center gap-1 text-xs sm:text-sm text-muted-foreground hover:text-foreground mb-3 sm:mb-5"
+          data-testid="link-back-orders"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-3.5 w-3.5" />
           Back to Orders
         </Link>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 sm:mb-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-display font-bold">
+            <h1 className="text-lg sm:text-2xl font-display font-bold" data-testid="text-order-number">
               {order.order_number}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Placed on {format(new Date(order.created_at), 'MMM d, yyyy')}
             </p>
           </div>
-          <Badge className={cn(statusColors[order.status], 'text-sm')}>
+          <Badge className={cn(statusColors[order.status], 'text-xs')} data-testid="badge-order-status">
             {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
           </Badge>
         </div>
 
-        {/* Status Timeline */}
         {order.status !== 'cancelled' && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="text-lg">Order Status</CardTitle>
+          <Card className="mb-4 sm:mb-6">
+            <CardHeader className="py-2.5 px-3 sm:py-4 sm:px-6">
+              <CardTitle className="text-sm sm:text-base">Order Status</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-3 pb-3 sm:px-6 sm:pb-4">
               <div className="flex justify-between relative">
                 {orderStatuses.slice(0, -1).map((status, index) => (
                   <div key={status} className="flex flex-col items-center relative z-10">
                     <div
                       className={cn(
-                        'w-10 h-10 rounded-full flex items-center justify-center border-2',
+                        'w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center border-2',
                         index <= currentStatusIndex
                           ? 'bg-primary border-primary text-primary-foreground'
                           : 'bg-muted border-border text-muted-foreground'
                       )}
                     >
                       {index < currentStatusIndex ? (
-                        <Check className="h-5 w-5" />
+                        <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       ) : (
-                        <span className="text-sm">{index + 1}</span>
+                        <span className="text-[10px] sm:text-xs">{index + 1}</span>
                       )}
                     </div>
-                    <span className="text-xs mt-2 capitalize hidden sm:block">
+                    <span className="text-[9px] sm:text-xs mt-1 capitalize hidden sm:block">
                       {status}
                     </span>
                   </div>
                 ))}
-                <div className="absolute top-5 left-0 right-0 h-0.5 bg-border -z-0">
+                <div className="absolute top-3.5 sm:top-[18px] left-0 right-0 h-0.5 bg-border -z-0">
                   <div
                     className="h-full bg-primary transition-all"
                     style={{
@@ -158,33 +157,33 @@ export default function OrderDetailPage() {
           </Card>
         )}
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Order Items */}
+        <div className="grid lg:grid-cols-3 gap-3 sm:gap-6">
           <div className="lg:col-span-2">
             <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Package className="h-5 w-5" />
+              <CardHeader className="py-2.5 px-3 sm:py-4 sm:px-6">
+                <CardTitle className="text-sm sm:text-base flex items-center gap-1.5">
+                  <Package className="h-4 w-4" />
                   Order Items
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
+              <CardContent className="px-3 pb-3 sm:px-6 sm:pb-4">
+                <div className="space-y-2 sm:space-y-3">
                   {items.map((item) => (
                     <div
                       key={item.id}
-                      className="flex items-center gap-4 pb-4 border-b last:border-0 last:pb-0"
+                      className="flex items-center gap-2.5 pb-2 sm:pb-3 border-b last:border-0 last:pb-0"
+                      data-testid={`item-order-${item.id}`}
                     >
-                      <div className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center">
-                        <Package className="h-6 w-6 text-muted-foreground" />
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 bg-muted rounded-md flex items-center justify-center shrink-0">
+                        <Package className="h-5 w-5 text-muted-foreground" />
                       </div>
-                      <div className="flex-1">
-                        <h4 className="font-medium">{item.product_name}</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Qty: {item.quantity} × {formatPrice(item.unit_price)}
+                      <div className="flex-1 min-w-0">
+                        <h4 className="text-xs sm:text-sm font-medium truncate">{item.product_name}</h4>
+                        <p className="text-[10px] sm:text-xs text-muted-foreground">
+                          Qty: {item.quantity} x {formatPrice(item.unit_price)}
                         </p>
                       </div>
-                      <p className="font-semibold">{formatPrice(item.total_price)}</p>
+                      <p className="text-xs sm:text-sm font-semibold shrink-0">{formatPrice(item.total_price)}</p>
                     </div>
                   ))}
                 </div>
@@ -192,22 +191,20 @@ export default function OrderDetailPage() {
             </Card>
           </div>
 
-          {/* Order Summary & Address */}
-          <div className="space-y-6">
-            {/* Summary */}
+          <div className="space-y-3 sm:space-y-4">
             <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <CreditCard className="h-5 w-5" />
+              <CardHeader className="py-2.5 px-3 sm:py-4 sm:px-6">
+                <CardTitle className="text-sm sm:text-base flex items-center gap-1.5">
+                  <CreditCard className="h-4 w-4" />
                   Order Summary
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex justify-between text-sm">
+              <CardContent className="px-3 pb-3 sm:px-6 sm:pb-4 space-y-1.5 sm:space-y-2">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
                   <span>{formatPrice(order.subtotal)}</span>
                 </div>
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-muted-foreground">Shipping</span>
                   <span>
                     {order.shipping_amount === 0
@@ -215,38 +212,37 @@ export default function OrderDetailPage() {
                       : formatPrice(order.shipping_amount)}
                   </span>
                 </div>
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-muted-foreground">Tax</span>
                   <span>{formatPrice(order.tax_amount)}</span>
                 </div>
-                <div className="border-t pt-3 flex justify-between font-semibold text-lg">
+                <div className="border-t pt-2 flex justify-between font-semibold text-sm sm:text-base">
                   <span>Total</span>
-                  <span className="text-primary">{formatPrice(order.total_amount)}</span>
+                  <span className="text-primary" data-testid="text-order-total">{formatPrice(order.total_amount)}</span>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Shipping Address */}
             {order.shipping_address && (
               <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2">
-                    <MapPin className="h-5 w-5" />
+                <CardHeader className="py-2.5 px-3 sm:py-4 sm:px-6">
+                  <CardTitle className="text-sm sm:text-base flex items-center gap-1.5">
+                    <MapPin className="h-4 w-4" />
                     Shipping Address
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <p className="font-medium">{order.shipping_address.full_name}</p>
-                  <p className="text-sm text-muted-foreground">
+                <CardContent className="px-3 pb-3 sm:px-6 sm:pb-4">
+                  <p className="text-xs sm:text-sm font-medium">{order.shipping_address.full_name}</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">
                     {order.shipping_address.address_line_1}
                     {order.shipping_address.address_line_2 &&
                       `, ${order.shipping_address.address_line_2}`}
                   </p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-[10px] sm:text-xs text-muted-foreground">
                     {order.shipping_address.city}, {order.shipping_address.state} -{' '}
                     {order.shipping_address.pincode}
                   </p>
-                  <p className="text-sm text-muted-foreground mt-2">
+                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-1">
                     Phone: {order.shipping_address.phone}
                   </p>
                 </CardContent>

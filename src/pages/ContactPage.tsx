@@ -89,55 +89,53 @@ export default function ContactPage() {
 
   return (
     <MainLayout>
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="text-center mb-12">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
+        <div className="text-center mb-4 sm:mb-8">
           <motion.span
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-primary font-medium"
+            className="text-muted-foreground font-medium text-xs sm:text-sm uppercase tracking-wide"
           >
             Get In Touch
           </motion.span>
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mt-2 mb-4"
+            className="text-xl sm:text-2xl lg:text-4xl font-display font-bold mt-1 mb-1 sm:mb-2"
+            data-testid="text-contact-title"
           >
             Contact Us
           </motion.h1>
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-muted-foreground max-w-2xl mx-auto"
+            className="text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto"
           >
-            Have questions or need a quote? We're here to help. 
-            Reach out to us and we'll respond as soon as possible.
+            Have questions or need a quote? We're here to help.
           </motion.p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-12">
-          {/* Contact Info */}
+        <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -15 }}
             animate={{ opacity: 1, x: 0 }}
-            className="lg:col-span-1 space-y-6"
+            className="lg:col-span-1 space-y-3 sm:space-y-4"
           >
-            {contactInfo.map((info, index) => (
-              <div key={info.title} className="flex gap-4">
-                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                  <info.icon className="h-6 w-6 text-primary" />
+            {contactInfo.map((info) => (
+              <div key={info.title} className="flex gap-3" data-testid={`info-${info.title.toLowerCase().replace(/\s+/g, '-')}`}>
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
+                  <info.icon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-1">{info.title}</h3>
+                  <h3 className="text-sm font-semibold mb-0.5">{info.title}</h3>
                   {info.details.map((detail, i) => (
-                    <p key={i} className="text-muted-foreground text-sm">
+                    <p key={i} className="text-xs sm:text-sm text-muted-foreground">
                       {info.links?.[i] ? (
                         <a
                           href={info.links[i]}
-                          className="hover:text-primary transition-colors"
+                          className="underline"
                         >
                           {detail}
                         </a>
@@ -150,8 +148,7 @@ export default function ContactPage() {
               </div>
             ))}
 
-            {/* Map Placeholder */}
-            <div className="mt-8 aspect-video rounded-xl overflow-hidden bg-muted">
+            <div className="mt-4 aspect-video rounded-lg overflow-hidden bg-muted">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3916.2649887468907!2d76.9558!3d11.0168!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTHCsDAxJzAwLjUiTiA3NsKwNTcnMjAuOSJF!5e0!3m2!1sen!2sin!4v1234567890"
                 width="100%"
@@ -164,25 +161,24 @@ export default function ContactPage() {
             </div>
           </motion.div>
 
-          {/* Contact Form */}
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 15 }}
             animate={{ opacity: 1, x: 0 }}
             className="lg:col-span-2"
           >
-            <div className="bg-card rounded-xl border border-border p-6 sm:p-8">
-              <h2 className="text-xl font-semibold mb-6">Send us a message</h2>
+            <div className="bg-card rounded-lg border border-border p-4 sm:p-6">
+              <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Send us a message</h2>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  <div className="grid sm:grid-cols-2 gap-6">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
+                  <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
                     <FormField
                       control={form.control}
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Your Name *</FormLabel>
+                          <FormLabel className="text-xs sm:text-sm">Your Name *</FormLabel>
                           <FormControl>
-                            <Input placeholder="John Doe" {...field} />
+                            <Input placeholder="John Doe" {...field} data-testid="input-name" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -193,9 +189,9 @@ export default function ContactPage() {
                       name="phone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Phone Number *</FormLabel>
+                          <FormLabel className="text-xs sm:text-sm">Phone Number *</FormLabel>
                           <FormControl>
-                            <Input placeholder="+91 98765 43210" {...field} />
+                            <Input placeholder="+91 98765 43210" {...field} data-testid="input-phone" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -207,9 +203,9 @@ export default function ContactPage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email (Optional)</FormLabel>
+                        <FormLabel className="text-xs sm:text-sm">Email (Optional)</FormLabel>
                         <FormControl>
-                          <Input placeholder="john@example.com" {...field} />
+                          <Input placeholder="john@example.com" {...field} data-testid="input-email" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -220,19 +216,20 @@ export default function ContactPage() {
                     name="message"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Your Message *</FormLabel>
+                        <FormLabel className="text-xs sm:text-sm">Your Message *</FormLabel>
                         <FormControl>
                           <Textarea
                             placeholder="Tell us about your project or inquiry..."
-                            rows={6}
+                            rows={4}
                             {...field}
+                            data-testid="input-message"
                           />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" size="lg" disabled={isSubmitting}>
+                  <Button type="submit" size="default" disabled={isSubmitting} data-testid="button-send-message">
                     {isSubmitting ? 'Sending...' : 'Send Message'}
                   </Button>
                 </form>

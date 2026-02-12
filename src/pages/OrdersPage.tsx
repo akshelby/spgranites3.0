@@ -50,11 +50,11 @@ export default function OrdersPage() {
   if (loading) {
     return (
       <MainLayout>
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="text-3xl font-display font-bold mb-8">My Orders</h1>
-          <div className="space-y-4">
+        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
+          <h1 className="text-xl sm:text-2xl font-display font-bold mb-3 sm:mb-5">My Orders</h1>
+          <div className="space-y-2">
             {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-24 bg-muted animate-pulse rounded-xl" />
+              <div key={i} className="h-16 sm:h-20 bg-muted animate-pulse rounded-lg" />
             ))}
           </div>
         </div>
@@ -65,15 +65,15 @@ export default function OrdersPage() {
   if (orders.length === 0) {
     return (
       <MainLayout>
-        <div className="container mx-auto px-4 py-16 text-center">
-          <div className="w-24 h-24 mx-auto rounded-full bg-muted flex items-center justify-center mb-6">
-            <Package className="h-12 w-12 text-muted-foreground" />
+        <div className="container mx-auto px-4 py-12 text-center">
+          <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center mb-4">
+            <Package className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h1 className="text-2xl font-bold mb-4">No orders yet</h1>
-          <p className="text-muted-foreground mb-6">
-            Once you place an order, it will appear here.
+          <h1 className="text-xl font-bold mb-2" data-testid="text-no-orders">No orders yet</h1>
+          <p className="text-sm text-muted-foreground mb-4">
+            Place your first order to see it here.
           </p>
-          <Button asChild size="lg">
+          <Button asChild size="default" data-testid="button-start-shopping">
             <Link to="/products">Start Shopping</Link>
           </Button>
         </div>
@@ -83,45 +83,42 @@ export default function OrdersPage() {
 
   return (
     <MainLayout>
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-display font-bold mb-8">My Orders</h1>
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
+        <h1 className="text-xl sm:text-2xl font-display font-bold mb-3 sm:mb-5" data-testid="text-orders-title">My Orders</h1>
 
-        <div className="space-y-4">
+        <div className="space-y-2">
           {orders.map((order, index) => (
             <motion.div
               key={order.id}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
+              transition={{ delay: index * 0.03 }}
             >
               <Link
                 to={`/orders/${order.id}`}
-                className="block bg-card rounded-xl border border-border p-4 sm:p-6 hover:shadow-lg transition-all"
+                className="flex items-center gap-3 bg-card rounded-lg border border-border p-3 sm:p-4 hover-elevate transition-all"
+                data-testid={`link-order-${order.id}`}
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                      <Package className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">{order.order_number}</h3>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                        <Clock className="h-4 w-4" />
-                        {format(new Date(order.created_at), 'MMM d, yyyy')}
-                      </div>
-                    </div>
+                <div className="w-10 h-10 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
+                  <Package className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-sm font-semibold">{order.order_number}</h3>
+                    <Badge className={statusColors[order.status]} data-testid={`badge-status-${order.id}`}>
+                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                    </Badge>
                   </div>
-                  <div className="flex items-center justify-between sm:justify-end gap-4">
-                    <div className="text-right">
-                      <Badge className={statusColors[order.status]}>
-                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                      </Badge>
-                      <p className="font-bold text-primary mt-1">
-                        {formatPrice(order.total_amount)}
-                      </p>
-                    </div>
-                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
+                    <Clock className="h-3 w-3" />
+                    {format(new Date(order.created_at), 'MMM d, yyyy')}
                   </div>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <p className="text-sm font-bold text-primary" data-testid={`text-order-total-${order.id}`}>
+                    {formatPrice(order.total_amount)}
+                  </p>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
                 </div>
               </Link>
             </motion.div>

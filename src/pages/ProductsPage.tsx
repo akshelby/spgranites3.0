@@ -102,26 +102,45 @@ export default function ProductsPage() {
 
   return (
     <MainLayout>
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-display font-bold mb-2">
-            Our Products
-          </h1>
-          <p className="text-muted-foreground">
-            Explore our premium collection of granite and marble products
-          </p>
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-3 sm:mb-5">
+          <div>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold" data-testid="text-page-title">
+              Our Products
+            </h1>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
+              {filteredProducts.length} results
+            </p>
+          </div>
+          <div className="flex gap-1.5">
+            <Button
+              variant={viewMode === 'grid' ? 'default' : 'outline'}
+              size="icon"
+              onClick={() => setViewMode('grid')}
+              data-testid="button-grid-view"
+            >
+              <Grid className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={viewMode === 'list' ? 'default' : 'outline'}
+              size="icon"
+              onClick={() => setViewMode('list')}
+              data-testid="button-list-view"
+            >
+              <List className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
+        <div className="flex flex-row gap-2 mb-3 sm:mb-5">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
               placeholder="Search products..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-8 h-9 text-sm"
+              data-testid="input-search"
             />
           </div>
           <Select
@@ -135,7 +154,7 @@ export default function ProductsPage() {
               setSearchParams(searchParams);
             }}
           >
-            <SelectTrigger className="w-full sm:w-48">
+            <SelectTrigger className="w-32 sm:w-44 h-9 text-sm" data-testid="select-category">
               <SelectValue placeholder="All Categories" />
             </SelectTrigger>
             <SelectContent>
@@ -147,36 +166,19 @@ export default function ProductsPage() {
               ))}
             </SelectContent>
           </Select>
-          <div className="flex gap-2">
-            <Button
-              variant={viewMode === 'grid' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => setViewMode('grid')}
-            >
-              <Grid className="h-4 w-4" />
-            </Button>
-            <Button
-              variant={viewMode === 'list' ? 'default' : 'outline'}
-              size="icon"
-              onClick={() => setViewMode('list')}
-            >
-              <List className="h-4 w-4" />
-            </Button>
-          </div>
         </div>
 
-        {/* Products Grid */}
         {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
             {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="bg-muted animate-pulse rounded-lg h-56" />
+              <div key={i} className="bg-muted animate-pulse rounded-lg h-48 sm:h-56" />
             ))}
           </div>
         ) : filteredProducts.length === 0 ? (
-          <div className="text-center py-16">
-            <h3 className="text-lg font-semibold mb-2">No products found</h3>
-            <p className="text-muted-foreground">
-              Try adjusting your search or filter criteria
+          <div className="text-center py-12">
+            <h3 className="text-base font-semibold mb-1">No products found</h3>
+            <p className="text-sm text-muted-foreground">
+              Try adjusting your search or filter
             </p>
           </div>
         ) : (
@@ -184,35 +186,36 @@ export default function ProductsPage() {
             className={cn(
               'grid',
               viewMode === 'grid'
-                ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4'
-                : 'grid-cols-1 gap-4'
+                ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3'
+                : 'grid-cols-1 gap-2'
             )}
           >
             {filteredProducts.map((product, index) => (
               <motion.div
                 key={product.id}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.02 }}
+                transition={{ delay: Math.min(index * 0.015, 0.3) }}
                 className={cn(
-                  'group bg-card rounded-lg overflow-hidden border border-border hover:shadow-md transition-all',
+                  'group bg-card rounded-lg overflow-hidden border border-border hover-elevate transition-all',
                   viewMode === 'list' && 'flex'
                 )}
+                data-testid={`card-product-${product.id}`}
               >
                 <div
                   className={cn(
                     'relative overflow-hidden',
-                    viewMode === 'grid' ? 'aspect-[4/3]' : 'w-36 shrink-0'
+                    viewMode === 'grid' ? 'aspect-[4/3]' : 'w-28 sm:w-36 shrink-0'
                   )}
                 >
                   <img
                     src={product.images?.[0] || '/placeholder.svg'}
                     alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover"
                     loading="lazy"
                   />
                   {product.compare_price && product.compare_price > product.price && (
-                    <span className="absolute top-2 left-2 px-1.5 py-0.5 bg-destructive text-destructive-foreground text-[10px] font-medium rounded">
+                    <span className="absolute top-1 left-1 sm:top-1.5 sm:left-1.5 px-1 py-0.5 bg-destructive text-destructive-foreground text-[9px] sm:text-[10px] font-semibold rounded" data-testid={`badge-discount-${product.id}`}>
                       {Math.round((1 - product.price / product.compare_price) * 100)}% OFF
                     </span>
                   )}
@@ -220,30 +223,31 @@ export default function ProductsPage() {
                     <button
                       onClick={() => handleWishlistToggle(product.id)}
                       className={cn(
-                        'absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 flex items-center justify-center transition-colors',
+                        'absolute top-1 right-1 sm:top-1.5 sm:right-1.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/90 flex items-center justify-center transition-colors',
                         isInWishlist(product.id)
                           ? 'text-destructive'
                           : 'text-muted-foreground hover:text-destructive'
                       )}
+                      data-testid={`button-wishlist-${product.id}`}
                     >
                       <Heart
-                        className={cn('h-3.5 w-3.5', isInWishlist(product.id) && 'fill-current')}
+                        className={cn('h-3 w-3 sm:h-3.5 sm:w-3.5', isInWishlist(product.id) && 'fill-current')}
                       />
                     </button>
                   )}
                 </div>
-                <div className="p-2.5 sm:p-3 flex-1">
-                  <Link to={`/products/${product.slug}`}>
-                    <h3 className="text-sm font-medium hover:text-primary transition-colors line-clamp-2 leading-tight">
+                <div className={cn("p-2 sm:p-2.5 flex-1", viewMode === 'list' && 'flex flex-col justify-center')}>
+                  <Link to={`/products/${product.slug}`} data-testid={`link-product-${product.id}`}>
+                    <h3 className="text-xs sm:text-sm font-medium line-clamp-2 leading-tight">
                       {product.name}
                     </h3>
                   </Link>
-                  <div className="mt-2">
-                    <span className="text-sm sm:text-base font-bold text-primary">
+                  <div className="mt-1 sm:mt-1.5 flex items-center gap-1 flex-wrap">
+                    <span className="text-sm sm:text-base font-bold text-primary" data-testid={`text-price-${product.id}`}>
                       {formatPrice(product.price)}
                     </span>
                     {product.compare_price && product.compare_price > product.price && (
-                      <span className="text-xs text-muted-foreground line-through ml-1.5">
+                      <span className="text-[10px] sm:text-xs text-muted-foreground line-through">
                         {formatPrice(product.compare_price)}
                       </span>
                     )}
@@ -251,10 +255,11 @@ export default function ProductsPage() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="w-full mt-2 h-8 text-xs"
+                    className="w-full mt-1.5 text-[10px] sm:text-xs"
                     onClick={() => handleAddToCart(product)}
+                    data-testid={`button-add-cart-${product.id}`}
                   >
-                    <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
+                    <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
                     Add to Cart
                   </Button>
                 </div>
