@@ -32,6 +32,7 @@ Preferred communication style: Simple, everyday language.
   - `estimation/` — Multi-step estimation form with drawing canvas, voice recorder, image uploader
   - `home/` — Homepage sections (hero carousel, stats, categories, featured products, services, testimonials, CTA)
   - `layout/` — Main layout wrapper (referenced but not shown in full)
+  - `visualizer/` — Interactive stone customizer with SVG room scenes (kitchen, dining, vanity), texture previews using CSS gradients, edge profile display, and controls panel
   - `ui/` — shadcn/ui primitives
 - `src/contexts/` — Cart (localStorage-persisted) and Wishlist (Supabase-synced) contexts
 - `src/hooks/` — Auth hook (Supabase auth state), mobile detection, toast management
@@ -67,6 +68,7 @@ Preferred communication style: Simple, everyday language.
 5. **Live Chat** — WhatsApp-style chat with reference IDs, media support (images, video, audio), real-time updates, conversation history
 6. **Admin Dashboard** — Full CRUD for products, categories, orders, enquiries, estimations, reviews, testimonials, services, catalogs, banners, carousel, locations, users, analytics, and admin chat
 7. **PDF Generation** — jspdf and jspdf-autotable for document generation (likely for estimation reports or invoices)
+8. **Stone Visualizer** — Interactive car-configurator-style tool at `/visualizer` for customizing kitchen countertops, dining tables, and vanity tops with 12 stone colors (granite/marble/quartz), 6 edge profiles, 4 finishes, and live SVG preview. "Request Estimate" CTA passes configuration to the estimation form via URL query params
 
 ### Dev Server Configuration
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useSearchParams } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion } from 'framer-motion';
@@ -157,10 +158,36 @@ const SECTIONS = [
 ];
 
 export function EstimationForm() {
+  const [searchParams] = useSearchParams();
   const [openSection, setOpenSection] = useState<string>('customer');
   const [completedSections, setCompletedSections] = useState<Set<string>>(new Set());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const surfaceParam = searchParams.get('surface');
+  const stoneParam = searchParams.get('stone');
+  const stoneCategoryParam = searchParams.get('stoneCategory');
+  const edgeParam = searchParams.get('edge');
+  const finishParam = searchParams.get('finish');
+
+  const getProjectTypeFromSurface = (s: string | null) => {
+    if (s === 'kitchen') return ['Kitchen Countertop'];
+    if (s === 'vanity') return ['Vanity Top'];
+    return [];
+  };
+
+  const getEdgeProfileValue = (e: string | null) => {
+    if (!e) return '';
+    const map: Record<string, string> = {
+      'Straight': 'Straight Edge',
+      'Full Bullnose': 'Bullnose',
+      'Half Bullnose': 'Bullnose',
+      'Bevel': 'Beveled Edge',
+      'Ogee': 'Ogee',
+      'Dupont': 'Other',
+    };
+    return map[e] || '';
+  };
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -169,13 +196,13 @@ export function EstimationForm() {
       mobile_number: '',
       email: '',
       project_location: '',
-      project_types: [],
-      project_type_other: '',
+      project_types: getProjectTypeFromSurface(surfaceParam),
+      project_type_other: surfaceParam === 'dining' ? 'Dining Table Top' : '',
       kitchen_type: '',
       project_nature: '',
-      stone_type: '',
-      preferred_color: '',
-      finish_type: '',
+      stone_type: stoneCategoryParam || '',
+      preferred_color: stoneParam || '',
+      finish_type: finishParam?.toLowerCase() === 'leathered' ? 'leather' : (finishParam?.toLowerCase() || ''),
       approximate_length: '',
       approximate_width: '',
       thickness: '',
@@ -186,8 +213,8 @@ export function EstimationForm() {
       completion_urgency: '',
       budget_range: '',
       cutouts_required: [],
-      edge_profile_preference: '',
-      additional_notes: '',
+      edge_profile_preference: getEdgeProfileValue(edgeParam),
+      additional_notes: surfaceParam ? `From Stone Visualizer: ${stoneParam || ''} ${stoneCategoryParam || ''}, ${finishParam || ''} finish, ${edgeParam || ''} edge` : '',
       drawing_data: '',
       voice_recording_url: '',
       reference_images: [],
