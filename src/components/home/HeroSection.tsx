@@ -162,26 +162,29 @@ export function HeroSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="relative h-[400px] lg:h-[500px]"
           >
-            <div className="relative w-full h-full perspective-1000">
+            <div className="relative w-full h-full">
               {cards.map((card, index) => {
                 const offset = (index - currentIndex + cards.length) % cards.length;
                 const isActive = offset === 0;
                 const isPrev = offset === cards.length - 1;
                 const isNext = offset === 1;
+                const isVisible = isActive || isPrev || isNext;
 
                 return (
                   <motion.div
                     key={card.id}
-                    className="absolute inset-0 rounded-2xl overflow-hidden shadow-premium"
+                    className="absolute inset-0 rounded-2xl overflow-hidden shadow-premium will-change-transform"
+                    style={{ zIndex: isActive ? 10 : isVisible ? 5 : 0 }}
                     initial={false}
                     animate={{
-                      x: isActive ? 0 : isPrev ? -80 : isNext ? 80 : 0,
-                      scale: isActive ? 1 : 0.85,
-                      opacity: isActive ? 1 : isPrev || isNext ? 0.5 : 0,
-                      zIndex: isActive ? 10 : isPrev || isNext ? 5 : 0,
-                      rotateY: isActive ? 0 : isPrev ? 15 : isNext ? -15 : 0,
+                      x: isActive ? 0 : isPrev ? '-15%' : isNext ? '15%' : 0,
+                      scale: isActive ? 1 : isVisible ? 0.88 : 0.85,
+                      opacity: isActive ? 1 : isVisible ? 0.5 : 0,
                     }}
-                    transition={{ duration: 0.5, ease: 'easeInOut' }}
+                    transition={{
+                      duration: 0.6,
+                      ease: [0.32, 0.72, 0, 1],
+                    }}
                   >
                     <img
                       src={card.image_url}
