@@ -52,7 +52,7 @@ type AddressFormData = z.infer<typeof addressSchema>;
 
 export default function CartPage() {
   const { t } = useTranslation();
-  const { items, updateQuantity, removeFromCart, getCartTotal, clearCart } = useCart();
+  const { items, updateQuantity, removeFromCart, getCartTotal } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -64,7 +64,6 @@ export default function CartPage() {
   
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string>('');
-  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [addressDialogOpen, setAddressDialogOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
 
@@ -229,57 +228,13 @@ export default function CartPage() {
   const tax = subtotal * 0.18;
   const total = subtotal + shipping + tax;
 
-  const handlePlaceOrder = async () => {
+  const handleProceedToPayment = () => {
     if (!user) return;
     if (!selectedAddressId) {
       toast.error(t('cart.selectAddress'));
       return;
     }
-
-    setIsPlacingOrder(true);
-    try {
-      const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
-      
-      const { data: order, error: orderError } = await supabase
-        .from('orders')
-        .insert({
-          user_id: user.id,
-          order_number: '',
-          subtotal,
-          tax_amount: tax,
-          shipping_amount: shipping,
-          total_amount: total,
-          shipping_address: selectedAddress as any,
-          billing_address: selectedAddress as any,
-        })
-        .select()
-        .single();
-
-      if (orderError) throw orderError;
-
-      const orderItems = items.map((item) => ({
-        order_id: order.id,
-        product_id: item.productId,
-        product_name: item.name,
-        quantity: item.quantity,
-        unit_price: item.price,
-        total_price: item.price * item.quantity,
-      }));
-
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert(orderItems);
-
-      if (itemsError) throw itemsError;
-
-      clearCart();
-      toast.success(t('cart.orderSuccess'));
-      navigate(`/orders/${order.id}`);
-    } catch {
-      toast.error(t('cart.orderFailed'));
-    } finally {
-      setIsPlacingOrder(false);
-    }
+    navigate(`/payment?address=${selectedAddressId}`);
   };
 
   if (items.length === 0) {
@@ -581,18 +536,12 @@ export default function CartPage() {
                 <Button
                   className="w-full"
                   size="default"
-                  onClick={handlePlaceOrder}
-                  disabled={isPlacingOrder || !selectedAddressId || !user}
+                  onClick={handleProceedToPayment}
+                  disabled={!selectedAddressId || !user}
                   data-testid="button-place-order"
                 >
-                  {isPlacingOrder ? (
-                    t('cart.placingOrder')
-                  ) : (
-                    <>
-                      {t('cart.placeOrder')}
-                      <ArrowRight className="ml-1.5 h-4 w-4" />
-                    </>
-                  )}
+                  {t('payment.proceedToPay')}
+                  <ArrowRight className="ml-1.5 h-4 w-4" />
                 </Button>
                 {subtotal < 10000 && (
                   <p className="text-[10px] sm:text-xs text-muted-foreground text-center">
