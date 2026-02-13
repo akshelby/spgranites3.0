@@ -62,7 +62,7 @@ export function StatsSection() {
               data-testid={`stat-${index}`}
             >
               <div className="w-9 h-9 sm:w-12 sm:h-12 lg:w-14 lg:h-14 mx-auto mb-2 sm:mb-3 rounded-full bg-white/10 flex items-center justify-center">
-                <stat.icon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6" />
+                <stat.icon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.7)]" />
               </div>
               <div className="text-lg sm:text-2xl lg:text-4xl font-bold font-display mb-0.5 sm:mb-1">
                 <Counter value={stat.value} suffix={stat.suffix} />
