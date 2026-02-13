@@ -8,6 +8,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import { TabProvider } from "@/contexts/TabContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import '@/i18n';
 
 // Pages
 import HomePage from "./pages/HomePage";

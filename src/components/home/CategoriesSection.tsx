@@ -1,15 +1,16 @@
 import { motion } from 'framer-motion';
 import { Gem, Bath, Utensils, LayoutGrid, Headset, Store } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { CategoryItem } from './CategoryItem';
 import { BhrundhavanIcon } from './BhrundhavanIcon';
 import { ElementType } from 'react';
 
 interface Category {
   id: string;
-  name: string;
+  nameKey: string;
   icon: ElementType;
   link: string;
-  description: string;
+  descriptionKey: string;
   iconColor: string;
   bgColor: string;
   borderColor: string;
@@ -18,70 +19,70 @@ interface Category {
 const categories: Category[] = [
   {
     id: 'kitchen-slab',
-    name: 'Kitchen Slab',
+    nameKey: 'categories.kitchenSlab',
     icon: Gem,
     link: '/products?category=kitchen-slab',
-    description: 'Premium kitchen countertops',
+    descriptionKey: 'categories.kitchenSlabDesc',
     iconColor: 'text-emerald-700 dark:text-emerald-400',
     bgColor: 'bg-emerald-50 dark:bg-emerald-900/30',
     borderColor: 'border-emerald-200 dark:border-emerald-800',
   },
   {
     id: 'vanity-top',
-    name: 'Vanity Top',
+    nameKey: 'categories.vanityTop',
     icon: Bath,
     link: '/products?category=vanity-top',
-    description: 'Elegant bathroom vanities',
+    descriptionKey: 'categories.vanityTopDesc',
     iconColor: 'text-slate-700 dark:text-slate-400',
     bgColor: 'bg-slate-50 dark:bg-slate-900/30',
     borderColor: 'border-slate-200 dark:border-slate-800',
   },
   {
     id: 'dining-top',
-    name: 'Dining Table Top',
+    nameKey: 'categories.diningTop',
     icon: Utensils,
     link: '/products?category=dining-top',
-    description: 'Stunning dining surfaces',
+    descriptionKey: 'categories.diningTopDesc',
     iconColor: 'text-red-700 dark:text-red-400',
     bgColor: 'bg-red-50 dark:bg-red-900/30',
     borderColor: 'border-red-200 dark:border-red-800',
   },
   {
     id: 'bhrundhavan',
-    name: 'Bhrundhavan',
+    nameKey: 'categories.bhrundhavan',
     icon: BhrundhavanIcon,
     link: '/products?category=bhrundhavan',
-    description: 'Traditional tulsi planters',
+    descriptionKey: 'categories.bhrundhavanDesc',
     iconColor: 'text-green-700 dark:text-green-400',
     bgColor: 'bg-green-50 dark:bg-green-900/30',
     borderColor: 'border-green-200 dark:border-green-800',
   },
   {
     id: 'tiles-fixing',
-    name: 'Tiles Fixing',
+    nameKey: 'categories.tilesFixing',
     icon: LayoutGrid,
     link: '/services',
-    description: 'Professional tile installation',
+    descriptionKey: 'categories.tilesFixingDesc',
     iconColor: 'text-zinc-700 dark:text-zinc-400',
     bgColor: 'bg-zinc-50 dark:bg-zinc-900/30',
     borderColor: 'border-zinc-200 dark:border-zinc-800',
   },
   {
     id: 'contact-us',
-    name: 'Contact Us',
+    nameKey: 'categories.contactUs',
     icon: Headset,
     link: '/contact',
-    description: 'Get in touch with us',
+    descriptionKey: 'categories.contactUsDesc',
     iconColor: 'text-teal-700 dark:text-teal-400',
     bgColor: 'bg-teal-50 dark:bg-teal-900/30',
     borderColor: 'border-teal-200 dark:border-teal-800',
   },
   {
     id: 'offline-stores',
-    name: 'Offline Stores',
+    nameKey: 'categories.offlineStores',
     icon: Store,
     link: '/stores',
-    description: 'Visit our showrooms',
+    descriptionKey: 'categories.offlineStoresDesc',
     iconColor: 'text-neutral-700 dark:text-neutral-400',
     bgColor: 'bg-neutral-50 dark:bg-neutral-900/30',
     borderColor: 'border-neutral-200 dark:border-neutral-800',
@@ -99,6 +100,8 @@ const containerVariants = {
 };
 
 export function CategoriesSection() {
+  const { t } = useTranslation();
+
   return (
     <section className="py-8 sm:py-12 md:py-16 bg-background" data-testid="categories-section">
       <div className="container mx-auto px-4">
@@ -110,10 +113,10 @@ export function CategoriesSection() {
           className="text-center mb-4 sm:mb-8 md:mb-12"
         >
           <h2 className="text-xl sm:text-3xl md:text-4xl font-display font-bold text-foreground" data-testid="text-categories-title">
-            Explore Categories
+            {t('categories.title')}
           </h2>
           <p className="mt-1 text-xs sm:text-sm md:text-base text-muted-foreground">
-            Premium stone surfaces for every space
+            {t('categories.subtitle')}
           </p>
         </motion.div>
 
@@ -127,7 +130,14 @@ export function CategoriesSection() {
           {categories.map((category, index) => (
             <CategoryItem
               key={category.id}
-              {...category}
+              id={category.id}
+              name={t(category.nameKey)}
+              icon={category.icon}
+              link={category.link}
+              description={t(category.descriptionKey)}
+              iconColor={category.iconColor}
+              bgColor={category.bgColor}
+              borderColor={category.borderColor}
               index={index}
             />
           ))}

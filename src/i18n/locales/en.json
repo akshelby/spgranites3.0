@@ -1,0 +1,149 @@
+{
+  "nav": {
+    "home": "Home",
+    "products": "Products",
+    "services": "Services",
+    "visualizer": "Visualizer",
+    "estimation": "Estimation",
+    "catalogs": "Catalogs",
+    "contact": "Contact",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "myProfile": "My Profile",
+    "myOrders": "My Orders",
+    "wishlist": "Wishlist",
+    "myReviews": "My Reviews",
+    "adminDashboard": "Admin Dashboard",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode"
+  },
+  "hero": {
+    "badge": "25+ Years of Excellence",
+    "title": "Crafting",
+    "titleHighlight": "Premium",
+    "titleEnd": "Stone Excellence",
+    "subtitle": "Transform your spaces with our exquisite collection of granite, marble, and premium stone products. Expert craftsmanship meets timeless elegance.",
+    "browseProducts": "Browse Products",
+    "freeEstimation": "Get Free Estimation",
+    "tryVisualizer": "Try Visualizer"
+  },
+  "stats": {
+    "yearsExperience": "Years Experience",
+    "happyClients": "Happy Clients",
+    "projectsDone": "Projects Done",
+    "awards": "Awards"
+  },
+  "categories": {
+    "title": "Explore Categories",
+    "subtitle": "Premium stone surfaces for every space",
+    "kitchenSlab": "Kitchen Slab",
+    "kitchenSlabDesc": "Premium kitchen countertops",
+    "vanityTop": "Vanity Top",
+    "vanityTopDesc": "Elegant bathroom vanities",
+    "diningTop": "Dining Table Top",
+    "diningTopDesc": "Stunning dining surfaces",
+    "bhrundhavan": "Bhrundhavan",
+    "bhrundhavanDesc": "Traditional tulsi planters",
+    "tilesFixing": "Tiles Fixing",
+    "tilesFixingDesc": "Professional tile installation",
+    "contactUs": "Contact Us",
+    "contactUsDesc": "Get in touch with us",
+    "offlineStores": "Offline Stores",
+    "offlineStoresDesc": "Visit our showrooms"
+  },
+  "featured": {
+    "label": "Featured Collection",
+    "title": "Best Sellers",
+    "subtitle": "Explore our most popular granite and marble products loved by customers.",
+    "viewAll": "View All Products",
+    "off": "OFF",
+    "addToCart": "Add to Cart"
+  },
+  "services": {
+    "label": "What We Offer",
+    "title": "Our Services",
+    "subtitle": "From consultation to installation, we provide end-to-end stone solutions.",
+    "viewAll": "View All Services",
+    "installation": "Installation",
+    "installationDesc": "Professional granite and marble installation",
+    "fabrication": "Fabrication",
+    "fabricationDesc": "Custom cutting and shaping",
+    "polishing": "Polishing",
+    "polishingDesc": "Restore shine to your surfaces",
+    "repair": "Repair",
+    "repairDesc": "Fix chips, cracks, and stains"
+  },
+  "testimonials": {
+    "label": "Testimonials",
+    "title": "What Our Clients Say",
+    "subtitle": "Hear from our satisfied customers about their experience with SP Granites."
+  },
+  "cta": {
+    "title": "Ready to Transform Your Space?",
+    "subtitle": "Get a free consultation and estimate for your granite or marble project. Our experts are ready to help bring your vision to life.",
+    "getEstimation": "Get Free Estimation",
+    "callUs": "Call Us Now"
+  },
+  "footer": {
+    "about": "About Us",
+    "quickLinks": "Quick Links",
+    "contactInfo": "Contact Info",
+    "followUs": "Follow Us",
+    "copyright": "All rights reserved.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service"
+  },
+  "products": {
+    "title": "Our Products",
+    "search": "Search products...",
+    "allCategories": "All Categories",
+    "sortBy": "Sort by",
+    "pricePerSqFt": "per sq.ft",
+    "addToCart": "Add to Cart",
+    "viewDetails": "View Details",
+    "noProducts": "No products found"
+  },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your cart is empty",
+    "total": "Total",
+    "subtotal": "Subtotal",
+    "checkout": "Proceed to Checkout",
+    "continueShopping": "Continue Shopping",
+    "remove": "Remove",
+    "quantity": "Quantity"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full Name",
+    "phone": "Phone Number",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "orContinueWith": "Or continue with"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try Again",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "submit": "Submit",
+    "search": "Search",
+    "viewMore": "View More",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous"
+  },
+  "language": {
+    "english": "English",
+    "hindi": "हिन्दी",
+    "kannada": "ಕನ್ನಡ"
+  }
+}

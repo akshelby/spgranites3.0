@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ShoppingCart, Heart } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { Product } from '@/types/database';
@@ -33,6 +34,7 @@ export function FeaturedProducts() {
   const { addToCart } = useCart();
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchFeaturedProducts();
@@ -96,12 +98,12 @@ export function FeaturedProducts() {
           viewport={{ once: true }}
           className="text-center mb-4 sm:mb-8 lg:mb-12"
         >
-          <span className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-featured-label">Featured Collection</span>
+          <span className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-featured-label">{t('featured.label')}</span>
           <h2 className="text-xl sm:text-3xl lg:text-4xl font-display font-bold mt-1 sm:mt-2 mb-1 sm:mb-4" data-testid="text-featured-title">
-            Best Sellers
+            {t('featured.title')}
           </h2>
           <p className="text-muted-foreground text-xs sm:text-sm lg:text-base max-w-2xl mx-auto">
-            Explore our most popular granite and marble products loved by customers.
+            {t('featured.subtitle')}
           </p>
         </motion.div>
 
@@ -124,7 +126,7 @@ export function FeaturedProducts() {
                 />
                 {product.compare_price && product.compare_price > product.price && (
                   <span className="absolute top-2 left-2 px-1.5 py-0.5 bg-destructive text-destructive-foreground text-[10px] sm:text-xs font-semibold rounded" data-testid={`badge-discount-${product.id}`}>
-                    {Math.round((1 - product.price / product.compare_price) * 100)}% OFF
+                    {Math.round((1 - product.price / product.compare_price) * 100)}% {t('featured.off')}
                   </span>
                 )}
                 {user && (
@@ -179,7 +181,7 @@ export function FeaturedProducts() {
         >
           <Button asChild size="default" data-testid="button-view-all-products">
             <Link to="/products">
-              View All Products
+              {t('featured.viewAll')}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>

@@ -1,0 +1,149 @@
+{
+  "nav": {
+    "home": "होम",
+    "products": "उत्पाद",
+    "services": "सेवाएं",
+    "visualizer": "विज़ुअलाइज़र",
+    "estimation": "अनुमान",
+    "catalogs": "कैटलॉग",
+    "contact": "संपर्क",
+    "signIn": "साइन इन",
+    "signOut": "साइन आउट",
+    "myProfile": "मेरी प्रोफ़ाइल",
+    "myOrders": "मेरे ऑर्डर",
+    "wishlist": "विशलिस्ट",
+    "myReviews": "मेरी समीक्षाएं",
+    "adminDashboard": "एडमिन डैशबोर्ड",
+    "lightMode": "लाइट मोड",
+    "darkMode": "डार्क मोड"
+  },
+  "hero": {
+    "badge": "25+ वर्षों की उत्कृष्टता",
+    "title": "बनाना",
+    "titleHighlight": "प्रीमियम",
+    "titleEnd": "पत्थर की उत्कृष्टता",
+    "subtitle": "ग्रेनाइट, संगमरमर और प्रीमियम पत्थर उत्पादों के हमारे उत्कृष्ट संग्रह से अपने स्थानों को बदलें। विशेषज्ञ शिल्प कौशल और शाश्वत सुंदरता का संगम।",
+    "browseProducts": "उत्पाद देखें",
+    "freeEstimation": "मुफ्त अनुमान पाएं",
+    "tryVisualizer": "विज़ुअलाइज़र आज़माएं"
+  },
+  "stats": {
+    "yearsExperience": "वर्षों का अनुभव",
+    "happyClients": "खुश ग्राहक",
+    "projectsDone": "पूरे प्रोजेक्ट",
+    "awards": "पुरस्कार"
+  },
+  "categories": {
+    "title": "श्रेणियां देखें",
+    "subtitle": "हर स्थान के लिए प्रीमियम पत्थर की सतहें",
+    "kitchenSlab": "किचन स्लैब",
+    "kitchenSlabDesc": "प्रीमियम किचन काउंटरटॉप",
+    "vanityTop": "वैनिटी टॉप",
+    "vanityTopDesc": "सुंदर बाथरूम वैनिटी",
+    "diningTop": "डाइनिंग टेबल टॉप",
+    "diningTopDesc": "शानदार डाइनिंग सतहें",
+    "bhrundhavan": "भृंधावन",
+    "bhrundhavanDesc": "पारंपरिक तुलसी प्लांटर",
+    "tilesFixing": "टाइल्स फिक्सिंग",
+    "tilesFixingDesc": "पेशेवर टाइल स्थापना",
+    "contactUs": "संपर्क करें",
+    "contactUsDesc": "हमसे संपर्क करें",
+    "offlineStores": "ऑफलाइन स्टोर",
+    "offlineStoresDesc": "हमारे शोरूम पर आएं"
+  },
+  "featured": {
+    "label": "विशेष संग्रह",
+    "title": "बेस्ट सेलर",
+    "subtitle": "ग्राहकों द्वारा पसंद किए गए हमारे सबसे लोकप्रिय ग्रेनाइट और संगमरमर उत्पाद देखें।",
+    "viewAll": "सभी उत्पाद देखें",
+    "off": "छूट",
+    "addToCart": "कार्ट में डालें"
+  },
+  "services": {
+    "label": "हम क्या प्रदान करते हैं",
+    "title": "हमारी सेवाएं",
+    "subtitle": "परामर्श से स्थापना तक, हम संपूर्ण पत्थर समाधान प्रदान करते हैं।",
+    "viewAll": "सभी सेवाएं देखें",
+    "installation": "स्थापना",
+    "installationDesc": "पेशेवर ग्रेनाइट और संगमरमर स्थापना",
+    "fabrication": "फैब्रिकेशन",
+    "fabricationDesc": "कस्टम कटिंग और शेपिंग",
+    "polishing": "पॉलिशिंग",
+    "polishingDesc": "अपनी सतहों की चमक वापस लाएं",
+    "repair": "मरम्मत",
+    "repairDesc": "चिप्स, दरारें और दाग ठीक करें"
+  },
+  "testimonials": {
+    "label": "प्रशंसापत्र",
+    "title": "हमारे ग्राहक क्या कहते हैं",
+    "subtitle": "SP Granites के साथ अपने अनुभव के बारे में हमारे संतुष्ट ग्राहकों से सुनें।"
+  },
+  "cta": {
+    "title": "अपने स्थान को बदलने के लिए तैयार हैं?",
+    "subtitle": "अपने ग्रेनाइट या संगमरमर प्रोजेक्ट के लिए मुफ्त परामर्श और अनुमान प्राप्त करें। हमारे विशेषज्ञ आपके सपनों को साकार करने के लिए तैयार हैं।",
+    "getEstimation": "मुफ्त अनुमान पाएं",
+    "callUs": "अभी कॉल करें"
+  },
+  "footer": {
+    "about": "हमारे बारे में",
+    "quickLinks": "त्वरित लिंक",
+    "contactInfo": "संपर्क जानकारी",
+    "followUs": "हमें फॉलो करें",
+    "copyright": "सर्वाधिकार सुरक्षित।",
+    "privacyPolicy": "गोपनीयता नीति",
+    "termsOfService": "सेवा की शर्तें"
+  },
+  "products": {
+    "title": "हमारे उत्पाद",
+    "search": "उत्पाद खोजें...",
+    "allCategories": "सभी श्रेणियां",
+    "sortBy": "क्रमबद्ध करें",
+    "pricePerSqFt": "प्रति वर्ग फुट",
+    "addToCart": "कार्ट में डालें",
+    "viewDetails": "विवरण देखें",
+    "noProducts": "कोई उत्पाद नहीं मिला"
+  },
+  "cart": {
+    "title": "शॉपिंग कार्ट",
+    "empty": "आपकी कार्ट खाली है",
+    "total": "कुल",
+    "subtotal": "उप-कुल",
+    "checkout": "चेकआउट करें",
+    "continueShopping": "खरीदारी जारी रखें",
+    "remove": "हटाएं",
+    "quantity": "मात्रा"
+  },
+  "auth": {
+    "signIn": "साइन इन",
+    "signUp": "साइन अप",
+    "email": "ईमेल",
+    "password": "पासवर्ड",
+    "fullName": "पूरा नाम",
+    "phone": "फ़ोन नंबर",
+    "forgotPassword": "पासवर्ड भूल गए?",
+    "noAccount": "खाता नहीं है?",
+    "hasAccount": "पहले से खाता है?",
+    "orContinueWith": "या इसके साथ जारी रखें"
+  },
+  "common": {
+    "loading": "लोड हो रहा है...",
+    "error": "कुछ गलत हो गया",
+    "retry": "पुनः प्रयास करें",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "delete": "हटाएं",
+    "edit": "संपादित करें",
+    "close": "बंद करें",
+    "submit": "सबमिट करें",
+    "search": "खोजें",
+    "viewMore": "और देखें",
+    "back": "वापस",
+    "next": "अगला",
+    "previous": "पिछला"
+  },
+  "language": {
+    "english": "English",
+    "hindi": "हिन्दी",
+    "kannada": "ಕನ್ನಡ"
+  }
+}

@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Star, Quote } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Testimonial } from '@/types/database';
 
 export function TestimonialsSection() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchTestimonials();
@@ -39,12 +41,12 @@ export function TestimonialsSection() {
           viewport={{ once: true }}
           className="text-center mb-4 sm:mb-8 lg:mb-12"
         >
-          <span className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-testimonials-label">Testimonials</span>
+          <span className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-testimonials-label">{t('testimonials.label')}</span>
           <h2 className="text-xl sm:text-3xl lg:text-4xl font-display font-bold mt-1 sm:mt-2 mb-1 sm:mb-4" data-testid="text-testimonials-title">
-            What Our Clients Say
+            {t('testimonials.title')}
           </h2>
           <p className="text-muted-foreground text-xs sm:text-sm lg:text-base max-w-2xl mx-auto">
-            Hear from our satisfied customers about their experience with SP Granites.
+            {t('testimonials.subtitle')}
           </p>
         </motion.div>
 

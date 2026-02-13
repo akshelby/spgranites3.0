@@ -14,7 +14,8 @@ Preferred communication style: Simple, everyday language.
 
 - **Framework**: React 18 with TypeScript, built with Vite and SWC for fast compilation
 - **Routing**: React Router DOM with BrowserRouter for client-side navigation
-- **Styling**: Tailwind CSS with CSS variables for theming (warm stone-inspired color palette with gold/amber accents). Uses the shadcn/ui component library built on top of Radix UI primitives
+- **Styling**: Tailwind CSS with CSS variables for theming (CRED-inspired palette: deep forest green primary, rich red accents, clean black/white neutrals). Uses the shadcn/ui component library built on top of Radix UI primitives
+- **Internationalization**: i18next + react-i18next for multilingual support (English, Hindi, Kannada). Translation files in `src/i18n/locales/`. Language preference persisted in localStorage
 - **State Management**: React Context API for global state (CartContext, WishlistContext, AuthContext, ChatContext). React Query (@tanstack/react-query) for server state and data fetching
 - **Animations**: Framer Motion for page transitions and UI animations
 - **Forms**: React Hook Form with Zod schema validation
@@ -37,6 +38,7 @@ Preferred communication style: Simple, everyday language.
 - `src/contexts/` — Cart (localStorage-persisted) and Wishlist (Supabase-synced) contexts
 - `src/hooks/` — Auth hook (Supabase auth state), mobile detection, toast management
 - `src/types/database.ts` — TypeScript interfaces for all database entities (Product, Order, Category, etc.)
+- `src/i18n/` — Internationalization config and locale files (en.json, hi.json, kn.json)
 - `src/integrations/supabase/` — Supabase client configuration
 
 ### Backend (Supabase)

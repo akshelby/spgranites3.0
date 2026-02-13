@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Wrench, Settings, Sparkles, Hammer, MessageCircle, Ruler } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Service } from '@/types/database';
 
@@ -16,6 +17,7 @@ const serviceIconMap: Record<string, typeof Wrench> = {
 
 export function ServicesSection() {
   const [services, setServices] = useState<Service[]>([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchServices();
@@ -33,10 +35,10 @@ export function ServicesSection() {
       setServices(data as Service[]);
     } else {
       setServices([
-        { id: '1', name: 'Installation', slug: 'installation', short_description: 'Professional granite and marble installation', description: null, image_url: null, icon: 'installation', display_order: 1, is_active: true, created_at: '', updated_at: '' },
-        { id: '2', name: 'Fabrication', slug: 'fabrication', short_description: 'Custom cutting and shaping', description: null, image_url: null, icon: 'fabrication', display_order: 2, is_active: true, created_at: '', updated_at: '' },
-        { id: '3', name: 'Polishing', slug: 'polishing', short_description: 'Restore shine to your surfaces', description: null, image_url: null, icon: 'polishing', display_order: 3, is_active: true, created_at: '', updated_at: '' },
-        { id: '4', name: 'Repair', slug: 'repair', short_description: 'Fix chips, cracks, and stains', description: null, image_url: null, icon: 'repair', display_order: 4, is_active: true, created_at: '', updated_at: '' },
+        { id: '1', name: 'Installation', slug: 'installation', short_description: t('services.installationDesc'), description: null, image_url: null, icon: 'installation', display_order: 1, is_active: true, created_at: '', updated_at: '' },
+        { id: '2', name: 'Fabrication', slug: 'fabrication', short_description: t('services.fabricationDesc'), description: null, image_url: null, icon: 'fabrication', display_order: 2, is_active: true, created_at: '', updated_at: '' },
+        { id: '3', name: 'Polishing', slug: 'polishing', short_description: t('services.polishingDesc'), description: null, image_url: null, icon: 'polishing', display_order: 3, is_active: true, created_at: '', updated_at: '' },
+        { id: '4', name: 'Repair', slug: 'repair', short_description: t('services.repairDesc'), description: null, image_url: null, icon: 'repair', display_order: 4, is_active: true, created_at: '', updated_at: '' },
       ]);
     }
   };
@@ -50,12 +52,12 @@ export function ServicesSection() {
           viewport={{ once: true }}
           className="text-center mb-4 sm:mb-8 lg:mb-12"
         >
-          <span className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-services-label">What We Offer</span>
+          <span className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-services-label">{t('services.label')}</span>
           <h2 className="text-xl sm:text-3xl lg:text-4xl font-display font-bold mt-1 sm:mt-2 mb-1 sm:mb-4" data-testid="text-services-title">
-            Our Services
+            {t('services.title')}
           </h2>
           <p className="text-muted-foreground text-xs sm:text-sm lg:text-base max-w-2xl mx-auto">
-            From consultation to installation, we provide end-to-end stone solutions.
+            {t('services.subtitle')}
           </p>
         </motion.div>
 
@@ -97,7 +99,7 @@ export function ServicesSection() {
             className="inline-flex items-center gap-2 text-primary font-semibold text-sm hover:gap-3 transition-all"
             data-testid="link-view-all-services"
           >
-            View All Services
+            {t('services.viewAll')}
             <ArrowRight className="h-4 w-4" />
           </Link>
         </motion.div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, ChevronLeft, ChevronRight, Gem } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -28,6 +29,7 @@ const fallbackImages: Record<string, string> = {
 export function HeroSection() {
   const [cards, setCards] = useState<CarouselCard[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchCarouselCards();
@@ -85,7 +87,7 @@ export function HeroSection() {
               className="inline-block px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-primary/10 text-primary text-xs sm:text-sm font-semibold mb-3 sm:mb-5 tracking-wide"
               data-testid="text-hero-badge"
             >
-              25+ Years of Excellence
+              {t('hero.badge')}
             </motion.span>
 
             <motion.h1
@@ -95,9 +97,9 @@ export function HeroSection() {
               className="text-2xl sm:text-4xl lg:text-6xl font-display font-bold leading-tight mb-3 sm:mb-6"
               data-testid="text-hero-title"
             >
-              Crafting{' '}
-              <span className="text-primary">Premium</span>{' '}
-              Stone Excellence
+              {t('hero.title')}{' '}
+              <span className="text-primary">{t('hero.titleHighlight')}</span>{' '}
+              {t('hero.titleEnd')}
             </motion.h1>
 
             <motion.p
@@ -107,8 +109,7 @@ export function HeroSection() {
               className="text-sm sm:text-base lg:text-lg text-muted-foreground mb-4 sm:mb-8 max-w-xl mx-auto lg:mx-0"
               data-testid="text-hero-subtitle"
             >
-              Transform your spaces with our exquisite collection of granite, marble, 
-              and premium stone products. Expert craftsmanship meets timeless elegance.
+              {t('hero.subtitle')}
             </motion.p>
 
             <motion.div
@@ -119,17 +120,17 @@ export function HeroSection() {
             >
               <Button size="default" asChild className="group text-xs sm:text-sm" data-testid="button-browse-products">
                 <Link to="/products">
-                  Browse Products
+                  {t('hero.browseProducts')}
                   <ArrowRight className="ml-1 sm:ml-2 h-3.5 w-3.5 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
               <Button size="default" variant="outline" asChild className="text-xs sm:text-sm" data-testid="button-free-estimation">
-                <Link to="/estimation">Get Free Estimation</Link>
+                <Link to="/estimation">{t('hero.freeEstimation')}</Link>
               </Button>
               <Button size="default" variant="outline" asChild className="border-primary/30 text-primary text-xs sm:text-sm" data-testid="button-visualizer-cta">
                 <Link to="/visualizer">
                   <Gem className="mr-1 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  Try Visualizer
+                  {t('hero.tryVisualizer')}
                 </Link>
               </Button>
             </motion.div>

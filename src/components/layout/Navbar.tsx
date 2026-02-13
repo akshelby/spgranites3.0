@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ShoppingCart, Heart, User, ChevronDown, Sun, Moon } from 'lucide-react';
+import { Menu, X, ShoppingCart, Heart, User, Sun, Moon, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -15,14 +16,10 @@ import { useCart } from '@/contexts/CartContext';
 import { useTabs } from '@/contexts/TabContext';
 import { cn } from '@/lib/utils';
 
-const navLinks = [
-  { name: 'Home', href: '/' },
-  { name: 'Products', href: '/products' },
-  { name: 'Services', href: '/services' },
-  { name: 'Visualizer', href: '/visualizer' },
-  { name: 'Estimation', href: '/estimation' },
-  { name: 'Catalogs', href: '/catalogs' },
-  { name: 'Contact', href: '/contact' },
+const languages = [
+  { code: 'en', label: 'English', flag: 'EN' },
+  { code: 'hi', label: 'हिन्दी', flag: 'HI' },
+  { code: 'kn', label: 'ಕನ್ನಡ', flag: 'KN' },
 ];
 
 export function Navbar() {
@@ -33,6 +30,17 @@ export function Navbar() {
   const { user, role, signOut } = useAuth();
   const { getCartCount, setMiniCartOpen } = useCart();
   const { addTab } = useTabs();
+  const { t, i18n } = useTranslation();
+
+  const navLinks = [
+    { name: t('nav.home'), href: '/' },
+    { name: t('nav.products'), href: '/products' },
+    { name: t('nav.services'), href: '/services' },
+    { name: t('nav.visualizer'), href: '/visualizer' },
+    { name: t('nav.estimation'), href: '/estimation' },
+    { name: t('nav.catalogs'), href: '/catalogs' },
+    { name: t('nav.contact'), href: '/contact' },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,6 +66,11 @@ export function Navbar() {
     localStorage.setItem('theme', newIsDark ? 'dark' : 'light');
   };
 
+  const changeLanguage = (langCode: string) => {
+    i18n.changeLanguage(langCode);
+    localStorage.setItem('language', langCode);
+  };
+
   const cartCount = getCartCount();
 
   return (
@@ -71,7 +84,6 @@ export function Navbar() {
     >
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16 lg:h-20">
-          {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
             <div className="w-10 h-10 bg-gradient-premium rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">SP</span>
@@ -84,7 +96,6 @@ export function Navbar() {
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => (
               <Link
@@ -101,16 +112,38 @@ export function Navbar() {
                     ? 'text-primary bg-primary/10'
                     : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                 )}
-                data-testid={`nav-${link.name.toLowerCase()}`}
+                data-testid={`nav-${link.href.replace('/', '') || 'home'}`}
               >
                 {link.name}
               </Link>
             ))}
           </div>
 
-          {/* Right Actions */}
-          <div className="flex items-center gap-2">
-            {/* Theme Toggle */}
+          <div className="flex items-center gap-1 sm:gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" data-testid="button-language-switcher">
+                  <Globe className="h-5 w-5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-40">
+                {languages.map((lang) => (
+                  <DropdownMenuItem
+                    key={lang.code}
+                    onClick={() => changeLanguage(lang.code)}
+                    className={cn(
+                      'flex items-center justify-between gap-2',
+                      i18n.language === lang.code && 'bg-primary/10 text-primary'
+                    )}
+                    data-testid={`button-lang-${lang.code}`}
+                  >
+                    <span>{lang.label}</span>
+                    <span className="text-xs font-mono text-muted-foreground">{lang.flag}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <Button
               variant="ghost"
               size="icon"
@@ -120,7 +153,6 @@ export function Navbar() {
               {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
 
-            {/* Wishlist */}
             {user && (
               <Button variant="ghost" size="icon" asChild className="hidden sm:flex">
                 <Link to="/wishlist">
@@ -129,7 +161,6 @@ export function Navbar() {
               </Button>
             )}
 
-            {/* Cart */}
             <Button
               variant="ghost"
               size="icon"
@@ -144,7 +175,6 @@ export function Navbar() {
               )}
             </Button>
 
-            {/* User Menu */}
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -154,38 +184,37 @@ export function Navbar() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuItem asChild>
-                    <Link to="/profile">My Profile</Link>
+                    <Link to="/profile">{t('nav.myProfile')}</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/orders">My Orders</Link>
+                    <Link to="/orders">{t('nav.myOrders')}</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/wishlist">Wishlist</Link>
+                    <Link to="/wishlist">{t('nav.wishlist')}</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/my-reviews">My Reviews</Link>
+                    <Link to="/my-reviews">{t('nav.myReviews')}</Link>
                   </DropdownMenuItem>
                   {role === 'admin' && (
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
                         <Link to="/admin" className="text-primary">
-                          Admin Dashboard
+                          {t('nav.adminDashboard')}
                         </Link>
                       </DropdownMenuItem>
                     </>
                   )}
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={signOut}>Sign Out</DropdownMenuItem>
+                  <DropdownMenuItem onClick={signOut}>{t('nav.signOut')}</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <Button asChild size="sm">
-                <Link to="/auth">Sign In</Link>
+                <Link to="/auth">{t('nav.signIn')}</Link>
               </Button>
             )}
 
-            {/* Mobile Menu Toggle */}
             <Button
               variant="ghost"
               size="icon"
@@ -198,7 +227,6 @@ export function Navbar() {
         </nav>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -228,11 +256,24 @@ export function Navbar() {
                   {link.name}
                 </Link>
               ))}
-              <div className="pt-4 border-t border-border flex items-center gap-4">
+              <div className="pt-4 border-t border-border flex items-center gap-2 flex-wrap">
                 <Button variant="outline" size="sm" onClick={toggleTheme}>
                   {isDark ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />}
-                  {isDark ? 'Light' : 'Dark'} Mode
+                  {isDark ? t('nav.lightMode') : t('nav.darkMode')}
                 </Button>
+                <div className="flex items-center gap-1">
+                  {languages.map((lang) => (
+                    <Button
+                      key={lang.code}
+                      variant={i18n.language === lang.code ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => changeLanguage(lang.code)}
+                      data-testid={`button-mobile-lang-${lang.code}`}
+                    >
+                      {lang.flag}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
           </motion.div>

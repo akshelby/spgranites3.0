@@ -1,13 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Award, Users, Briefcase, Clock } from 'lucide-react';
-
-const stats = [
-  { icon: Clock, value: 25, suffix: '+', label: 'Years Experience' },
-  { icon: Users, value: 500, suffix: '+', label: 'Happy Clients' },
-  { icon: Briefcase, value: 1000, suffix: '+', label: 'Projects Done' },
-  { icon: Award, value: 50, suffix: '+', label: 'Awards' },
-];
+import { useTranslation } from 'react-i18next';
 
 function Counter({ value, suffix }: { value: number; suffix: string }) {
   const [count, setCount] = useState(0);
@@ -44,19 +38,28 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
 }
 
 export function StatsSection() {
+  const { t } = useTranslation();
+
+  const stats = [
+    { icon: Clock, value: 25, suffix: '+', label: t('stats.yearsExperience') },
+    { icon: Users, value: 500, suffix: '+', label: t('stats.happyClients') },
+    { icon: Briefcase, value: 1000, suffix: '+', label: t('stats.projectsDone') },
+    { icon: Award, value: 50, suffix: '+', label: t('stats.awards') },
+  ];
+
   return (
     <section className="py-8 sm:py-12 lg:py-16 bg-foreground text-background" data-testid="stats-section">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-4 gap-3 sm:gap-6 lg:gap-8">
           {stats.map((stat, index) => (
             <motion.div
-              key={stat.label}
+              key={index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
               className="text-center"
-              data-testid={`stat-${stat.label.toLowerCase().replace(/\s+/g, '-')}`}
+              data-testid={`stat-${index}`}
             >
               <div className="w-9 h-9 sm:w-12 sm:h-12 lg:w-14 lg:h-14 mx-auto mb-2 sm:mb-3 rounded-full bg-white/10 flex items-center justify-center">
                 <stat.icon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6" />

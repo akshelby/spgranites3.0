@@ -1,9 +1,12 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Phone } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 
 export function CTASection() {
+  const { t } = useTranslation();
+
   return (
     <section className="py-8 sm:py-12 lg:py-16 bg-primary text-primary-foreground relative overflow-hidden" data-testid="cta-section">
       <div className="absolute inset-0 opacity-[0.06]">
@@ -20,11 +23,10 @@ export function CTASection() {
           className="text-center max-w-3xl mx-auto"
         >
           <h2 className="text-xl sm:text-3xl lg:text-5xl font-display font-bold mb-3 sm:mb-6" data-testid="text-cta-title">
-            Ready to Transform Your Space?
+            {t('cta.title')}
           </h2>
           <p className="text-sm sm:text-base lg:text-lg opacity-85 mb-4 sm:mb-8">
-            Get a free consultation and estimate for your granite or marble project. 
-            Our experts are ready to help bring your vision to life.
+            {t('cta.subtitle')}
           </p>
           <div className="flex flex-row flex-wrap gap-2 sm:gap-4 justify-center">
             <Button
@@ -35,7 +37,7 @@ export function CTASection() {
               data-testid="button-cta-estimation"
             >
               <Link to="/estimation">
-                Get Free Estimation
+                {t('cta.getEstimation')}
                 <ArrowRight className="ml-1 sm:ml-2 h-3.5 w-3.5 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
@@ -48,7 +50,7 @@ export function CTASection() {
             >
               <a href="tel:+919876543210">
                 <Phone className="mr-1 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                Call Us Now
+                {t('cta.callUs')}
               </a>
             </Button>
           </div>
