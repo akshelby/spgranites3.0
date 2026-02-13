@@ -3,8 +3,10 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export function SocialAuthButtons() {
+  const { t } = useTranslation();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {
@@ -34,7 +36,7 @@ export function SocialAuthButtons() {
           <span className="w-full border-t border-border" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+          <span className="bg-card px-2 text-muted-foreground">{t('auth.orContinueWith')}</span>
         </div>
       </div>
 
@@ -67,7 +69,7 @@ export function SocialAuthButtons() {
             />
           </svg>
         )}
-        Continue with Google
+        {t('auth.continueWithGoogle')}
       </Button>
     </div>
   );

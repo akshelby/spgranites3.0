@@ -32,6 +32,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Address } from '@/types/database';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 const addressSchema = z.object({
   label: z.string().optional(),
@@ -48,16 +49,17 @@ const addressSchema = z.object({
 
 type AddressFormData = z.infer<typeof addressSchema>;
 
-const addressTypeOptions = [
-  { value: 'home' as const, label: 'Home', icon: Home },
-  { value: 'office' as const, label: 'Office', icon: Building2 },
-  { value: 'other' as const, label: 'Other', icon: MapPinned },
-];
-
 export default function CartPage() {
+  const { t } = useTranslation();
   const { items, updateQuantity, removeFromCart, getCartTotal, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const addressTypeOptions = [
+    { value: 'home' as const, label: t('cart.home'), icon: Home },
+    { value: 'office' as const, label: t('cart.office'), icon: Building2 },
+    { value: 'other' as const, label: t('cart.other'), icon: MapPinned },
+  ];
   
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string>('');
@@ -116,7 +118,7 @@ export default function CartPage() {
           .update({ ...data, country: 'India' })
           .eq('id', editingAddress.id);
         if (error) throw error;
-        toast.success('Address updated');
+        toast.success(t('cart.addressUpdated'));
       } else {
         const isFirst = addresses.length === 0;
         const { data: newAddr, error } = await supabase
@@ -130,7 +132,7 @@ export default function CartPage() {
           .select()
           .single();
         if (error) throw error;
-        toast.success('Address added');
+        toast.success(t('cart.addressAdded'));
         if (newAddr) setSelectedAddressId(newAddr.id);
       }
       setAddressDialogOpen(false);
@@ -138,7 +140,7 @@ export default function CartPage() {
       addressForm.reset();
       fetchAddresses();
     } catch {
-      toast.error('Failed to save address');
+      toast.error(t('cart.addressSaveFailed'));
     }
   };
 
@@ -179,7 +181,7 @@ export default function CartPage() {
   const deleteAddress = async (id: string) => {
     try {
       await supabase.from('addresses').delete().eq('id', id);
-      toast.success('Address removed');
+      toast.success(t('cart.addressRemoved'));
       const { data } = await supabase
         .from('addresses')
         .select('*')
@@ -195,7 +197,7 @@ export default function CartPage() {
         setSelectedAddressId('');
       }
     } catch {
-      toast.error('Failed to delete address');
+      toast.error(t('cart.addressDeleteFailed'));
     }
   };
 
@@ -223,7 +225,7 @@ export default function CartPage() {
   const handlePlaceOrder = async () => {
     if (!user) return;
     if (!selectedAddressId) {
-      toast.error('Please select a delivery address');
+      toast.error(t('cart.selectAddress'));
       return;
     }
 
@@ -264,10 +266,10 @@ export default function CartPage() {
       if (itemsError) throw itemsError;
 
       clearCart();
-      toast.success('Order placed successfully!');
+      toast.success(t('cart.orderSuccess'));
       navigate(`/orders/${order.id}`);
     } catch {
-      toast.error('Failed to place order. Please try again.');
+      toast.error(t('cart.orderFailed'));
     } finally {
       setIsPlacingOrder(false);
     }
@@ -280,12 +282,12 @@ export default function CartPage() {
           <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center mb-4">
             <ShoppingBag className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h1 className="text-xl font-bold mb-2" data-testid="text-empty-cart">Your cart is empty</h1>
+          <h1 className="text-xl font-bold mb-2" data-testid="text-empty-cart">{t('cart.empty')}</h1>
           <p className="text-sm text-muted-foreground mb-4">
-            Add items to your cart to get started.
+            {t('cart.emptyHint')}
           </p>
           <Button asChild size="default" data-testid="button-browse-products">
-            <Link to="/products">Browse Products</Link>
+            <Link to="/products">{t('cart.browseProducts')}</Link>
           </Button>
         </div>
       </MainLayout>
@@ -296,7 +298,7 @@ export default function CartPage() {
     <MainLayout>
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
         <h1 className="text-xl sm:text-2xl font-display font-bold mb-3 sm:mb-5" data-testid="text-cart-title">
-          Shopping Cart ({items.length} {items.length === 1 ? 'item' : 'items'})
+          {t('cart.title')} ({items.length} {items.length === 1 ? t('cart.item') : t('cart.items')})
         </h1>
 
         <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
@@ -359,7 +361,7 @@ export default function CartPage() {
                       data-testid={`button-remove-${item.productId}`}
                     >
                       <Trash2 className="h-3.5 w-3.5 mr-1" />
-                      Remove
+                      {t('cart.remove')}
                     </Button>
                   </div>
                 </div>
@@ -375,7 +377,7 @@ export default function CartPage() {
               <CardHeader className="py-3 px-4 flex flex-row items-center justify-between gap-2">
                 <CardTitle className="text-sm sm:text-base flex items-center gap-1.5">
                   <MapPin className="h-4 w-4" />
-                  Delivery Address
+                  {t('cart.deliveryAddress')}
                 </CardTitle>
                 {user && (
                   <Button
@@ -385,7 +387,7 @@ export default function CartPage() {
                     data-testid="button-add-address-cart"
                   >
                     <Plus className="h-3.5 w-3.5 mr-1" />
-                    Add New
+                    {t('cart.addNew')}
                   </Button>
                 )}
               </CardHeader>
@@ -393,22 +395,22 @@ export default function CartPage() {
                 {!user ? (
                   <div className="text-center py-4">
                     <p className="text-muted-foreground text-xs mb-2">
-                      Please sign in to add a delivery address
+                      {t('cart.signInForAddress')}
                     </p>
                     <Button variant="outline" size="sm" asChild data-testid="button-signin-address">
-                      <Link to="/auth">Sign In</Link>
+                      <Link to="/auth">{t('auth.signIn')}</Link>
                     </Button>
                   </div>
                 ) : addresses.length === 0 ? (
                   <div className="text-center py-4">
                     <MapPin className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                    <p className="text-sm font-medium mb-1">No addresses saved</p>
+                    <p className="text-sm font-medium mb-1">{t('cart.noAddresses')}</p>
                     <p className="text-muted-foreground text-xs mb-3">
-                      Add a delivery address to place your order
+                      {t('cart.noAddressesHint')}
                     </p>
                     <Button size="sm" onClick={openNewAddress} data-testid="button-add-first-address-cart">
                       <Plus className="h-3.5 w-3.5 mr-1" />
-                      Add Address
+                      {t('cart.addAddress')}
                     </Button>
                   </div>
                 ) : (
@@ -436,11 +438,11 @@ export default function CartPage() {
                               <div className="flex items-center gap-1.5 mb-0.5">
                                 <TypeIcon className="h-3 w-3 text-muted-foreground" />
                                 <span className="text-[10px] uppercase tracking-wide font-semibold text-muted-foreground">
-                                  {address.label || address.address_type || 'Home'}
+                                  {address.label || address.address_type || t('cart.home')}
                                 </span>
                                 {address.is_default && (
                                   <span className="text-[9px] bg-primary/10 text-primary px-1 py-0.5 rounded font-medium">
-                                    Default
+                                    {t('cart.default')}
                                   </span>
                                 )}
                               </div>
@@ -464,7 +466,7 @@ export default function CartPage() {
                               data-testid={`button-edit-addr-${address.id}`}
                             >
                               <Edit className="h-2.5 w-2.5 mr-0.5" />
-                              Edit
+                              {t('cart.edit')}
                             </Button>
                             <Button
                               variant="ghost"
@@ -474,7 +476,7 @@ export default function CartPage() {
                               data-testid={`button-del-addr-${address.id}`}
                             >
                               <Trash2 className="h-2.5 w-2.5 mr-0.5" />
-                              Remove
+                              {t('cart.remove')}
                             </Button>
                           </div>
                         </div>
@@ -487,23 +489,23 @@ export default function CartPage() {
 
             <Card>
               <CardHeader className="py-3 px-4">
-                <CardTitle className="text-sm sm:text-base">Order Summary</CardTitle>
+                <CardTitle className="text-sm sm:text-base">{t('cart.orderSummary')}</CardTitle>
               </CardHeader>
               <CardContent className="px-4 pb-3 space-y-2">
                 <div className="flex justify-between gap-1 text-xs sm:text-sm">
-                  <span className="text-muted-foreground">Subtotal</span>
+                  <span className="text-muted-foreground">{t('cart.subtotal')}</span>
                   <span>{formatPrice(subtotal)}</span>
                 </div>
                 <div className="flex justify-between gap-1 text-xs sm:text-sm">
-                  <span className="text-muted-foreground">Shipping</span>
-                  <span>{shipping === 0 ? 'Free' : formatPrice(shipping)}</span>
+                  <span className="text-muted-foreground">{t('cart.shipping')}</span>
+                  <span>{shipping === 0 ? t('cart.free') : formatPrice(shipping)}</span>
                 </div>
                 <div className="flex justify-between gap-1 text-xs sm:text-sm">
-                  <span className="text-muted-foreground">Tax (18% GST)</span>
+                  <span className="text-muted-foreground">{t('cart.tax')}</span>
                   <span>{formatPrice(tax)}</span>
                 </div>
                 <div className="border-t pt-2 flex justify-between gap-1 font-semibold text-base sm:text-lg">
-                  <span>Total</span>
+                  <span>{t('cart.total')}</span>
                   <span className="text-primary" data-testid="text-order-total">{formatPrice(total)}</span>
                 </div>
                 <Button
@@ -514,17 +516,17 @@ export default function CartPage() {
                   data-testid="button-place-order"
                 >
                   {isPlacingOrder ? (
-                    'Placing Order...'
+                    t('cart.placingOrder')
                   ) : (
                     <>
-                      Place Order
+                      {t('cart.placeOrder')}
                       <ArrowRight className="ml-1.5 h-4 w-4" />
                     </>
                   )}
                 </Button>
                 {subtotal < 10000 && (
                   <p className="text-[10px] sm:text-xs text-muted-foreground text-center">
-                    Free shipping on orders above ₹10,000
+                    {t('cart.freeShippingNote')}
                   </p>
                 )}
               </CardContent>
@@ -543,10 +545,10 @@ export default function CartPage() {
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-base sm:text-lg">
-              {editingAddress ? 'Edit Address' : 'Add Delivery Address'}
+              {editingAddress ? t('cart.editAddress') : t('cart.addDeliveryAddress')}
             </DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground">
-              {editingAddress ? 'Update your delivery address details' : 'Enter your delivery address to continue with your order'}
+              {editingAddress ? t('cart.editAddressDesc') : t('cart.addAddressDesc')}
             </DialogDescription>
           </DialogHeader>
           <Form {...addressForm}>
@@ -556,7 +558,7 @@ export default function CartPage() {
                 name="address_type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Address Type</FormLabel>
+                    <FormLabel>{t('cart.addressType')}</FormLabel>
                     <div className="flex gap-2">
                       {addressTypeOptions.map((opt) => (
                         <button
@@ -584,9 +586,9 @@ export default function CartPage() {
                 name="label"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Label (optional)</FormLabel>
+                    <FormLabel>{t('cart.label')}</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., Mom's House, Site Office" {...field} data-testid="input-cart-addr-label" />
+                      <Input placeholder={t('cart.labelPlaceholder')} {...field} data-testid="input-cart-addr-label" />
                     </FormControl>
                   </FormItem>
                 )}
@@ -597,7 +599,7 @@ export default function CartPage() {
                   name="full_name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Full Name *</FormLabel>
+                      <FormLabel>{t('cart.fullName')} *</FormLabel>
                       <FormControl>
                         <Input {...field} data-testid="input-cart-addr-name" />
                       </FormControl>
@@ -610,7 +612,7 @@ export default function CartPage() {
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone *</FormLabel>
+                      <FormLabel>{t('cart.phone')} *</FormLabel>
                       <FormControl>
                         <Input {...field} data-testid="input-cart-addr-phone" />
                       </FormControl>
@@ -624,7 +626,7 @@ export default function CartPage() {
                 name="address_line_1"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Address Line 1 *</FormLabel>
+                    <FormLabel>{t('cart.addressLine1')} *</FormLabel>
                     <FormControl>
                       <Input placeholder="House/Flat No., Building, Street" {...field} data-testid="input-cart-addr-line1" />
                     </FormControl>
@@ -637,7 +639,7 @@ export default function CartPage() {
                 name="address_line_2"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Address Line 2</FormLabel>
+                    <FormLabel>{t('cart.addressLine2')}</FormLabel>
                     <FormControl>
                       <Input placeholder="Area, Landmark (optional)" {...field} data-testid="input-cart-addr-line2" />
                     </FormControl>
@@ -650,7 +652,7 @@ export default function CartPage() {
                   name="city"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>City *</FormLabel>
+                      <FormLabel>{t('cart.city')} *</FormLabel>
                       <FormControl>
                         <Input {...field} data-testid="input-cart-addr-city" />
                       </FormControl>
@@ -663,7 +665,7 @@ export default function CartPage() {
                   name="state"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>State *</FormLabel>
+                      <FormLabel>{t('cart.state')} *</FormLabel>
                       <FormControl>
                         <Input {...field} data-testid="input-cart-addr-state" />
                       </FormControl>
@@ -676,7 +678,7 @@ export default function CartPage() {
                   name="pincode"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Pincode *</FormLabel>
+                      <FormLabel>{t('cart.pincode')} *</FormLabel>
                       <FormControl>
                         <Input {...field} data-testid="input-cart-addr-pincode" />
                       </FormControl>
@@ -704,13 +706,13 @@ export default function CartPage() {
                       )}>
                         {field.value && <Check className="h-3 w-3 text-primary-foreground" />}
                       </div>
-                      <span className="text-sm">Set as default delivery address</span>
+                      <span className="text-sm">{t('cart.setAsDefault')}</span>
                     </div>
                   </FormItem>
                 )}
               />
               <Button type="submit" className="w-full" data-testid="button-cart-save-address">
-                {editingAddress ? 'Update Address' : 'Save & Use This Address'}
+                {editingAddress ? t('cart.updateAddress') : t('cart.saveAddress')}
               </Button>
             </form>
           </Form>

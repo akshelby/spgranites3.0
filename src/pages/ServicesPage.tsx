@@ -3,8 +3,10 @@ import { motion } from 'framer-motion';
 import { MainLayout } from '@/components/layout';
 import { supabase } from '@/integrations/supabase/client';
 import { Service } from '@/types/database';
+import { useTranslation } from 'react-i18next';
 
 export default function ServicesPage() {
+  const { t } = useTranslation();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -34,7 +36,7 @@ export default function ServicesPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-muted-foreground font-medium text-xs sm:text-sm uppercase tracking-wide"
           >
-            What We Offer
+            {t('services.label')}
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 15 }}
@@ -43,7 +45,7 @@ export default function ServicesPage() {
             className="text-xl sm:text-2xl lg:text-4xl font-display font-bold mt-1 mb-1 sm:mb-2"
             data-testid="text-services-title"
           >
-            Our Services
+            {t('services.title')}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 15 }}
@@ -51,7 +53,7 @@ export default function ServicesPage() {
             transition={{ delay: 0.2 }}
             className="text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto"
           >
-            From consultation to installation, we provide comprehensive stone solutions.
+            {t('services.pageSubtitle')}
           </motion.p>
         </div>
 
@@ -63,7 +65,7 @@ export default function ServicesPage() {
           </div>
         ) : services.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-sm text-muted-foreground">No services available at the moment.</p>
+            <p className="text-sm text-muted-foreground">{t('services.noServices')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">

@@ -14,6 +14,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 interface ProductReview {
   id: string;
@@ -25,6 +26,7 @@ interface ProductReview {
 }
 
 export default function ProductDetailPage() {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -110,18 +112,18 @@ export default function ProductDetailPage() {
       });
       if (error) {
         if (error.code === '23505') {
-          toast.error('You have already reviewed this product.');
+          toast.error(t('products.alreadyReviewed'));
         } else {
           throw error;
         }
       } else {
-        toast.success('Review submitted! It will appear after approval.');
+        toast.success(t('products.reviewSubmitted'));
         setReviewText('');
         setReviewRating(5);
         fetchReviews(product.id);
       }
     } catch {
-      toast.error('Failed to submit review.');
+      toast.error(t('products.reviewFailed'));
     } finally {
       setSubmittingReview(false);
     }
@@ -179,9 +181,9 @@ export default function ProductDetailPage() {
     return (
       <MainLayout>
         <div className="container mx-auto px-4 py-12 text-center">
-          <h1 className="text-xl font-bold mb-3">Product not found</h1>
+          <h1 className="text-xl font-bold mb-3">{t('products.productNotFound')}</h1>
           <Button asChild size="default">
-            <Link to="/products">Back to Products</Link>
+            <Link to="/products">{t('products.backToProducts')}</Link>
           </Button>
         </div>
       </MainLayout>
@@ -199,7 +201,7 @@ export default function ProductDetailPage() {
           data-testid="link-back-products"
         >
           <ChevronLeft className="h-3.5 w-3.5" />
-          Back to Products
+          {t('products.backToProducts')}
         </Link>
 
         <div className="grid md:grid-cols-2 gap-4 sm:gap-8 lg:gap-12">
@@ -258,16 +260,16 @@ export default function ProductDetailPage() {
                   />
                 ))}
                 <span className="text-xs text-muted-foreground ml-1.5">
-                  ({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})
+                  ({reviews.length} {reviews.length === 1 ? t('products.review') : t('products.reviews')})
                 </span>
               </div>
               {product.stock_quantity > 0 ? (
                 <span className="flex items-center gap-0.5 text-xs text-success" data-testid="status-in-stock">
                   <Check className="h-3.5 w-3.5" />
-                  In Stock
+                  {t('products.inStock')}
                 </span>
               ) : (
-                <span className="text-xs text-destructive" data-testid="status-out-stock">Out of Stock</span>
+                <span className="text-xs text-destructive" data-testid="status-out-stock">{t('products.outOfStock')}</span>
               )}
             </div>
 
@@ -281,7 +283,7 @@ export default function ProductDetailPage() {
                     {formatPrice(product.compare_price)}
                   </span>
                   <span className="px-1.5 py-0.5 bg-destructive text-destructive-foreground text-xs font-medium rounded">
-                    {Math.round((1 - product.price / product.compare_price) * 100)}% OFF
+                    {Math.round((1 - product.price / product.compare_price) * 100)}% {t('common.off')}
                   </span>
                 </>
               )}
@@ -319,7 +321,7 @@ export default function ProductDetailPage() {
                 data-testid="button-add-to-cart"
               >
                 <ShoppingCart className="h-4 w-4 mr-1.5" />
-                Add to Cart
+                {t('products.addToCart')}
               </Button>
               {user && (
                 <Button
@@ -340,15 +342,15 @@ export default function ProductDetailPage() {
 
             <Tabs defaultValue="description">
               <TabsList>
-                <TabsTrigger value="description" className="text-xs sm:text-sm" data-testid="tab-description">Description</TabsTrigger>
-                <TabsTrigger value="specifications" className="text-xs sm:text-sm" data-testid="tab-specifications">Specifications</TabsTrigger>
+                <TabsTrigger value="description" className="text-xs sm:text-sm" data-testid="tab-description">{t('products.description')}</TabsTrigger>
+                <TabsTrigger value="specifications" className="text-xs sm:text-sm" data-testid="tab-specifications">{t('products.specifications')}</TabsTrigger>
                 <TabsTrigger value="reviews" className="text-xs sm:text-sm" data-testid="tab-reviews">
-                  Reviews ({reviews.length})
+                  {t('products.reviews')} ({reviews.length})
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="description" className="mt-3">
                 <p className="text-xs sm:text-sm text-muted-foreground whitespace-pre-wrap">
-                  {product.description || 'No description available.'}
+                  {product.description || t('products.noDescription')}
                 </p>
               </TabsContent>
               <TabsContent value="specifications" className="mt-3">
@@ -364,13 +366,13 @@ export default function ProductDetailPage() {
                     </tbody>
                   </table>
                 ) : (
-                  <p className="text-xs sm:text-sm text-muted-foreground">No specifications available.</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">{t('products.noSpecifications')}</p>
                 )}
               </TabsContent>
               <TabsContent value="reviews" className="mt-3 space-y-4">
                 {user && (
                   <div className="bg-muted/30 border border-border rounded-lg p-3 sm:p-4" data-testid="form-review">
-                    <h4 className="text-sm font-semibold mb-2">Write a Review</h4>
+                    <h4 className="text-sm font-semibold mb-2">{t('products.writeReview')}</h4>
                     <div className="flex items-center gap-1 mb-2">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <button
@@ -398,7 +400,7 @@ export default function ProductDetailPage() {
                     <Textarea
                       value={reviewText}
                       onChange={(e) => setReviewText(e.target.value)}
-                      placeholder="Share your experience with this product..."
+                      placeholder={t('products.reviewPlaceholder')}
                       rows={3}
                       className="mb-2 text-sm"
                       data-testid="input-review-text"
@@ -410,13 +412,13 @@ export default function ProductDetailPage() {
                       data-testid="button-submit-review"
                     >
                       <Send className="h-3.5 w-3.5 mr-1" />
-                      {submittingReview ? 'Submitting...' : 'Submit Review'}
+                      {submittingReview ? t('products.submitting') : t('products.submitReview')}
                     </Button>
                   </div>
                 )}
                 {!user && (
                   <p className="text-xs sm:text-sm text-muted-foreground">
-                    <Link to="/auth" className="underline font-medium" data-testid="link-login-review">Sign in</Link> to write a review.
+                    <Link to="/auth" className="underline font-medium" data-testid="link-login-review">{t('products.signInToReview')}</Link> {t('products.signInToReviewText')}
                   </p>
                 )}
                 {reviews.length > 0 ? (
@@ -462,7 +464,7 @@ export default function ProductDetailPage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs sm:text-sm text-muted-foreground">No reviews yet. Be the first to review this product!</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">{t('products.noReviews')}</p>
                 )}
               </TabsContent>
             </Tabs>
@@ -472,7 +474,7 @@ export default function ProductDetailPage() {
         {relatedProducts.length > 0 && (
           <section className="mt-8 sm:mt-12">
             <h2 className="text-lg sm:text-xl font-display font-bold mb-3 sm:mb-4" data-testid="text-related-title">
-              Related Products
+              {t('products.relatedProducts')}
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
               {relatedProducts.map((rp) => (

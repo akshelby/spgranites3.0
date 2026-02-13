@@ -8,8 +8,10 @@ import { useWishlist } from '@/contexts/WishlistContext';
 import { useCart } from '@/contexts/CartContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Product } from '@/types/database';
+import { useTranslation } from 'react-i18next';
 
 export default function WishlistPage() {
+  const { t } = useTranslation();
   const { items, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
@@ -58,7 +60,7 @@ export default function WishlistPage() {
     return (
       <MainLayout>
         <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
-          <h1 className="text-xl sm:text-2xl font-display font-bold mb-3 sm:mb-5">My Wishlist</h1>
+          <h1 className="text-xl sm:text-2xl font-display font-bold mb-3 sm:mb-5">{t('wishlist.title')}</h1>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="h-48 bg-muted animate-pulse rounded-lg" />
@@ -76,12 +78,12 @@ export default function WishlistPage() {
           <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center mb-4">
             <Heart className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h1 className="text-xl font-bold mb-2" data-testid="text-empty-wishlist">Your wishlist is empty</h1>
+          <h1 className="text-xl font-bold mb-2" data-testid="text-empty-wishlist">{t('wishlist.empty')}</h1>
           <p className="text-sm text-muted-foreground mb-4">
-            Save items you love by clicking the heart icon.
+            {t('wishlist.emptyHint')}
           </p>
           <Button asChild size="default" data-testid="button-browse">
-            <Link to="/products">Browse Products</Link>
+            <Link to="/products">{t('wishlist.browseProducts')}</Link>
           </Button>
         </div>
       </MainLayout>
@@ -92,7 +94,7 @@ export default function WishlistPage() {
     <MainLayout>
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
         <h1 className="text-xl sm:text-2xl font-display font-bold mb-3 sm:mb-5" data-testid="text-wishlist-title">
-          My Wishlist ({products.length})
+          {t('wishlist.title')} ({products.length})
         </h1>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">

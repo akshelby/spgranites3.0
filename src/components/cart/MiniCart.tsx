@@ -5,10 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 
 export function MiniCart() {
   const { items, isMiniCartOpen, setMiniCartOpen, updateQuantity, removeFromCart, getCartTotal } = useCart();
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -24,7 +26,7 @@ export function MiniCart() {
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <ShoppingBag className="h-5 w-5" />
-            Your Cart ({items.length})
+            {t('cart.yourCart')} ({items.length})
           </SheetTitle>
         </SheetHeader>
 
@@ -33,12 +35,12 @@ export function MiniCart() {
             <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-4">
               <ShoppingBag className="h-10 w-10 text-muted-foreground" />
             </div>
-            <h3 className="font-semibold text-lg mb-2">Your cart is empty</h3>
+            <h3 className="font-semibold text-lg mb-2">{t('cart.empty')}</h3>
             <p className="text-muted-foreground text-sm mb-6">
-              Looks like you haven't added any items yet.
+              {t('cart.emptyCartMessage')}
             </p>
             <Button onClick={() => setMiniCartOpen(false)} asChild>
-              <Link to="/products">Browse Products</Link>
+              <Link to="/products">{t('cart.browseProducts')}</Link>
             </Button>
           </div>
         ) : (
@@ -107,19 +109,19 @@ export function MiniCart() {
 
             <div className="border-t pt-4 space-y-4">
               <div className="flex justify-between items-center text-lg font-semibold">
-                <span>Subtotal</span>
+                <span>{t('cart.subtotal')}</span>
                 <span>{formatPrice(getCartTotal())}</span>
               </div>
               <p className="text-xs text-muted-foreground">
-                Shipping and taxes calculated at checkout.
+                {t('cart.shippingNote')}
               </p>
               {user ? (
                 <Button className="w-full" size="lg" asChild onClick={() => setMiniCartOpen(false)}>
-                  <Link to="/cart">Proceed to Checkout</Link>
+                  <Link to="/cart">{t('cart.checkout')}</Link>
                 </Button>
               ) : (
                 <Button className="w-full" size="lg" asChild onClick={() => setMiniCartOpen(false)}>
-                  <Link to="/auth?redirect=/cart">Sign in to Checkout</Link>
+                  <Link to="/auth?redirect=/cart">{t('cart.signInToCheckout')}</Link>
                 </Button>
               )}
               <Button
@@ -128,7 +130,7 @@ export function MiniCart() {
                 onClick={() => setMiniCartOpen(false)}
                 asChild
               >
-                <Link to="/products">Continue Shopping</Link>
+                <Link to="/products">{t('cart.continueShopping')}</Link>
               </Button>
             </div>
           </>

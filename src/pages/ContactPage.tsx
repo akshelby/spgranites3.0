@@ -18,6 +18,7 @@ import {
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -28,33 +29,34 @@ const contactSchema = z.object({
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
-const contactInfo = [
-  {
-    icon: MapPin,
-    title: 'Visit Us',
-    details: ['123 Stone Avenue, Industrial Area', 'Chennai, Tamil Nadu 600001'],
-  },
-  {
-    icon: Phone,
-    title: 'Call Us',
-    details: ['+91 98765 43210', '+91 98765 43211'],
-    links: ['tel:+919876543210', 'tel:+919876543211'],
-  },
-  {
-    icon: Mail,
-    title: 'Email Us',
-    details: ['info@spgranites.com', 'sales@spgranites.com'],
-    links: ['mailto:info@spgranites.com', 'mailto:sales@spgranites.com'],
-  },
-  {
-    icon: Clock,
-    title: 'Working Hours',
-    details: ['Mon - Sat: 9:00 AM - 7:00 PM', 'Sunday: Closed'],
-  },
-];
-
 export default function ContactPage() {
+  const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const contactInfo = [
+    {
+      icon: MapPin,
+      title: t('contact.visitUs'),
+      details: ['123 Stone Avenue, Industrial Area', 'Chennai, Tamil Nadu 600001'],
+    },
+    {
+      icon: Phone,
+      title: t('contact.callUs'),
+      details: ['+91 98765 43210', '+91 98765 43211'],
+      links: ['tel:+919876543210', 'tel:+919876543211'],
+    },
+    {
+      icon: Mail,
+      title: t('contact.emailUs'),
+      details: ['info@spgranites.com', 'sales@spgranites.com'],
+      links: ['mailto:info@spgranites.com', 'mailto:sales@spgranites.com'],
+    },
+    {
+      icon: Clock,
+      title: t('contact.workingHours'),
+      details: ['Mon - Sat: 9:00 AM - 7:00 PM', 'Sunday: Closed'],
+    },
+  ];
 
   const form = useForm<ContactFormData>({
     resolver: zodResolver(contactSchema),
@@ -78,10 +80,10 @@ export default function ContactPage() {
 
       if (error) throw error;
 
-      toast.success('Message sent successfully! We will get back to you soon.');
+      toast.success(t('contact.messageSent'));
       form.reset();
     } catch (error) {
-      toast.error('Failed to send message. Please try again.');
+      toast.error(t('contact.messageFailed'));
     } finally {
       setIsSubmitting(false);
     }
@@ -96,7 +98,7 @@ export default function ContactPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-muted-foreground font-medium text-xs sm:text-sm uppercase tracking-wide"
           >
-            Get In Touch
+            {t('contact.label')}
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 15 }}
@@ -105,7 +107,7 @@ export default function ContactPage() {
             className="text-xl sm:text-2xl lg:text-4xl font-display font-bold mt-1 mb-1 sm:mb-2"
             data-testid="text-contact-title"
           >
-            Contact Us
+            {t('contact.title')}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 15 }}
@@ -113,7 +115,7 @@ export default function ContactPage() {
             transition={{ delay: 0.2 }}
             className="text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto"
           >
-            Have questions or need a quote? We're here to help.
+            {t('contact.subtitle')}
           </motion.p>
         </div>
 
@@ -167,7 +169,7 @@ export default function ContactPage() {
             className="lg:col-span-2"
           >
             <div className="bg-card rounded-lg border border-border p-4 sm:p-6">
-              <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Send us a message</h2>
+              <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">{t('contact.sendMessage')}</h2>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
                   <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
@@ -176,7 +178,7 @@ export default function ContactPage() {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs sm:text-sm">Your Name *</FormLabel>
+                          <FormLabel className="text-xs sm:text-sm">{t('contact.yourName')}</FormLabel>
                           <FormControl>
                             <Input placeholder="John Doe" {...field} data-testid="input-name" />
                           </FormControl>
@@ -189,7 +191,7 @@ export default function ContactPage() {
                       name="phone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs sm:text-sm">Phone Number *</FormLabel>
+                          <FormLabel className="text-xs sm:text-sm">{t('contact.phoneNumber')}</FormLabel>
                           <FormControl>
                             <Input placeholder="+91 98765 43210" {...field} data-testid="input-phone" />
                           </FormControl>
@@ -203,7 +205,7 @@ export default function ContactPage() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs sm:text-sm">Email (Optional)</FormLabel>
+                        <FormLabel className="text-xs sm:text-sm">{t('contact.emailOptional')}</FormLabel>
                         <FormControl>
                           <Input placeholder="john@example.com" {...field} data-testid="input-email" />
                         </FormControl>
@@ -216,10 +218,10 @@ export default function ContactPage() {
                     name="message"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-xs sm:text-sm">Your Message *</FormLabel>
+                        <FormLabel className="text-xs sm:text-sm">{t('contact.yourMessage')}</FormLabel>
                         <FormControl>
                           <Textarea
-                            placeholder="Tell us about your project or inquiry..."
+                            placeholder={t('contact.messagePlaceholder')}
                             rows={4}
                             {...field}
                             data-testid="input-message"
@@ -230,7 +232,7 @@ export default function ContactPage() {
                     )}
                   />
                   <Button type="submit" size="default" disabled={isSubmitting} data-testid="button-send-message">
-                    {isSubmitting ? 'Sending...' : 'Send Message'}
+                    {isSubmitting ? t('contact.sending') : t('contact.send')}
                   </Button>
                 </form>
               </Form>

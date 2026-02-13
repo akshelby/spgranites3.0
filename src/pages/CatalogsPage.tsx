@@ -5,8 +5,10 @@ import { MainLayout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { Catalog } from '@/types/database';
+import { useTranslation } from 'react-i18next';
 
 export default function CatalogsPage() {
+  const { t } = useTranslation();
   const [catalogs, setCatalogs] = useState<Catalog[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -43,7 +45,7 @@ export default function CatalogsPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-muted-foreground font-medium text-xs sm:text-sm uppercase tracking-wide"
           >
-            Resources
+            {t('catalogs.label')}
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 15 }}
@@ -52,7 +54,7 @@ export default function CatalogsPage() {
             className="text-xl sm:text-2xl lg:text-4xl font-display font-bold mt-1 mb-1 sm:mb-2"
             data-testid="text-catalogs-title"
           >
-            Download Catalogs
+            {t('catalogs.title')}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 15 }}
@@ -60,7 +62,7 @@ export default function CatalogsPage() {
             transition={{ delay: 0.2 }}
             className="text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto"
           >
-            Browse and download our product catalogs to explore our collections.
+            {t('catalogs.subtitle')}
           </motion.p>
         </div>
 
@@ -73,9 +75,9 @@ export default function CatalogsPage() {
         ) : catalogs.length === 0 ? (
           <div className="text-center py-12">
             <FileText className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-            <h3 className="text-base font-semibold mb-1">No catalogs available</h3>
+            <h3 className="text-base font-semibold mb-1">{t('catalogs.noCatalogs')}</h3>
             <p className="text-sm text-muted-foreground">
-              Check back later for our product catalogs.
+              {t('catalogs.noCatalogsHint')}
             </p>
           </div>
         ) : (
@@ -104,7 +106,7 @@ export default function CatalogsPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-center pb-4">
                     <Button size="sm" onClick={() => handleDownload(catalog)} data-testid={`button-download-${catalog.id}`}>
                       <Download className="h-3.5 w-3.5 mr-1.5" />
-                      Download
+                      {t('catalogs.download')}
                     </Button>
                   </div>
                 </div>
@@ -116,7 +118,7 @@ export default function CatalogsPage() {
                     </p>
                   )}
                   <p className="text-[10px] sm:text-xs text-muted-foreground" data-testid={`text-downloads-${catalog.id}`}>
-                    {catalog.download_count} downloads
+                    {catalog.download_count} {t('catalogs.downloads')}
                   </p>
                 </div>
               </motion.div>

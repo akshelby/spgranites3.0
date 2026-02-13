@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -30,6 +30,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Profile, Address } from '@/types/database';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 const profileSchema = z.object({
   full_name: z.string().min(2, 'Name is required'),
@@ -55,13 +56,8 @@ const addressSchema = z.object({
 type ProfileFormData = z.infer<typeof profileSchema>;
 type AddressFormData = z.infer<typeof addressSchema>;
 
-const addressTypeOptions = [
-  { value: 'home' as const, label: 'Home', icon: Home },
-  { value: 'office' as const, label: 'Office', icon: Building2 },
-  { value: 'other' as const, label: 'Other', icon: MapPinned },
-];
-
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const { user, signOut } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -69,6 +65,12 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [addressDialogOpen, setAddressDialogOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
+
+  const addressTypeOptions = useMemo(() => [
+    { value: 'home' as const, label: t('cart.home'), icon: Home },
+    { value: 'office' as const, label: t('cart.office'), icon: Building2 },
+    { value: 'other' as const, label: t('cart.other'), icon: MapPinned },
+  ], [t]);
 
   const profileForm = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -139,9 +141,9 @@ export default function ProfilePage() {
         .eq('user_id', user?.id);
 
       if (error) throw error;
-      toast.success('Profile updated successfully');
+      toast.success(t('profile.profileUpdated'));
     } catch {
-      toast.error('Failed to update profile');
+      toast.error(t('profile.profileFailed'));
     } finally {
       setSaving(false);
     }
@@ -162,7 +164,7 @@ export default function ProfilePage() {
           .update({ ...data, country: 'India' })
           .eq('id', editingAddress.id);
         if (error) throw error;
-        toast.success('Address updated');
+        toast.success(t('profile.addressUpdated'));
       } else {
         const isFirst = addresses.length === 0;
         const { error } = await supabase
@@ -174,7 +176,7 @@ export default function ProfilePage() {
             is_default: isFirst ? true : data.is_default,
           } as any);
         if (error) throw error;
-        toast.success('Address added');
+        toast.success(t('profile.addressAdded'));
       }
       setAddressDialogOpen(false);
       setEditingAddress(null);
@@ -192,17 +194,17 @@ export default function ProfilePage() {
       });
       fetchData();
     } catch {
-      toast.error('Failed to save address');
+      toast.error(t('profile.addressSaveFailed'));
     }
   };
 
   const deleteAddress = async (id: string) => {
     try {
       await supabase.from('addresses').delete().eq('id', id);
-      toast.success('Address deleted');
+      toast.success(t('profile.addressDeleted'));
       fetchData();
     } catch {
-      toast.error('Failed to delete address');
+      toast.error(t('profile.addressDeleteFailed'));
     }
   };
 
@@ -216,10 +218,10 @@ export default function ProfilePage() {
         .from('addresses')
         .update({ is_default: true })
         .eq('id', id);
-      toast.success('Default address updated');
+      toast.success(t('profile.defaultUpdated'));
       fetchData();
     } catch {
-      toast.error('Failed to set default address');
+      toast.error(t('profile.defaultFailed'));
     }
   };
 
@@ -280,30 +282,30 @@ export default function ProfilePage() {
     <MainLayout>
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
         <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold mb-4 sm:mb-6" data-testid="text-profile-title">
-          My Profile
+          {t('profile.title')}
         </h1>
 
         <Tabs defaultValue="profile" className="space-y-4 sm:space-y-6">
           <TabsList>
             <TabsTrigger value="profile" data-testid="tab-profile">
               <User className="h-4 w-4 mr-1.5" />
-              Profile
+              {t('profile.profile')}
             </TabsTrigger>
             <TabsTrigger value="addresses" data-testid="tab-addresses">
               <MapPin className="h-4 w-4 mr-1.5" />
-              Addresses ({addresses.length})
+              {t('profile.addresses')} ({addresses.length})
             </TabsTrigger>
             <TabsTrigger value="security" data-testid="tab-security">
               <Lock className="h-4 w-4 mr-1.5" />
-              Security
+              {t('profile.security')}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base sm:text-lg">Personal Information</CardTitle>
-                <CardDescription className="text-xs sm:text-sm">Update your personal details</CardDescription>
+                <CardTitle className="text-base sm:text-lg">{t('profile.personalInfo')}</CardTitle>
+                <CardDescription className="text-xs sm:text-sm">{t('profile.personalInfoDesc')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <Form {...profileForm}>
@@ -314,7 +316,7 @@ export default function ProfilePage() {
                         name="full_name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Full Name</FormLabel>
+                            <FormLabel>{t('profile.fullName')}</FormLabel>
                             <FormControl>
                               <Input {...field} data-testid="input-profile-name" />
                             </FormControl>
@@ -327,7 +329,7 @@ export default function ProfilePage() {
                         name="phone"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Phone</FormLabel>
+                            <FormLabel>{t('profile.phone')}</FormLabel>
                             <FormControl>
                               <Input {...field} data-testid="input-profile-phone" />
                             </FormControl>
@@ -340,7 +342,7 @@ export default function ProfilePage() {
                         name="company_name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Company Name</FormLabel>
+                            <FormLabel>{t('profile.companyName')}</FormLabel>
                             <FormControl>
                               <Input {...field} data-testid="input-profile-company" />
                             </FormControl>
@@ -353,7 +355,7 @@ export default function ProfilePage() {
                         name="gst_number"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>GST Number</FormLabel>
+                            <FormLabel>{t('profile.gstNumber')}</FormLabel>
                             <FormControl>
                               <Input {...field} data-testid="input-profile-gst" />
                             </FormControl>
@@ -363,7 +365,7 @@ export default function ProfilePage() {
                       />
                     </div>
                     <Button type="submit" disabled={saving} data-testid="button-save-profile">
-                      {saving ? 'Saving...' : 'Save Changes'}
+                      {saving ? t('profile.saving') : t('profile.saveChanges')}
                     </Button>
                   </form>
                 </Form>
@@ -375,12 +377,12 @@ export default function ProfilePage() {
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <div>
-                  <h2 className="text-base sm:text-lg font-semibold">Saved Addresses</h2>
-                  <p className="text-xs sm:text-sm text-muted-foreground">Manage your delivery addresses</p>
+                  <h2 className="text-base sm:text-lg font-semibold">{t('profile.savedAddresses')}</h2>
+                  <p className="text-xs sm:text-sm text-muted-foreground">{t('profile.manageAddresses')}</p>
                 </div>
                 <Button size="sm" onClick={openNewAddress} data-testid="button-add-address">
                   <Plus className="h-4 w-4 mr-1.5" />
-                  Add New Address
+                  {t('profile.addNewAddress')}
                 </Button>
               </div>
 
@@ -388,13 +390,13 @@ export default function ProfilePage() {
                 <Card>
                   <CardContent className="py-12 text-center">
                     <MapPin className="h-10 w-10 mx-auto text-muted-foreground mb-3" />
-                    <p className="text-sm font-medium mb-1">No addresses saved yet</p>
+                    <p className="text-sm font-medium mb-1">{t('profile.noAddresses')}</p>
                     <p className="text-xs text-muted-foreground mb-4">
-                      Add your first delivery address to get started
+                      {t('profile.noAddressesHint')}
                     </p>
                     <Button size="sm" onClick={openNewAddress} data-testid="button-add-first-address">
                       <Plus className="h-4 w-4 mr-1.5" />
-                      Add Address
+                      {t('profile.addAddress')}
                     </Button>
                   </CardContent>
                 </Card>
@@ -429,11 +431,11 @@ export default function ProfilePage() {
                               </div>
                               <div>
                                 <span className="text-xs font-semibold uppercase tracking-wide">
-                                  {address.label || address.address_type || 'Home'}
+                                  {address.label || address.address_type || t('cart.home')}
                                 </span>
                                 {address.is_default && (
                                   <span className="ml-2 text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium">
-                                    Default
+                                    {t('profile.default')}
                                   </span>
                                 )}
                               </div>
@@ -448,7 +450,7 @@ export default function ProfilePage() {
                             {address.city}, {address.state} - {address.pincode}
                           </p>
                           <p className="text-xs text-muted-foreground mt-1">
-                            Phone: {address.phone}
+                            {t('common.phone')}: {address.phone}
                           </p>
 
                           <div className="flex items-center gap-1.5 mt-3 flex-wrap">
@@ -459,7 +461,7 @@ export default function ProfilePage() {
                               data-testid={`button-edit-address-${address.id}`}
                             >
                               <Edit className="h-3 w-3 mr-1" />
-                              Edit
+                              {t('profile.edit')}
                             </Button>
                             {!address.is_default && (
                               <Button
@@ -469,7 +471,7 @@ export default function ProfilePage() {
                                 data-testid={`button-default-address-${address.id}`}
                               >
                                 <Star className="h-3 w-3 mr-1" />
-                                Set Default
+                                {t('profile.setDefault')}
                               </Button>
                             )}
                             <Button
@@ -480,7 +482,7 @@ export default function ProfilePage() {
                               data-testid={`button-delete-address-${address.id}`}
                             >
                               <Trash2 className="h-3 w-3 mr-1" />
-                              Delete
+                              {t('profile.delete')}
                             </Button>
                           </div>
                         </CardContent>
@@ -497,7 +499,7 @@ export default function ProfilePage() {
                       <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mb-2">
                         <Plus className="h-5 w-5 text-muted-foreground" />
                       </div>
-                      <p className="text-sm font-medium text-muted-foreground">Add New Address</p>
+                      <p className="text-sm font-medium text-muted-foreground">{t('profile.addNewAddress')}</p>
                     </CardContent>
                   </Card>
                 </div>
@@ -514,10 +516,10 @@ export default function ProfilePage() {
               <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle className="text-base sm:text-lg">
-                    {editingAddress ? 'Edit Address' : 'Add New Address'}
+                    {editingAddress ? t('profile.editAddress') : t('profile.addNewAddressTitle')}
                   </DialogTitle>
                   <DialogDescription className="text-xs text-muted-foreground">
-                    {editingAddress ? 'Update your delivery address details' : 'Enter your delivery address details'}
+                    {editingAddress ? t('profile.editAddressDesc') : t('profile.addAddressDesc')}
                   </DialogDescription>
                 </DialogHeader>
                 <Form {...addressForm}>
@@ -527,7 +529,7 @@ export default function ProfilePage() {
                       name="address_type"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Address Type</FormLabel>
+                          <FormLabel>{t('cart.addressType')}</FormLabel>
                           <div className="flex gap-2">
                             {addressTypeOptions.map((opt) => (
                               <button
@@ -555,7 +557,7 @@ export default function ProfilePage() {
                       name="label"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Label (optional)</FormLabel>
+                          <FormLabel>{t('cart.label')}</FormLabel>
                           <FormControl>
                             <Input placeholder="e.g., Mom's House, Site Office" {...field} data-testid="input-address-label" />
                           </FormControl>
@@ -568,7 +570,7 @@ export default function ProfilePage() {
                         name="full_name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Full Name *</FormLabel>
+                            <FormLabel>{t('cart.fullName')} *</FormLabel>
                             <FormControl>
                               <Input {...field} data-testid="input-address-name" />
                             </FormControl>
@@ -581,7 +583,7 @@ export default function ProfilePage() {
                         name="phone"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Phone *</FormLabel>
+                            <FormLabel>{t('cart.phone')} *</FormLabel>
                             <FormControl>
                               <Input {...field} data-testid="input-address-phone" />
                             </FormControl>
@@ -595,7 +597,7 @@ export default function ProfilePage() {
                       name="address_line_1"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Address Line 1 *</FormLabel>
+                          <FormLabel>{t('cart.addressLine1')} *</FormLabel>
                           <FormControl>
                             <Input placeholder="House/Flat No., Building, Street" {...field} data-testid="input-address-line1" />
                           </FormControl>
@@ -608,7 +610,7 @@ export default function ProfilePage() {
                       name="address_line_2"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Address Line 2</FormLabel>
+                          <FormLabel>{t('cart.addressLine2')}</FormLabel>
                           <FormControl>
                             <Input placeholder="Area, Landmark (optional)" {...field} data-testid="input-address-line2" />
                           </FormControl>
@@ -621,7 +623,7 @@ export default function ProfilePage() {
                         name="city"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>City *</FormLabel>
+                            <FormLabel>{t('cart.city')} *</FormLabel>
                             <FormControl>
                               <Input {...field} data-testid="input-address-city" />
                             </FormControl>
@@ -634,7 +636,7 @@ export default function ProfilePage() {
                         name="state"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>State *</FormLabel>
+                            <FormLabel>{t('cart.state')} *</FormLabel>
                             <FormControl>
                               <Input {...field} data-testid="input-address-state" />
                             </FormControl>
@@ -647,7 +649,7 @@ export default function ProfilePage() {
                         name="pincode"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Pincode *</FormLabel>
+                            <FormLabel>{t('cart.pincode')} *</FormLabel>
                             <FormControl>
                               <Input {...field} data-testid="input-address-pincode" />
                             </FormControl>
@@ -675,13 +677,13 @@ export default function ProfilePage() {
                             )}>
                               {field.value && <Check className="h-3 w-3 text-primary-foreground" />}
                             </div>
-                            <span className="text-sm">Set as default delivery address</span>
+                            <span className="text-sm">{t('cart.setAsDefault')}</span>
                           </div>
                         </FormItem>
                       )}
                     />
                     <Button type="submit" className="w-full" data-testid="button-save-address">
-                      {editingAddress ? 'Update Address' : 'Save Address'}
+                      {editingAddress ? t('cart.updateAddress') : t('cart.saveAddress')}
                     </Button>
                   </form>
                 </Form>
@@ -692,21 +694,21 @@ export default function ProfilePage() {
           <TabsContent value="security">
             <Card>
               <CardHeader>
-                <CardTitle className="text-base sm:text-lg">Account Security</CardTitle>
-                <CardDescription className="text-xs sm:text-sm">Manage your account security settings</CardDescription>
+                <CardTitle className="text-base sm:text-lg">{t('profile.security')}</CardTitle>
+                <CardDescription className="text-xs sm:text-sm">{t('profile.signOutDesc')}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <h4 className="font-medium text-sm mb-1">Email Address</h4>
+                  <h4 className="font-medium text-sm mb-1">{t('auth.email')}</h4>
                   <p className="text-sm text-muted-foreground">{user?.email}</p>
                 </div>
                 <div className="border-t pt-6">
-                  <h4 className="font-medium text-sm mb-1">Sign Out</h4>
+                  <h4 className="font-medium text-sm mb-1">{t('profile.signOut')}</h4>
                   <p className="text-muted-foreground text-xs mb-4">
-                    Sign out from your account on this device
+                    {t('profile.signOutDesc')}
                   </p>
                   <Button variant="outline" onClick={signOut} data-testid="button-signout">
-                    Sign Out
+                    {t('profile.signOutButton')}
                   </Button>
                 </div>
               </CardContent>

@@ -7,6 +7,7 @@ import { PasswordInput } from './PasswordInput';
 import { toast } from 'sonner';
 import { Loader2, Mail } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { useTranslation } from 'react-i18next';
 
 const signUpSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -29,6 +30,7 @@ interface EmailAuthFormProps {
 
 export function EmailAuthForm({ mode, onSuccess }: EmailAuthFormProps) {
   const { signIn, signUp } = useAuth();
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -98,7 +100,7 @@ export function EmailAuthForm({ mode, onSuccess }: EmailAuthFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor={`${mode}-email`}>Email</Label>
+        <Label htmlFor={`${mode}-email`}>{t('auth.email')}</Label>
         <div className="relative">
           <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
           <Input
@@ -115,7 +117,7 @@ export function EmailAuthForm({ mode, onSuccess }: EmailAuthFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor={`${mode}-password`}>Password</Label>
+        <Label htmlFor={`${mode}-password`}>{t('auth.password')}</Label>
         <PasswordInput
           id={`${mode}-password`}
           value={password}
@@ -127,12 +129,12 @@ export function EmailAuthForm({ mode, onSuccess }: EmailAuthFormProps) {
 
       {mode === 'signup' && (
         <div className="space-y-2">
-          <Label htmlFor="confirm-password">Confirm Password</Label>
+          <Label htmlFor="confirm-password">{t('auth.confirmPassword')}</Label>
           <PasswordInput
             id="confirm-password"
             value={confirmPassword}
             onChange={setConfirmPassword}
-            placeholder="Confirm your password"
+            placeholder={t('auth.confirmPasswordPlaceholder')}
             disabled={loading}
             error={errors.confirmPassword}
           />
@@ -143,10 +145,10 @@ export function EmailAuthForm({ mode, onSuccess }: EmailAuthFormProps) {
         {loading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            {mode === 'signup' ? 'Creating account...' : 'Signing in...'}
+            {mode === 'signup' ? t('auth.creatingAccount') : t('auth.signingIn')}
           </>
         ) : (
-          mode === 'signup' ? 'Create Account' : 'Sign In'
+          mode === 'signup' ? t('auth.signUp') : t('auth.signIn')
         )}
       </Button>
     </form>

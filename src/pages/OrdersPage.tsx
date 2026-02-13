@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Order } from '@/types/database';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 const statusColors: Record<string, string> = {
   pending: 'bg-warning text-warning-foreground',
@@ -20,6 +21,7 @@ const statusColors: Record<string, string> = {
 };
 
 export default function OrdersPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,7 +53,7 @@ export default function OrdersPage() {
     return (
       <MainLayout>
         <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
-          <h1 className="text-xl sm:text-2xl font-display font-bold mb-3 sm:mb-5">My Orders</h1>
+          <h1 className="text-xl sm:text-2xl font-display font-bold mb-3 sm:mb-5">{t('orders.title')}</h1>
           <div className="space-y-2">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="h-16 sm:h-20 bg-muted animate-pulse rounded-lg" />
@@ -69,12 +71,12 @@ export default function OrdersPage() {
           <div className="w-16 h-16 mx-auto rounded-full bg-muted flex items-center justify-center mb-4">
             <Package className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h1 className="text-xl font-bold mb-2" data-testid="text-no-orders">No orders yet</h1>
+          <h1 className="text-xl font-bold mb-2" data-testid="text-no-orders">{t('orders.noOrders')}</h1>
           <p className="text-sm text-muted-foreground mb-4">
-            Place your first order to see it here.
+            {t('orders.noOrdersHint')}
           </p>
           <Button asChild size="default" data-testid="button-start-shopping">
-            <Link to="/products">Start Shopping</Link>
+            <Link to="/products">{t('orders.startShopping')}</Link>
           </Button>
         </div>
       </MainLayout>
@@ -84,7 +86,7 @@ export default function OrdersPage() {
   return (
     <MainLayout>
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
-        <h1 className="text-xl sm:text-2xl font-display font-bold mb-3 sm:mb-5" data-testid="text-orders-title">My Orders</h1>
+        <h1 className="text-xl sm:text-2xl font-display font-bold mb-3 sm:mb-5" data-testid="text-orders-title">{t('orders.title')}</h1>
 
         <div className="space-y-2">
           {orders.map((order, index) => (

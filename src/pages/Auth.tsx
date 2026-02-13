@@ -5,10 +5,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Mail, Phone } from 'lucide-react';
 import { EmailAuthForm, PhoneAuthForm, SocialAuthButtons } from '@/components/auth';
+import { useTranslation } from 'react-i18next';
 
 const Auth = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+  const { t } = useTranslation();
   const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
 
   useEffect(() => {
@@ -33,8 +35,8 @@ const Auth = () => {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold">Welcome</CardTitle>
-          <CardDescription>Sign in to your account or create a new one</CardDescription>
+          <CardTitle className="text-2xl font-bold">{t('auth.welcome')}</CardTitle>
+          <CardDescription>{t('auth.signInDesc')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Auth Method Toggle */}
@@ -68,8 +70,8 @@ const Auth = () => {
           {authMethod === 'email' ? (
             <Tabs defaultValue="signin" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="signin">Sign In</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                <TabsTrigger value="signin">{t('auth.signIn')}</TabsTrigger>
+                <TabsTrigger value="signup">{t('auth.signUp')}</TabsTrigger>
               </TabsList>
               
               <TabsContent value="signin" className="space-y-4">
@@ -90,7 +92,7 @@ const Auth = () => {
           )}
         </CardContent>
         <CardFooter className="flex flex-col space-y-2 text-center text-sm text-muted-foreground">
-          <p>By continuing, you agree to our Terms of Service</p>
+          <p>{t('auth.termsAgreement')}</p>
         </CardFooter>
       </Card>
     </div>

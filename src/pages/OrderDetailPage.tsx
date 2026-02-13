@@ -14,6 +14,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { useTranslation } from 'react-i18next';
 
 const statusColors: Record<string, string> = {
   pending: 'bg-warning text-warning-foreground',
@@ -27,6 +28,7 @@ const statusColors: Record<string, string> = {
 const orderStatuses = ['pending', 'processing', 'shipped', 'delivered', 'completed'];
 
 export default function OrderDetailPage() {
+  const { t } = useTranslation();
   const { orderId } = useParams();
   const { user } = useAuth();
   const [order, setOrder] = useState<Order | null>(null);
@@ -68,7 +70,7 @@ export default function OrderDetailPage() {
 
   const downloadInvoice = () => {
     if (!order || !items.length) {
-      toast.error('Invoice cannot be generated. Order details are missing.');
+      toast.error(t('orders.invoiceError'));
       return;
     }
     try {
@@ -162,7 +164,7 @@ export default function OrderDetailPage() {
 
     doc.save(`SP-Granites-Invoice-${order.order_number}.pdf`);
     } catch {
-      toast.error('Failed to generate invoice. Please try again.');
+      toast.error(t('orders.invoiceFailed'));
     }
   };
 
@@ -184,9 +186,9 @@ export default function OrderDetailPage() {
     return (
       <MainLayout>
         <div className="container mx-auto px-4 py-12 text-center">
-          <h1 className="text-xl font-bold mb-3">Order not found</h1>
+          <h1 className="text-xl font-bold mb-3">{t('orders.orderNotFound')}</h1>
           <Button asChild size="default">
-            <Link to="/orders">Back to Orders</Link>
+            <Link to="/orders">{t('orders.backToOrders')}</Link>
           </Button>
         </div>
       </MainLayout>
@@ -202,7 +204,7 @@ export default function OrderDetailPage() {
           data-testid="link-back-orders"
         >
           <ChevronLeft className="h-3.5 w-3.5" />
-          Back to Orders
+          {t('orders.backToOrders')}
         </Link>
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 sm:mb-6">
@@ -211,7 +213,7 @@ export default function OrderDetailPage() {
               {order.order_number}
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground">
-              Placed on {format(new Date(order.created_at), 'MMM d, yyyy')}
+              {t('orders.placedOn')} {format(new Date(order.created_at), 'MMM d, yyyy')}
             </p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
@@ -225,7 +227,7 @@ export default function OrderDetailPage() {
               data-testid="button-download-invoice"
             >
               <Download className="h-3.5 w-3.5 mr-1" />
-              Invoice
+              {t('orders.invoice')}
             </Button>
           </div>
         </div>
@@ -233,7 +235,7 @@ export default function OrderDetailPage() {
         {order.status !== 'cancelled' && (
           <Card className="mb-4 sm:mb-6">
             <CardHeader className="py-2.5 px-3 sm:py-4 sm:px-6">
-              <CardTitle className="text-sm sm:text-base">Order Status</CardTitle>
+              <CardTitle className="text-sm sm:text-base">{t('orders.orderStatus')}</CardTitle>
             </CardHeader>
             <CardContent className="px-3 pb-3 sm:px-6 sm:pb-4">
               <div className="flex justify-between relative">
@@ -277,7 +279,7 @@ export default function OrderDetailPage() {
               <CardHeader className="py-2.5 px-3 sm:py-4 sm:px-6">
                 <CardTitle className="text-sm sm:text-base flex items-center gap-1.5">
                   <Package className="h-4 w-4" />
-                  Order Items
+                  {t('orders.orderItems')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="px-3 pb-3 sm:px-6 sm:pb-4">
@@ -294,7 +296,7 @@ export default function OrderDetailPage() {
                       <div className="flex-1 min-w-0">
                         <h4 className="text-xs sm:text-sm font-medium truncate">{item.product_name}</h4>
                         <p className="text-[10px] sm:text-xs text-muted-foreground">
-                          Qty: {item.quantity} x {formatPrice(item.unit_price)}
+                          {t('orders.qty')}: {item.quantity} x {formatPrice(item.unit_price)}
                         </p>
                       </div>
                       <p className="text-xs sm:text-sm font-semibold shrink-0">{formatPrice(item.total_price)}</p>
@@ -310,28 +312,28 @@ export default function OrderDetailPage() {
               <CardHeader className="py-2.5 px-3 sm:py-4 sm:px-6">
                 <CardTitle className="text-sm sm:text-base flex items-center gap-1.5">
                   <CreditCard className="h-4 w-4" />
-                  Order Summary
+                  {t('orders.orderSummary')}
                 </CardTitle>
               </CardHeader>
               <CardContent className="px-3 pb-3 sm:px-6 sm:pb-4 space-y-1.5 sm:space-y-2">
                 <div className="flex justify-between text-xs sm:text-sm">
-                  <span className="text-muted-foreground">Subtotal</span>
+                  <span className="text-muted-foreground">{t('orders.subtotal')}</span>
                   <span>{formatPrice(order.subtotal)}</span>
                 </div>
                 <div className="flex justify-between text-xs sm:text-sm">
-                  <span className="text-muted-foreground">Shipping</span>
+                  <span className="text-muted-foreground">{t('orders.shipping')}</span>
                   <span>
                     {order.shipping_amount === 0
-                      ? 'Free'
+                      ? t('orders.free')
                       : formatPrice(order.shipping_amount)}
                   </span>
                 </div>
                 <div className="flex justify-between text-xs sm:text-sm">
-                  <span className="text-muted-foreground">Tax</span>
+                  <span className="text-muted-foreground">{t('orders.tax')}</span>
                   <span>{formatPrice(order.tax_amount)}</span>
                 </div>
                 <div className="border-t pt-2 flex justify-between font-semibold text-sm sm:text-base">
-                  <span>Total</span>
+                  <span>{t('orders.total')}</span>
                   <span className="text-primary" data-testid="text-order-total">{formatPrice(order.total_amount)}</span>
                 </div>
               </CardContent>
@@ -342,7 +344,7 @@ export default function OrderDetailPage() {
                 <CardHeader className="py-2.5 px-3 sm:py-4 sm:px-6">
                   <CardTitle className="text-sm sm:text-base flex items-center gap-1.5">
                     <MapPin className="h-4 w-4" />
-                    Shipping Address
+                    {t('orders.shippingAddress')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="px-3 pb-3 sm:px-6 sm:pb-4">

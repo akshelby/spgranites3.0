@@ -4,11 +4,13 @@ import { Star, Quote } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { supabase } from '@/integrations/supabase/client';
 import { Testimonial, CustomerReview } from '@/types/database';
+import { useTranslation } from 'react-i18next';
 
 export default function TestimonialsPage() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [customerReviews, setCustomerReviews] = useState<CustomerReview[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchData();
@@ -42,7 +44,7 @@ export default function TestimonialsPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-muted-foreground font-medium text-xs sm:text-sm uppercase tracking-wide"
           >
-            What People Say
+            {t('testimonials.pageLabel')}
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 15 }}
@@ -51,7 +53,7 @@ export default function TestimonialsPage() {
             className="text-xl sm:text-2xl lg:text-4xl font-display font-bold mt-1 mb-1 sm:mb-2"
             data-testid="text-testimonials-title"
           >
-            Testimonials & Reviews
+            {t('testimonials.pageTitle')}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 15 }}
@@ -59,7 +61,7 @@ export default function TestimonialsPage() {
             transition={{ delay: 0.2 }}
             className="text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto"
           >
-            Hear from our satisfied customers about their experience with SP Granites.
+            {t('testimonials.subtitle')}
           </motion.p>
         </div>
 
@@ -74,7 +76,7 @@ export default function TestimonialsPage() {
             {testimonials.length > 0 && (
               <section className="mb-6 sm:mb-10">
                 <h2 className="text-lg sm:text-xl font-display font-bold mb-3 sm:mb-4">
-                  Featured Testimonials
+                  {t('testimonials.featuredTestimonials')}
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
                   {testimonials.map((testimonial, index) => (
@@ -133,7 +135,7 @@ export default function TestimonialsPage() {
             {customerReviews.length > 0 && (
               <section>
                 <h2 className="text-lg sm:text-xl font-display font-bold mb-3 sm:mb-4">
-                  Customer Reviews
+                  {t('testimonials.customerReviews')}
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                   {customerReviews.map((review, index) => (
@@ -203,7 +205,7 @@ export default function TestimonialsPage() {
 
             {testimonials.length === 0 && customerReviews.length === 0 && (
               <div className="text-center py-12">
-                <p className="text-sm text-muted-foreground">No reviews available yet.</p>
+                <p className="text-sm text-muted-foreground">{t('testimonials.noReviews')}</p>
               </div>
             )}
           </>

@@ -4,34 +4,37 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Award, Users, Clock, Shield, ArrowRight } from 'lucide-react';
-
-const stats = [
-  { label: 'Years of Experience', value: '25+', icon: Clock },
-  { label: 'Happy Customers', value: '5,000+', icon: Users },
-  { label: 'Projects Completed', value: '10,000+', icon: Award },
-  { label: 'Quality Guarantee', value: '100%', icon: Shield },
-];
-
-const values = [
-  {
-    title: 'Premium Quality',
-    description: 'We source only the finest granite, marble, and quartz from trusted quarries worldwide, ensuring every piece meets our exacting standards.',
-  },
-  {
-    title: 'Expert Craftsmanship',
-    description: 'Our team of skilled artisans combines traditional techniques with modern CNC technology to deliver flawless cuts and finishes.',
-  },
-  {
-    title: 'Customer First',
-    description: 'From free consultations to after-installation support, we walk with you through every step of your stone project journey.',
-  },
-  {
-    title: 'Timely Delivery',
-    description: 'We understand the importance of your timeline. Our dedicated logistics team ensures on-time delivery to your project site.',
-  },
-];
+import { useTranslation } from 'react-i18next';
 
 export default function AboutPage() {
+  const { t } = useTranslation();
+
+  const stats = [
+    { label: t('about.yearsExperience'), value: '25+', icon: Clock },
+    { label: t('about.happyCustomers'), value: '5,000+', icon: Users },
+    { label: t('about.projectsCompleted'), value: '10,000+', icon: Award },
+    { label: t('about.qualityGuarantee'), value: '100%', icon: Shield },
+  ];
+
+  const values = [
+    {
+      title: t('about.premiumQuality'),
+      description: t('about.premiumQualityDesc'),
+    },
+    {
+      title: t('about.expertCraftsmanship'),
+      description: t('about.expertCraftsmanshipDesc'),
+    },
+    {
+      title: t('about.customerFirst'),
+      description: t('about.customerFirstDesc'),
+    },
+    {
+      title: t('about.timelyDelivery'),
+      description: t('about.timelyDeliveryDesc'),
+    },
+  ];
+
   return (
     <MainLayout>
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
@@ -41,7 +44,7 @@ export default function AboutPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-muted-foreground font-medium text-xs sm:text-sm uppercase tracking-wide"
           >
-            Our Story
+            {t('about.label')}
           </motion.span>
           <motion.h1
             initial={{ opacity: 0, y: 15 }}
@@ -50,7 +53,7 @@ export default function AboutPage() {
             className="text-xl sm:text-2xl lg:text-4xl font-display font-bold mt-1 mb-2 sm:mb-3"
             data-testid="text-about-title"
           >
-            About SP Granites
+            {t('about.title')}
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 15 }}
@@ -58,7 +61,7 @@ export default function AboutPage() {
             transition={{ delay: 0.2 }}
             className="text-xs sm:text-sm text-muted-foreground max-w-2xl mx-auto"
           >
-            Building trust through quality stone craftsmanship since 2000.
+            {t('about.subtitle')}
           </motion.p>
         </div>
 
@@ -70,30 +73,30 @@ export default function AboutPage() {
         >
           <div className="space-y-3 sm:space-y-4">
             <h2 className="text-lg sm:text-xl font-display font-bold" data-testid="text-who-we-are">
-              Who We Are
+              {t('about.whoWeAre')}
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              SP Granites is a leading provider of premium granite, marble, and natural stone products based in Chennai, Tamil Nadu. For over 25 years, we have been transforming homes, offices, and commercial spaces with our curated collection of high-quality stone surfaces.
+              {t('about.whoWeAreP1')}
             </p>
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              What started as a small family-run stone workshop has grown into a trusted name in the stone industry. Today, we serve thousands of customers across South India, offering everything from raw slabs to fully fabricated countertops, flooring, and custom stonework.
+              {t('about.whoWeAreP2')}
             </p>
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              Our state-of-the-art fabrication facility is equipped with the latest CNC machinery and diamond cutting tools, allowing us to achieve precision cuts and flawless finishes that meet international standards.
+              {t('about.whoWeAreP3')}
             </p>
           </div>
           <div className="space-y-3 sm:space-y-4">
             <h2 className="text-lg sm:text-xl font-display font-bold" data-testid="text-mission">
-              Our Mission
+              {t('about.mission')}
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              To make premium natural stone accessible and affordable for every Indian home, while maintaining the highest standards of quality, craftsmanship, and customer service.
+              {t('about.missionText')}
             </p>
             <h2 className="text-lg sm:text-xl font-display font-bold mt-4 sm:mt-6" data-testid="text-vision">
-              Our Vision
+              {t('about.vision')}
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-              To be South India's most trusted stone partner, known for unmatched quality, innovative design solutions, and a seamless customer experience from selection to installation.
+              {t('about.visionText')}
             </p>
           </div>
         </motion.div>
@@ -124,7 +127,7 @@ export default function AboutPage() {
           className="mb-8 sm:mb-12"
         >
           <h2 className="text-lg sm:text-xl font-display font-bold text-center mb-4 sm:mb-6" data-testid="text-values-title">
-            Our Values
+            {t('about.values')}
           </h2>
           <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
             {values.map((value) => (
@@ -147,10 +150,10 @@ export default function AboutPage() {
           className="text-center bg-card border border-border rounded-lg p-6 sm:p-10"
         >
           <h2 className="text-lg sm:text-xl font-display font-bold mb-2" data-testid="text-cta-title">
-            Ready to Transform Your Space?
+            {t('about.ctaTitle')}
           </h2>
           <p className="text-xs sm:text-sm text-muted-foreground mb-4 max-w-lg mx-auto">
-            Whether you're renovating your kitchen, building a new home, or designing a commercial space, we're here to help you find the perfect stone.
+            {t('about.ctaText')}
           </p>
           <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
             <Button asChild>
@@ -160,7 +163,7 @@ export default function AboutPage() {
             </Button>
             <Button asChild variant="outline">
               <Link to="/estimation" data-testid="link-get-estimate">
-                Get Free Estimate
+                {t('about.getEstimate')}
               </Link>
             </Button>
           </div>

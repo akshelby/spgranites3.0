@@ -1,23 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin } from 'lucide-react';
-
-const quickLinks = [
-  { name: 'About Us', href: '/about' },
-  { name: 'Products', href: '/products' },
-  { name: 'Services', href: '/services' },
-  { name: 'Get Estimation', href: '/estimation' },
-  { name: 'Catalogs', href: '/catalogs' },
-  { name: 'Testimonials', href: '/testimonials' },
-  { name: 'Contact Us', href: '/contact' },
-];
-
-const productLinks = [
-  { name: 'Granite Countertops', href: '/products?category=countertops' },
-  { name: 'Marble Flooring', href: '/products?category=flooring' },
-  { name: 'Kitchen Slabs', href: '/products?category=kitchen' },
-  { name: 'Bathroom Vanities', href: '/products?category=bathroom' },
-  { name: 'Staircases', href: '/products?category=staircases' },
-];
+import { useTranslation } from 'react-i18next';
 
 const socialLinks = [
   { name: 'Facebook', icon: Facebook, href: 'https://facebook.com' },
@@ -27,11 +10,30 @@ const socialLinks = [
 ];
 
 export function Footer() {
+  const { t } = useTranslation();
+
+  const quickLinks = [
+    { name: t('footer.about'), href: '/about' },
+    { name: t('nav.products'), href: '/products' },
+    { name: t('nav.services'), href: '/services' },
+    { name: t('footer.getEstimation'), href: '/estimation' },
+    { name: t('nav.catalogs'), href: '/catalogs' },
+    { name: t('testimonials.label'), href: '/testimonials' },
+    { name: t('footer.contactInfo'), href: '/contact' },
+  ];
+
+  const productLinks = [
+    { name: t('footer.graniteCountertops'), href: '/products?category=countertops' },
+    { name: t('footer.marbleFlooring'), href: '/products?category=flooring' },
+    { name: t('footer.kitchenSlabs'), href: '/products?category=kitchen' },
+    { name: t('footer.bathroomVanities'), href: '/products?category=bathroom' },
+    { name: t('footer.staircases'), href: '/products?category=staircases' },
+  ];
+
   return (
     <footer className="bg-charcoal text-white">
       <div className="container mx-auto px-4 py-8 sm:py-12 lg:py-16">
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
-          {/* Company Info */}
           <div className="space-y-3 sm:space-y-4 col-span-2 sm:col-span-1">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-premium rounded-lg flex items-center justify-center">
@@ -43,7 +45,7 @@ export function Footer() {
               </div>
             </div>
             <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
-              Crafting premium granite and marble solutions for over 25 years.
+              {t('footer.companyDesc')}
             </p>
             <div className="flex gap-2 sm:gap-3">
               {socialLinks.map((social) => (
@@ -61,12 +63,11 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
           <div>
-            <h4 className="font-semibold text-sm sm:text-lg mb-2 sm:mb-4">Quick Links</h4>
+            <h4 className="font-semibold text-sm sm:text-lg mb-2 sm:mb-4">{t('footer.quickLinks')}</h4>
             <ul className="space-y-1 sm:space-y-2">
               {quickLinks.map((link) => (
-                <li key={link.name}>
+                <li key={link.href}>
                   <Link
                     to={link.href}
                     className="text-gray-400 hover:text-primary transition-colors text-xs sm:text-sm"
@@ -78,12 +79,11 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Products */}
           <div>
-            <h4 className="font-semibold text-sm sm:text-lg mb-2 sm:mb-4">Our Products</h4>
+            <h4 className="font-semibold text-sm sm:text-lg mb-2 sm:mb-4">{t('footer.ourProducts')}</h4>
             <ul className="space-y-1 sm:space-y-2">
               {productLinks.map((link) => (
-                <li key={link.name}>
+                <li key={link.href}>
                   <Link
                     to={link.href}
                     className="text-gray-400 hover:text-primary transition-colors text-xs sm:text-sm"
@@ -95,9 +95,8 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Contact Info */}
           <div>
-            <h4 className="font-semibold text-sm sm:text-lg mb-2 sm:mb-4">Contact Us</h4>
+            <h4 className="font-semibold text-sm sm:text-lg mb-2 sm:mb-4">{t('footer.contactInfo')}</h4>
             <ul className="space-y-2 sm:space-y-4">
               <li className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
@@ -129,18 +128,17 @@ export function Footer() {
         </div>
       </div>
 
-      {/* Bottom Bar */}
       <div className="border-t border-white/10">
         <div className="container mx-auto px-4 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-4">
           <p className="text-gray-400 text-xs sm:text-sm">
-            © {new Date().getFullYear()} SP Granites. All rights reserved.
+            © {new Date().getFullYear()} SP Granites. {t('footer.copyright')}
           </p>
           <div className="flex gap-6">
             <Link to="/privacy" className="text-gray-400 hover:text-white text-sm">
-              Privacy Policy
+              {t('footer.privacyPolicy')}
             </Link>
             <Link to="/terms" className="text-gray-400 hover:text-white text-sm">
-              Terms of Service
+              {t('footer.termsOfService')}
             </Link>
           </div>
         </div>

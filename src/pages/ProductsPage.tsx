@@ -18,8 +18,10 @@ import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 export default function ProductsPage() {
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<ProductCategory[]>([]);
@@ -106,10 +108,10 @@ export default function ProductsPage() {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-3 sm:mb-5">
           <div>
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold" data-testid="text-page-title">
-              Our Products
+              {t('products.title')}
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
-              {filteredProducts.length} results
+              {filteredProducts.length} {t('products.results')}
             </p>
           </div>
           <div className="flex gap-1.5">
@@ -136,7 +138,7 @@ export default function ProductsPage() {
           <div className="relative flex-1">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input
-              placeholder="Search products..."
+              placeholder={t('products.search')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-8 h-9 text-sm"
@@ -155,10 +157,10 @@ export default function ProductsPage() {
             }}
           >
             <SelectTrigger className="w-32 sm:w-44 h-9 text-sm" data-testid="select-category">
-              <SelectValue placeholder="All Categories" />
+              <SelectValue placeholder={t('products.allCategories')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
+              <SelectItem value="all">{t('products.allCategories')}</SelectItem>
               {categories.map((cat) => (
                 <SelectItem key={cat.id} value={cat.slug}>
                   {cat.name}
@@ -176,9 +178,9 @@ export default function ProductsPage() {
           </div>
         ) : filteredProducts.length === 0 ? (
           <div className="text-center py-12">
-            <h3 className="text-base font-semibold mb-1">No products found</h3>
+            <h3 className="text-base font-semibold mb-1">{t('products.noProducts')}</h3>
             <p className="text-sm text-muted-foreground">
-              Try adjusting your search or filter
+              {t('products.noProductsHint')}
             </p>
           </div>
         ) : (
@@ -216,7 +218,7 @@ export default function ProductsPage() {
                   />
                   {product.compare_price && product.compare_price > product.price && (
                     <span className="absolute top-1 left-1 sm:top-1.5 sm:left-1.5 px-1 py-0.5 bg-destructive text-destructive-foreground text-[9px] sm:text-[10px] font-semibold rounded" data-testid={`badge-discount-${product.id}`}>
-                      {Math.round((1 - product.price / product.compare_price) * 100)}% OFF
+                      {Math.round((1 - product.price / product.compare_price) * 100)}% {t('common.off')}
                     </span>
                   )}
                   {user && (
@@ -260,7 +262,7 @@ export default function ProductsPage() {
                     data-testid={`button-add-cart-${product.id}`}
                   >
                     <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
-                    Add to Cart
+                    {t('products.addToCart')}
                   </Button>
                 </div>
               </motion.div>
