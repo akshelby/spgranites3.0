@@ -204,7 +204,8 @@
     "yourCart": "Your Cart",
     "emptyCartMessage": "Looks like you haven't added any items yet.",
     "shippingNote": "Shipping and taxes calculated at checkout.",
-    "signInToCheckout": "Sign in to Checkout"
+    "signInToCheckout": "Sign in to Checkout",
+    "youSave": "You Save"
   },
   "about": {
     "label": "Our Story",

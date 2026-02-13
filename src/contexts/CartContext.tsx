@@ -7,6 +7,11 @@ export interface CartItem {
   price: number;
   quantity: number;
   image: string;
+  description?: string;
+  category?: string;
+  comparePrice?: number;
+  unit?: string;
+  inStock?: boolean;
 }
 
 interface CartContextType {

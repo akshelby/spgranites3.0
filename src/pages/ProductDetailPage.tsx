@@ -145,6 +145,11 @@ export default function ProductDetailPage() {
       price: product.price,
       quantity,
       image: product.images?.[0] || '/placeholder.svg',
+      description: product.short_description || product.description || undefined,
+      category: product.category?.name || undefined,
+      comparePrice: product.compare_price || undefined,
+      unit: 'per sq.ft',
+      inStock: product.stock_quantity > 0,
     });
   };
 

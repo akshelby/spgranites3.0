@@ -203,6 +203,7 @@
     "addressDeleteFailed": "पता हटाने में विफल",
     "yourCart": "आपका कार्ट",
     "emptyCartMessage": "ऐसा लगता है कि आपने अभी तक कोई आइटम नहीं जोड़ा है।",
+    "youSave": "आपकी बचत",
     "shippingNote": "शिपिंग और कर चेकआउट पर गणना की जाएगी।",
     "signInToCheckout": "चेकआउट के लिए साइन इन करें"
   },

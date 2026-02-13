@@ -4,11 +4,12 @@ import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, MapPin, Home, Building2, MapPinned, Check, Edit, X } from 'lucide-react';
+import { Minus, Plus, Trash2, ShoppingBag, ArrowRight, MapPin, Home, Building2, MapPinned, Check, Edit, X, CheckCircle, Tag, Truck } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import {
@@ -218,6 +219,12 @@ export default function CartPage() {
   };
 
   const subtotal = getCartTotal();
+  const totalSavings = items.reduce((acc, item) => {
+    if (item.comparePrice && item.comparePrice > item.price) {
+      return acc + (item.comparePrice - item.price) * item.quantity;
+    }
+    return acc;
+  }, 0);
   const shipping = subtotal > 10000 ? 0 : 500;
   const tax = subtotal * 0.18;
   const total = subtotal + shipping + tax;
@@ -303,73 +310,130 @@ export default function CartPage() {
 
         <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
           <div className="lg:col-span-2 space-y-2 sm:space-y-3">
-            {items.map((item) => (
-              <motion.div
-                key={item.id}
-                layout
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, x: -100 }}
-                className="flex gap-3 p-2.5 sm:p-3 bg-card rounded-lg border border-border"
-                data-testid={`card-cart-item-${item.productId}`}
-              >
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-muted rounded-md overflow-hidden shrink-0">
-                  {item.image ? (
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <ShoppingBag className="h-6 w-6 text-muted-foreground" />
+            {items.map((item) => {
+              const discount = item.comparePrice && item.comparePrice > item.price
+                ? Math.round(((item.comparePrice - item.price) / item.comparePrice) * 100)
+                : 0;
+              return (
+                <motion.div
+                  key={item.id}
+                  layout
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  className="p-3 sm:p-4 bg-card rounded-lg border border-border"
+                  data-testid={`card-cart-item-${item.productId}`}
+                >
+                  <div className="flex gap-3 sm:gap-4">
+                    <Link to={`/products/${item.productId}`} className="w-20 h-20 sm:w-24 sm:h-24 bg-muted rounded-md overflow-hidden shrink-0">
+                      {item.image ? (
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                          data-testid={`img-cart-item-${item.productId}`}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <ShoppingBag className="h-6 w-6 text-muted-foreground" />
+                        </div>
+                      )}
+                    </Link>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <Link to={`/products/${item.productId}`} className="text-sm sm:text-base font-medium line-clamp-2 hover:underline" data-testid={`text-cart-name-${item.productId}`}>
+                            {item.name}
+                          </Link>
+                          {item.category && (
+                            <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">
+                              {item.category}
+                            </p>
+                          )}
+                        </div>
+                        <p className="text-sm sm:text-base font-bold shrink-0" data-testid={`text-item-total-${item.productId}`}>
+                          {formatPrice(item.price * item.quantity)}
+                        </p>
+                      </div>
+
+                      {item.description && (
+                        <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-2 mt-1" data-testid={`text-cart-desc-${item.productId}`}>
+                          {item.description}
+                        </p>
+                      )}
+
+                      <div className="flex items-center gap-2 flex-wrap mt-1.5">
+                        <span className="text-sm font-bold text-primary" data-testid={`text-cart-price-${item.productId}`}>
+                          {formatPrice(item.price)}
+                        </span>
+                        {item.unit && (
+                          <span className="text-[10px] text-muted-foreground">{t('products.pricePerSqFt')}</span>
+                        )}
+                        {item.comparePrice && item.comparePrice > item.price && (
+                          <span className="text-[10px] sm:text-xs text-muted-foreground line-through">
+                            {formatPrice(item.comparePrice)}
+                          </span>
+                        )}
+                        {discount > 0 && (
+                          <Badge variant="secondary" className="text-[9px] sm:text-[10px] px-1.5 py-0">
+                            {discount}% {t('common.off')}
+                          </Badge>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-3 flex-wrap mt-1">
+                        {item.inStock !== false && (
+                          <span className="text-[10px] sm:text-xs text-green-600 dark:text-green-400 flex items-center gap-0.5" data-testid={`text-stock-${item.productId}`}>
+                            <CheckCircle className="h-3 w-3" />
+                            {t('products.inStock')}
+                          </span>
+                        )}
+                        {subtotal > 10000 && (
+                          <span className="text-[10px] sm:text-xs text-muted-foreground flex items-center gap-0.5">
+                            <Truck className="h-3 w-3" />
+                            {t('cart.free')} {t('cart.shipping')}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-3 mt-2">
+                        <div className="flex items-center border border-border rounded-md">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            data-testid={`button-qty-minus-${item.productId}`}
+                          >
+                            <Minus className="h-3 w-3" />
+                          </Button>
+                          <span className="w-7 text-center text-xs font-medium" data-testid={`text-qty-${item.productId}`}>
+                            {item.quantity}
+                          </span>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            data-testid={`button-qty-plus-${item.productId}`}
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive text-xs"
+                          onClick={() => removeFromCart(item.id)}
+                          data-testid={`button-remove-${item.productId}`}
+                        >
+                          <Trash2 className="h-3.5 w-3.5 mr-1" />
+                          {t('cart.remove')}
+                        </Button>
+                      </div>
                     </div>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-medium line-clamp-1">{item.name}</h3>
-                  <p className="text-sm font-bold text-primary mt-0.5">
-                    {formatPrice(item.price)}
-                  </p>
-                  <div className="flex items-center gap-3 mt-1.5">
-                    <div className="flex items-center border border-border rounded-md">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        data-testid={`button-qty-minus-${item.productId}`}
-                      >
-                        <Minus className="h-3 w-3" />
-                      </Button>
-                      <span className="w-7 text-center text-xs font-medium">
-                        {item.quantity}
-                      </span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        data-testid={`button-qty-plus-${item.productId}`}
-                      >
-                        <Plus className="h-3 w-3" />
-                      </Button>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive text-xs"
-                      onClick={() => removeFromCart(item.id)}
-                      data-testid={`button-remove-${item.productId}`}
-                    >
-                      <Trash2 className="h-3.5 w-3.5 mr-1" />
-                      {t('cart.remove')}
-                    </Button>
                   </div>
-                </div>
-                <div className="text-right shrink-0">
-                  <p className="text-sm font-bold" data-testid={`text-item-total-${item.productId}`}>{formatPrice(item.price * item.quantity)}</p>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </div>
 
           <div className="space-y-3 sm:space-y-4">
@@ -493,12 +557,18 @@ export default function CartPage() {
               </CardHeader>
               <CardContent className="px-4 pb-3 space-y-2">
                 <div className="flex justify-between gap-1 text-xs sm:text-sm">
-                  <span className="text-muted-foreground">{t('cart.subtotal')}</span>
+                  <span className="text-muted-foreground">{t('cart.subtotal')} ({items.reduce((acc, i) => acc + i.quantity, 0)} {items.length === 1 ? t('cart.item') : t('cart.items')})</span>
                   <span>{formatPrice(subtotal)}</span>
                 </div>
+                {totalSavings > 0 && (
+                  <div className="flex justify-between gap-1 text-xs sm:text-sm text-green-600 dark:text-green-400">
+                    <span>{t('cart.youSave')}</span>
+                    <span>-{formatPrice(totalSavings)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between gap-1 text-xs sm:text-sm">
                   <span className="text-muted-foreground">{t('cart.shipping')}</span>
-                  <span>{shipping === 0 ? t('cart.free') : formatPrice(shipping)}</span>
+                  <span className={shipping === 0 ? 'text-green-600 dark:text-green-400' : ''}>{shipping === 0 ? t('cart.free') : formatPrice(shipping)}</span>
                 </div>
                 <div className="flex justify-between gap-1 text-xs sm:text-sm">
                   <span className="text-muted-foreground">{t('cart.tax')}</span>
