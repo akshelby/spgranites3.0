@@ -49,7 +49,11 @@
     "contactUs": "Contact Us",
     "contactUsDesc": "Get in touch with us",
     "offlineStores": "Offline Stores",
-    "offlineStoresDesc": "Visit our showrooms"
+    "offlineStoresDesc": "Visit our showrooms",
+    "freeEstimation": "Free Estimation",
+    "freeEstimationDesc": "Get a free quote",
+    "callUs": "Call Us Now",
+    "callUsDesc": "Speak with our team"
   },
   "featured": {
     "label": "Featured Collection",

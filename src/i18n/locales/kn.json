@@ -49,7 +49,11 @@
     "contactUs": "ನಮ್ಮನ್ನು ಸಂಪರ್ಕಿಸಿ",
     "contactUsDesc": "ನಮ್ಮ ಜೊತೆ ಸಂಪರ್ಕದಲ್ಲಿರಿ",
     "offlineStores": "ಆಫ್‌ಲೈನ್ ಸ್ಟೋರ್",
-    "offlineStoresDesc": "ನಮ್ಮ ಶೋರೂಮ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಿ"
+    "offlineStoresDesc": "ನಮ್ಮ ಶೋರೂಮ್‌ಗಳಿಗೆ ಭೇಟಿ ನೀಡಿ",
+    "freeEstimation": "ಉಚಿತ ಅಂದಾಜು",
+    "freeEstimationDesc": "ಉಚಿತ ಕೋಟ್ ಪಡೆಯಿರಿ",
+    "callUs": "ನಮಗೆ ಕರೆ ಮಾಡಿ",
+    "callUsDesc": "ನಮ್ಮ ತಂಡದೊಂದಿಗೆ ಮಾತನಾಡಿ"
   },
   "featured": {
     "label": "ವಿಶೇಷ ಸಂಗ್ರಹ",

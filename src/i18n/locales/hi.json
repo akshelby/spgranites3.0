@@ -49,7 +49,11 @@
     "contactUs": "संपर्क करें",
     "contactUsDesc": "हमसे संपर्क करें",
     "offlineStores": "ऑफलाइन स्टोर",
-    "offlineStoresDesc": "हमारे शोरूम पर जाएं"
+    "offlineStoresDesc": "हमारे शोरूम पर जाएं",
+    "freeEstimation": "मुफ्त अनुमान",
+    "freeEstimationDesc": "मुफ्त कोटेशन प्राप्त करें",
+    "callUs": "हमें कॉल करें",
+    "callUsDesc": "हमारी टीम से बात करें"
   },
   "featured": {
     "label": "विशेष संग्रह",

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Gem, Bath, Utensils, LayoutGrid, Headset, Store } from 'lucide-react';
+import { Gem, Bath, Utensils, LayoutGrid, Headset, Store, FileText, Phone } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { CategoryItem } from './CategoryItem';
 import { BhrundhavanIcon } from './BhrundhavanIcon';
@@ -86,6 +86,26 @@ const categories: Category[] = [
     iconColor: 'text-neutral-700 dark:text-neutral-400',
     bgColor: 'bg-neutral-50 dark:bg-neutral-900/30',
     borderColor: 'border-neutral-200 dark:border-neutral-800',
+  },
+  {
+    id: 'free-estimation',
+    nameKey: 'categories.freeEstimation',
+    icon: FileText,
+    link: '/estimation',
+    descriptionKey: 'categories.freeEstimationDesc',
+    iconColor: 'text-amber-700 dark:text-amber-400',
+    bgColor: 'bg-amber-50 dark:bg-amber-900/30',
+    borderColor: 'border-amber-200 dark:border-amber-800',
+  },
+  {
+    id: 'call-us',
+    nameKey: 'categories.callUs',
+    icon: Phone,
+    link: 'tel:+919876543210',
+    descriptionKey: 'categories.callUsDesc',
+    iconColor: 'text-blue-700 dark:text-blue-400',
+    bgColor: 'bg-blue-50 dark:bg-blue-900/30',
+    borderColor: 'border-blue-200 dark:border-blue-800',
   },
 ];
 
