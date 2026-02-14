@@ -6,7 +6,7 @@ import { MainLayout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Product } from '@/types/database';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
@@ -49,51 +49,19 @@ export default function ProductDetailPage() {
 
   const fetchProduct = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from('products')
-      .select('*, product_categories(*)')
-      .eq('slug', slug)
-      .eq('is_active', true)
-      .maybeSingle();
-
-    if (data) {
-      setProduct(data as Product);
-      fetchReviews(data.id);
-      const { data: related } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .eq('category_id', data.category_id)
-        .neq('id', data.id)
-        .limit(6);
-      if (related) setRelatedProducts(related as Product[]);
-    }
-    setLoading(false);
-  };
-
-  const fetchReviews = async (productId: string) => {
     try {
-      const { data, error } = await supabase
-        .from('product_reviews')
-        .select('*')
-        .eq('product_id', productId)
-        .eq('is_approved', true)
-        .order('created_at', { ascending: false });
-      if (error || !data) return;
-      if (data.length === 0) { setReviews([]); return; }
-      const userIds = [...new Set(data.map(r => r.user_id))];
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, full_name, display_name')
-        .in('id', userIds);
-      const profileMap = new Map((profiles || []).map(p => [p.id, p]));
-      setReviews(data.map(r => ({
-        ...r,
-        profiles: profileMap.get(r.user_id) || null,
-      })) as unknown as ProductReview[]);
-    } catch {
-      setReviews([]);
-    }
+      const data = await api.get(`/api/products/${slug}`);
+      if (data) {
+        setProduct(data as Product);
+        if (data.reviews) {
+          setReviews(data.reviews as ProductReview[]);
+        }
+        if (data.relatedProducts) {
+          setRelatedProducts(data.relatedProducts as Product[]);
+        }
+      }
+    } catch {}
+    setLoading(false);
   };
 
   const avgRating = reviews.length > 0
@@ -104,26 +72,21 @@ export default function ProductDetailPage() {
     if (!user || !product) return;
     setSubmittingReview(true);
     try {
-      const { error } = await supabase.from('product_reviews').insert({
+      await api.post('/api/product-reviews', {
         product_id: product.id,
-        user_id: user.id,
         rating: reviewRating,
         review_text: reviewText || null,
       });
-      if (error) {
-        if (error.code === '23505') {
-          toast.error(t('products.alreadyReviewed'));
-        } else {
-          throw error;
-        }
+      toast.success(t('products.reviewSubmitted'));
+      setReviewText('');
+      setReviewRating(5);
+      fetchProduct();
+    } catch (err: any) {
+      if (err?.message?.includes('already')) {
+        toast.error(t('products.alreadyReviewed'));
       } else {
-        toast.success(t('products.reviewSubmitted'));
-        setReviewText('');
-        setReviewRating(5);
-        fetchReviews(product.id);
+        toast.error(t('products.reviewFailed'));
       }
-    } catch {
-      toast.error(t('products.reviewFailed'));
     } finally {
       setSubmittingReview(false);
     }

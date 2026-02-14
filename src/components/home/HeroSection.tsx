@@ -4,7 +4,7 @@ import { ArrowRight, ChevronLeft, ChevronRight, Gem } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 
 import blackGraniteImg from '@/assets/products/black-granite.jpg';
 import kitchenCountertopsImg from '@/assets/categories/kitchen-countertops.jpg';
@@ -44,21 +44,24 @@ export function HeroSection() {
   }, [cards.length]);
 
   const fetchCarouselCards = async () => {
-    const { data } = await supabase
-      .from('hero_carousel_cards')
-      .select('*')
-      .eq('is_active', true)
-      .order('display_order');
-    
-    if (data && data.length > 0) {
-      const mappedCards = data.map(card => ({
-        ...card,
-        image_url: card.image_url === '/placeholder.svg' 
-          ? (fallbackImages[card.title] || blackGraniteImg)
-          : card.image_url
-      }));
-      setCards(mappedCards);
-    } else {
+    try {
+      const data = await api.get('/api/hero-carousel/cards');
+      if (data && data.length > 0) {
+        const mappedCards = data.map((card: any) => ({
+          ...card,
+          image_url: card.image_url === '/placeholder.svg' 
+            ? (fallbackImages[card.title] || blackGraniteImg)
+            : card.image_url
+        }));
+        setCards(mappedCards);
+      } else {
+        setCards([
+          { id: '1', title: 'Premium Granite', image_url: blackGraniteImg },
+          { id: '2', title: 'Elegant Marble', image_url: kitchenCountertopsImg },
+          { id: '3', title: 'Modern Countertops', image_url: flooringImg },
+        ]);
+      }
+    } catch {
       setCards([
         { id: '1', title: 'Premium Granite', image_url: blackGraniteImg },
         { id: '2', title: 'Elegant Marble', image_url: kitchenCountertopsImg },

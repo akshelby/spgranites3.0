@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Download, FileText } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Catalog } from '@/types/database';
 import { useTranslation } from 'react-i18next';
 
@@ -17,22 +17,17 @@ export default function CatalogsPage() {
   }, []);
 
   const fetchCatalogs = async () => {
-    const { data } = await supabase
-      .from('catalogs')
-      .select('*')
-      .eq('is_active', true)
-      .order('created_at', { ascending: false });
-
-    if (data) setCatalogs(data as Catalog[]);
+    try {
+      const data = await api.get('/api/catalogs');
+      if (data) setCatalogs(data as Catalog[]);
+    } catch {}
     setLoading(false);
   };
 
   const handleDownload = async (catalog: Catalog) => {
-    await supabase
-      .from('catalogs')
-      .update({ download_count: catalog.download_count + 1 })
-      .eq('id', catalog.id);
-
+    try {
+      await api.post(`/api/catalogs/${catalog.id}/download`);
+    } catch {}
     window.open(catalog.file_url, '_blank');
   };
 

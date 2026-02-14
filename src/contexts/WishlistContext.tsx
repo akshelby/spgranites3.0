@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 
 interface WishlistItem {
@@ -36,18 +36,12 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     
     setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('wishlists')
-        .select('id, product_id')
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-      
+      const data = await api.get('/api/wishlist');
       setItems(
-        data?.map((item) => ({
+        (data || []).map((item: any) => ({
           id: item.id,
-          productId: item.product_id,
-        })) || []
+          productId: item.product_id || item.productId,
+        }))
       );
     } catch (error) {
       console.error('Error fetching wishlist:', error);
@@ -60,17 +54,10 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase
-        .from('wishlists')
-        .insert({ user_id: user.id, product_id: productId })
-        .select('id, product_id')
-        .single();
-
-      if (error) throw error;
-      
+      const data = await api.post('/api/wishlist', { productId });
       setItems((prev) => [
         ...prev,
-        { id: data.id, productId: data.product_id },
+        { id: data.id, productId: data.product_id || data.productId || productId },
       ]);
     } catch (error) {
       console.error('Error adding to wishlist:', error);
@@ -81,14 +68,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     if (!user) return;
 
     try {
-      const { error } = await supabase
-        .from('wishlists')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('product_id', productId);
-
-      if (error) throw error;
-      
+      await api.delete(`/api/wishlist/${productId}`);
       setItems((prev) => prev.filter((item) => item.productId !== productId));
     } catch (error) {
       console.error('Error removing from wishlist:', error);

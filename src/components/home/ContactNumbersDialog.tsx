@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Phone } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { useTranslation } from 'react-i18next';
-
-const supabaseAny = supabase as any;
 
 interface ContactNumber {
   id: string;
@@ -34,16 +32,13 @@ export function ContactNumbersDialog({ open, onOpenChange }: ContactNumbersDialo
   const fetchNumbers = async () => {
     setLoading(true);
     setError(false);
-    const { data, error: fetchError } = await supabaseAny
-      .from('contact_numbers')
-      .select('*')
-      .eq('is_active', true)
-      .order('display_order', { ascending: true });
-
-    if (fetchError) {
+    try {
+      const data = await api.get('/api/contact-numbers');
+      if (data) {
+        setNumbers(data);
+      }
+    } catch {
       setError(true);
-    } else if (data) {
-      setNumbers(data);
     }
     setLoading(false);
   };

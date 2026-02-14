@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { Search, Shield } from 'lucide-react';
 import { format } from 'date-fns';
@@ -40,23 +40,8 @@ export default function AdminUsers() {
 
   const fetchUsers = async () => {
     try {
-      const [profilesRes, rolesRes] = await Promise.all([
-        supabase.from('profiles').select('*').order('created_at', { ascending: false }),
-        supabase.from('user_roles').select('*'),
-      ]);
-
-      const profiles = profilesRes.data || [];
-      const roles = rolesRes.data || [];
-
-      const usersWithRoles = profiles.map(profile => {
-        const userRole = roles.find(r => r.user_id === profile.user_id);
-        return {
-          ...profile,
-          role: userRole?.role || 'user',
-        };
-      });
-
-      setUsers(usersWithRoles);
+      const data = await api.get('/api/admin/users');
+      setUsers(data || []);
     } catch (error) {
       console.error('Error fetching users:', error);
     } finally {
@@ -66,28 +51,7 @@ export default function AdminUsers() {
 
   const updateUserRole = async (userId: string, newRole: string) => {
     try {
-      // Check if role exists
-      const { data: existingRole } = await supabase
-        .from('user_roles')
-        .select('*')
-        .eq('user_id', userId)
-        .single();
-
-      if (existingRole) {
-        const { error } = await supabase
-          .from('user_roles')
-          .update({ role: newRole as 'admin' | 'moderator' | 'user' })
-          .eq('user_id', userId);
-
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('user_roles')
-          .insert([{ user_id: userId, role: newRole as 'admin' | 'moderator' | 'user' }]);
-
-        if (error) throw error;
-      }
-
+      await api.put(`/api/admin/users/${userId}/role`, { role: newRole });
       toast({ title: 'User role updated' });
       fetchUsers();
     } catch (error: any) {

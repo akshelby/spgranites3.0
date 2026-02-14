@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AdminLayout, StatsCard, PageHeader } from '@/components/admin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import {
   Package,
   ShoppingCart,
@@ -63,49 +63,19 @@ export default function AdminDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      // Fetch all stats in parallel
-      const [
-        productsRes,
-        ordersRes,
-        usersRes,
-        enquiriesRes,
-        visitorsRes,
-        reviewsRes,
-        recentOrdersRes,
-        recentEnquiriesRes,
-      ] = await Promise.all([
-        supabase.from('products').select('id', { count: 'exact', head: true }),
-        supabase.from('orders').select('id, total_amount, status', { count: 'exact' }),
-        supabase.from('profiles').select('id', { count: 'exact', head: true }),
-        supabase.from('enquiries').select('id', { count: 'exact', head: true }),
-        supabase.from('site_visitors').select('id', { count: 'exact', head: true }),
-        supabase.from('customer_reviews').select('rating'),
-        supabase.from('orders').select('*').order('created_at', { ascending: false }).limit(5),
-        supabase.from('enquiries').select('*').order('created_at', { ascending: false }).limit(5),
-      ]);
-
-      const orders = ordersRes.data || [];
-      const totalRevenue = orders.reduce((sum, order) => sum + (order.total_amount || 0), 0);
-      const pendingOrders = orders.filter(o => o.status === 'pending').length;
-
-      const reviews = reviewsRes.data || [];
-      const avgRating = reviews.length > 0 
-        ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length 
-        : 0;
-
+      const data = await api.get('/api/admin/dashboard');
       setStats({
-        totalProducts: productsRes.count || 0,
-        totalOrders: ordersRes.count || 0,
-        totalUsers: usersRes.count || 0,
-        totalEnquiries: enquiriesRes.count || 0,
-        totalRevenue,
-        totalVisitors: visitorsRes.count || 0,
-        pendingOrders,
-        avgRating: Math.round(avgRating * 10) / 10,
+        totalProducts: data.totalProducts || 0,
+        totalOrders: data.totalOrders || 0,
+        totalUsers: data.totalUsers || 0,
+        totalEnquiries: data.totalEnquiries || 0,
+        totalRevenue: data.totalRevenue || 0,
+        totalVisitors: data.totalVisitors || 0,
+        pendingOrders: data.pendingOrders || 0,
+        avgRating: data.avgRating || 0,
       });
-
-      setRecentOrders(recentOrdersRes.data || []);
-      setRecentEnquiries(recentEnquiriesRes.data || []);
+      setRecentOrders(data.recentOrders || []);
+      setRecentEnquiries(data.recentEnquiries || []);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {

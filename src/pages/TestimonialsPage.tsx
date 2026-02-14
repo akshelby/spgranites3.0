@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Star, Quote } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Testimonial, CustomerReview } from '@/types/database';
 import { useTranslation } from 'react-i18next';
 
@@ -17,21 +17,14 @@ export default function TestimonialsPage() {
   }, []);
 
   const fetchData = async () => {
-    const [testimonialsRes, reviewsRes] = await Promise.all([
-      supabase
-        .from('testimonials')
-        .select('*')
-        .eq('is_active', true)
-        .order('display_order'),
-      supabase
-        .from('customer_reviews')
-        .select('*')
-        .eq('is_approved', true)
-        .order('created_at', { ascending: false }),
-    ]);
-
-    if (testimonialsRes.data) setTestimonials(testimonialsRes.data as Testimonial[]);
-    if (reviewsRes.data) setCustomerReviews(reviewsRes.data as CustomerReview[]);
+    try {
+      const [testimonialData, reviewData] = await Promise.all([
+        api.get('/api/testimonials'),
+        api.get('/api/customer-reviews'),
+      ]);
+      if (testimonialData) setTestimonials(testimonialData as Testimonial[]);
+      if (reviewData) setCustomerReviews(reviewData as CustomerReview[]);
+    } catch {}
     setLoading(false);
   };
 

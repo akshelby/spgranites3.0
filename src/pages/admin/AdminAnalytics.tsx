@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AdminLayout, StatsCard, PageHeader } from '@/components/admin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import {
   Eye,
   Globe,
@@ -41,33 +41,27 @@ export default function AdminAnalytics() {
   const fetchAnalytics = async () => {
     try {
       const now = new Date();
-      const todayStart = startOfDay(now).toISOString();
-      const weekStart = startOfDay(subDays(now, 7)).toISOString();
-      const monthStart = startOfDay(subDays(now, 30)).toISOString();
+      const data = await api.get('/api/admin/analytics');
+      const visitors = data?.visitors || [];
 
-      // Fetch all stats in parallel
-      const [totalRes, todayRes, weekRes, monthRes, visitorsRes] = await Promise.all([
-        supabase.from('site_visitors').select('id', { count: 'exact', head: true }),
-        supabase.from('site_visitors').select('id', { count: 'exact', head: true }).gte('visited_at', todayStart),
-        supabase.from('site_visitors').select('id', { count: 'exact', head: true }).gte('visited_at', weekStart),
-        supabase.from('site_visitors').select('id', { count: 'exact', head: true }).gte('visited_at', monthStart),
-        supabase.from('site_visitors').select('page_url, visited_at').order('visited_at', { ascending: false }).limit(1000),
-      ]);
+      const todayStart = startOfDay(now);
+      const weekStart = startOfDay(subDays(now, 7));
+      const monthStart = startOfDay(subDays(now, 30));
 
-      setStats({
-        total: totalRes.count || 0,
-        today: todayRes.count || 0,
-        thisWeek: weekRes.count || 0,
-        thisMonth: monthRes.count || 0,
-      });
-
-      // Process daily data
-      const visitors = visitorsRes.data || [];
+      let total = visitors.length;
+      let today = 0;
+      let thisWeek = 0;
+      let thisMonth = 0;
       const dailyMap = new Map<string, number>();
       const pageMap = new Map<string, number>();
 
-      visitors.forEach(v => {
-        const date = format(new Date(v.visited_at), 'MMM d');
+      visitors.forEach((v: any) => {
+        const visitDate = new Date(v.visited_at);
+        if (visitDate >= todayStart) today++;
+        if (visitDate >= weekStart) thisWeek++;
+        if (visitDate >= monthStart) thisMonth++;
+
+        const date = format(visitDate, 'MMM d');
         dailyMap.set(date, (dailyMap.get(date) || 0) + 1);
 
         if (v.page_url) {
@@ -75,7 +69,8 @@ export default function AdminAnalytics() {
         }
       });
 
-      // Get last 7 days
+      setStats({ total, today, thisWeek, thisMonth });
+
       const last7Days: DailyVisitor[] = [];
       for (let i = 6; i >= 0; i--) {
         const date = format(subDays(now, i), 'MMM d');
@@ -83,7 +78,6 @@ export default function AdminAnalytics() {
       }
       setDailyData(last7Days);
 
-      // Get top pages
       const sortedPages = Array.from(pageMap.entries())
         .sort((a, b) => b[1] - a[1])
         .slice(0, 5)

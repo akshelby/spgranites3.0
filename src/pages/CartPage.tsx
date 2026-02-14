@@ -29,7 +29,7 @@ import {
 } from '@/components/ui/dialog';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Address } from '@/types/database';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -88,50 +88,29 @@ export default function CartPage() {
   }, [user]);
 
   const fetchAddresses = async () => {
-    const { data } = await supabase
-      .from('addresses')
-      .select('*')
-      .eq('user_id', user?.id)
-      .order('is_default', { ascending: false })
-      .order('created_at', { ascending: false });
-
-    if (data) {
-      setAddresses(data as Address[]);
-      const defaultAddr = data.find((a) => a.is_default);
-      if (defaultAddr) setSelectedAddressId(defaultAddr.id);
-      else if (data.length > 0) setSelectedAddressId(data[0].id);
-    }
+    try {
+      const data = await api.get('/api/addresses');
+      if (data) {
+        setAddresses(data as Address[]);
+        const defaultAddr = data.find((a: Address) => a.is_default);
+        if (defaultAddr) setSelectedAddressId(defaultAddr.id);
+        else if (data.length > 0) setSelectedAddressId(data[0].id);
+      }
+    } catch {}
   };
 
   const onAddressSubmit = async (data: AddressFormData) => {
     try {
-      if (data.is_default) {
-        await supabase
-          .from('addresses')
-          .update({ is_default: false })
-          .eq('user_id', user?.id);
-      }
-
       if (editingAddress) {
-        const { error } = await supabase
-          .from('addresses')
-          .update({ ...data, country: 'India' })
-          .eq('id', editingAddress.id);
-        if (error) throw error;
+        await api.put(`/api/addresses/${editingAddress.id}`, { ...data, country: 'India' });
         toast.success(t('cart.addressUpdated'));
       } else {
         const isFirst = addresses.length === 0;
-        const { data: newAddr, error } = await supabase
-          .from('addresses')
-          .insert({
-            ...data,
-            user_id: user?.id,
-            country: 'India',
-            is_default: isFirst ? true : data.is_default,
-          } as any)
-          .select()
-          .single();
-        if (error) throw error;
+        const newAddr = await api.post('/api/addresses', {
+          ...data,
+          country: 'India',
+          is_default: isFirst ? true : data.is_default,
+        });
         toast.success(t('cart.addressAdded'));
         if (newAddr) setSelectedAddressId(newAddr.id);
       }
@@ -180,22 +159,9 @@ export default function CartPage() {
 
   const deleteAddress = async (id: string) => {
     try {
-      await supabase.from('addresses').delete().eq('id', id);
+      await api.delete(`/api/addresses/${id}`);
       toast.success(t('cart.addressRemoved'));
-      const { data } = await supabase
-        .from('addresses')
-        .select('*')
-        .eq('user_id', user?.id)
-        .order('is_default', { ascending: false })
-        .order('created_at', { ascending: false });
-      if (data) {
-        setAddresses(data as Address[]);
-        const defaultAddr = data.find((a) => a.is_default);
-        setSelectedAddressId(defaultAddr?.id || data[0]?.id || '');
-      } else {
-        setAddresses([]);
-        setSelectedAddressId('');
-      }
+      await fetchAddresses();
     } catch {
       toast.error(t('cart.addressDeleteFailed'));
     }

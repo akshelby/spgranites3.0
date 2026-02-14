@@ -2,7 +2,6 @@ import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Upload, X, Loader2, ImageIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface ImageUploaderProps {
@@ -21,23 +20,17 @@ export function ImageUploader({
   const [dragOver, setDragOver] = useState(false);
 
   const uploadImage = async (file: File): Promise<string | null> => {
-    const fileExt = file.name.split('.').pop();
-    const fileName = `images/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-
-    const { error } = await supabase.storage
-      .from('estimation-files')
-      .upload(fileName, file, {
-        contentType: file.type,
-        upsert: true,
-      });
-
-    if (error) {
-      console.error('Upload error:', error);
-      return null;
-    }
-
-    const { data } = supabase.storage.from('estimation-files').getPublicUrl(fileName);
-    return data.publicUrl;
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        resolve(reader.result as string);
+      };
+      reader.onerror = () => {
+        console.error('Error reading file');
+        resolve(null);
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
   const handleFiles = useCallback(

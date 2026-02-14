@@ -1,4 +1,4 @@
-modules = ["nodejs-20", "postgresql-16"]
+modules = ["nodejs-20", "web", "postgresql-16"]
 
 [workflows]
 runButton = "Project"
@@ -25,6 +25,10 @@ args = "npm run dev"
 waitForPort = 5000
 
 [[ports]]
+localPort = 3001
+externalPort = 3001
+
+[[ports]]
 localPort = 5000
 externalPort = 80
 
@@ -37,9 +41,10 @@ channel = "stable-25_05"
 
 [agent]
 expertMode = true
+integrations = ["javascript_database:1.0.0"]
 
 [deployment]
 deploymentTarget = "autoscale"
 build = ["npm", "run", "build"]
 publicDir = "dist"
-run = ["npm", "run", "start"]
+run = ["node", "--import", "tsx", "server/index.ts"]

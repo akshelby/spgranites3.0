@@ -3,7 +3,7 @@ import { X, Bell, BellOff, Copy, Check, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { Message, Conversation } from "./types";
 import { MessageBubble } from "./MessageBubble";
@@ -59,16 +59,10 @@ export function ChatWindow({
   }, []);
 
   const fetchMessages = useCallback(async (showLoader = false) => {
-    if (!refId) return;
+    if (!refId || !conversationId) return;
     if (showLoader) setIsLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('messages')
-        .select('*')
-        .eq('ref_id', refId)
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
+      const data = await api.get(`/api/conversations/${conversationId}/messages`);
       setMessages(prev => {
         const confirmed = (data as Message[]) || [];
         const pending = prev.filter(m => m._tempId && m._status === 'sending');
@@ -85,71 +79,16 @@ export function ChatWindow({
     } finally {
       if (showLoader) setIsLoading(false);
     }
-  }, [refId]);
-
-  const markStaffMessagesAsRead = useCallback(async () => {
-    if (!refId) return;
-    try {
-      const { data: unread } = await supabase
-        .from('messages')
-        .select('id')
-        .eq('ref_id', refId)
-        .eq('sender_type', 'staff')
-        .eq('is_read', false);
-
-      if (unread && unread.length > 0) {
-        const ids = unread.map(m => m.id);
-        const { error } = await supabase
-          .from('messages')
-          .update({ is_read: true })
-          .in('id', ids);
-        if (error) {
-          console.error('Supabase update error (mark staff read):', error);
-        }
-      }
-    } catch (err) {
-      console.error('Error marking messages as read:', err);
-    }
-  }, [refId]);
+  }, [refId, conversationId]);
 
   useEffect(() => {
-    if (!refId) return;
+    if (!refId || !conversationId) return;
     fetchMessages(true);
-    markStaffMessagesAsRead();
     const interval = setInterval(() => {
       fetchMessages(false);
-      markStaffMessagesAsRead();
-    }, 500);
+    }, 3000);
     return () => clearInterval(interval);
-  }, [refId, fetchMessages, markStaffMessagesAsRead]);
-
-  useEffect(() => {
-    if (!refId) return;
-
-    const channel = supabase
-      .channel(`messages:${refId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `ref_id=eq.${refId}`,
-        },
-        () => {
-          fetchMessages(false);
-          markStaffMessagesAsRead();
-          if (notificationsEnabled) {
-            notificationSoundRef.current?.play().catch(() => {});
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [refId, notificationsEnabled, fetchMessages, markStaffMessagesAsRead]);
+  }, [refId, conversationId, fetchMessages]);
 
   // Auto-scroll to bottom
   const scrollToBottom = useCallback(() => {
@@ -166,14 +105,7 @@ export function ChatWindow({
     const newRefId = generateRefId();
     
     try {
-      const { data, error } = await supabase
-        .from('conversations')
-        .insert({ ref_id: newRefId })
-        .select()
-        .single();
-
-      if (error) throw error;
-      
+      const data = await api.post('/api/conversations', { ref_id: newRefId });
       onSetSession(newRefId, data.id);
       setShowStartScreen(false);
     } catch (err) {
@@ -190,13 +122,10 @@ export function ChatWindow({
     if (!existingRefId.trim()) return;
 
     try {
-      const { data, error } = await supabase
-        .from('conversations')
-        .select()
-        .eq('ref_id', existingRefId.trim().toUpperCase())
-        .single();
+      const data = await api.get(`/api/conversations?ref_id=${existingRefId.trim().toUpperCase()}`);
+      const conversation = Array.isArray(data) ? data[0] : data;
 
-      if (error || !data) {
+      if (!conversation) {
         toast({
           title: "Not Found",
           description: "No conversation found with this Reference ID.",
@@ -205,10 +134,15 @@ export function ChatWindow({
         return;
       }
 
-      onSetSession(data.ref_id, data.id);
+      onSetSession(conversation.ref_id, conversation.id);
       setShowStartScreen(false);
     } catch (err) {
       console.error('Error resuming conversation:', err);
+      toast({
+        title: "Not Found",
+        description: "No conversation found with this Reference ID.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -234,20 +168,13 @@ export function ChatWindow({
     setMessages(prev => [...prev, optimisticMessage]);
 
     try {
-      const { data, error } = await supabase
-        .from('messages')
-        .insert({
-          conversation_id: conversationId,
-          ref_id: refId,
-          sender_type: 'customer',
-          content_text: text,
-        })
-        .select()
-        .single();
+      const data = await api.post('/api/messages', {
+        conversation_id: conversationId,
+        ref_id: refId,
+        sender_type: 'customer',
+        content_text: text,
+      });
 
-      if (error) throw error;
-
-      // Replace optimistic message with confirmed one
       setMessages(prev =>
         prev.map(m => m._tempId === tempId ? { ...data as Message, _status: 'sent' as const } : m)
       );
@@ -268,30 +195,27 @@ export function ChatWindow({
     if (!refId || !conversationId) return;
 
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${refId}/${Date.now()}.${fileExt}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('chat-media')
-        .upload(fileName, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('chat-media')
-        .getPublicUrl(fileName);
-
-      const { error } = await supabase
-        .from('messages')
-        .insert({
-          conversation_id: conversationId,
-          ref_id: refId,
-          sender_type: 'customer',
-          media_url: publicUrl,
-          media_type: type,
-        });
-
-      if (error) throw error;
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const dataUrl = reader.result as string;
+        try {
+          await api.post('/api/messages', {
+            conversation_id: conversationId,
+            ref_id: refId,
+            sender_type: 'customer',
+            media_url: dataUrl,
+            media_type: type,
+          });
+        } catch (err) {
+          console.error('Error sending media:', err);
+          toast({
+            title: "Error",
+            description: "Failed to send media. Please try again.",
+            variant: "destructive",
+          });
+        }
+      };
+      reader.readAsDataURL(file);
     } catch (err) {
       console.error('Error sending media:', err);
       toast({

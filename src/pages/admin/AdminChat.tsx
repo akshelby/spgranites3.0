@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { Message, Conversation } from "@/components/chat/types";
 import { MessageBubble } from "@/components/chat/MessageBubble";
@@ -42,12 +42,7 @@ export default function AdminChat() {
 
   const loadConversations = useCallback(async () => {
     try {
-      const { data, error } = await supabase
-        .from('conversations')
-        .select('*')
-        .order('last_message_at', { ascending: false, nullsFirst: false });
-
-      if (error) throw error;
+      const data = await api.get('/api/admin/conversations');
       const convs = (data as Conversation[]) || [];
       setConversations(convs);
       setStats({
@@ -64,31 +59,14 @@ export default function AdminChat() {
 
   useEffect(() => {
     loadConversations();
-    const interval = setInterval(loadConversations, 5000);
-
-    const channel = supabase
-      .channel('admin-conversations')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'conversations' }, () => {
-        loadConversations();
-      })
-      .subscribe();
-
-    return () => {
-      clearInterval(interval);
-      supabase.removeChannel(channel);
-    };
+    const interval = setInterval(loadConversations, 3000);
+    return () => clearInterval(interval);
   }, [loadConversations]);
 
   const fetchMessages = useCallback(async () => {
     if (!selectedConversation) return;
     try {
-      const { data, error } = await supabase
-        .from('messages')
-        .select('*')
-        .eq('ref_id', selectedConversation.ref_id)
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
+      const data = await api.get(`/api/conversations/${selectedConversation.id}/messages`);
       setMessages(prev => {
         const confirmed = (data as Message[]) || [];
         const pending = prev.filter(m => m._tempId && m._status === 'sending');
@@ -105,56 +83,12 @@ export default function AdminChat() {
     }
   }, [selectedConversation]);
 
-  const markCustomerMessagesAsRead = useCallback(async () => {
-    if (!selectedConversation) return;
-    try {
-      const { data: unread } = await supabase
-        .from('messages')
-        .select('id')
-        .eq('ref_id', selectedConversation.ref_id)
-        .eq('sender_type', 'customer')
-        .eq('is_read', false);
-
-      if (unread && unread.length > 0) {
-        const ids = unread.map(m => m.id);
-        const { error } = await supabase
-          .from('messages')
-          .update({ is_read: true })
-          .in('id', ids);
-        if (error) {
-          console.error('Supabase update error (mark read):', error);
-        }
-      }
-    } catch (err) {
-      console.error('Error marking messages as read:', err);
-    }
-  }, [selectedConversation]);
-
   useEffect(() => {
     if (!selectedConversation) return;
     fetchMessages();
-    markCustomerMessagesAsRead();
-    const interval = setInterval(() => {
-      fetchMessages();
-      markCustomerMessagesAsRead();
-    }, 500);
-
-    const channel = supabase
-      .channel(`admin-messages:${selectedConversation.ref_id}`)
-      .on('postgres_changes', {
-        event: 'INSERT', schema: 'public', table: 'messages',
-        filter: `ref_id=eq.${selectedConversation.ref_id}`,
-      }, () => {
-        fetchMessages();
-        markCustomerMessagesAsRead();
-      })
-      .subscribe();
-
-    return () => {
-      clearInterval(interval);
-      supabase.removeChannel(channel);
-    };
-  }, [selectedConversation, fetchMessages, markCustomerMessagesAsRead]);
+    const interval = setInterval(fetchMessages, 3000);
+    return () => clearInterval(interval);
+  }, [selectedConversation, fetchMessages]);
 
   // Auto-scroll
   useEffect(() => {
@@ -180,14 +114,13 @@ export default function AdminChat() {
     
     setIsSending(true);
     try {
-      const { data, error } = await supabase.from('messages').insert({
+      const data = await api.post('/api/messages', {
         conversation_id: selectedConversation.id,
         ref_id: selectedConversation.ref_id,
         sender_type: 'staff',
         sender_name: 'Support Team',
         content_text: text,
-      }).select().single();
-      if (error) throw error;
+      });
       setMessages(prev => prev.map(m => m._tempId === tempId ? { ...data as Message, _status: 'sent' as const } : m));
     } catch (err) {
       console.error('Error sending message:', err);
@@ -203,25 +136,30 @@ export default function AdminChat() {
     if (!file || !selectedConversation) return;
     setIsSending(true);
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${selectedConversation.ref_id}/staff-${Date.now()}.${fileExt}`;
-      const { error: uploadError } = await supabase.storage.from('chat-media').upload(fileName, file);
-      if (uploadError) throw uploadError;
-      const { data: { publicUrl } } = supabase.storage.from('chat-media').getPublicUrl(fileName);
-      const mediaType = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : 'audio';
-      const { error } = await supabase.from('messages').insert({
-        conversation_id: selectedConversation.id,
-        ref_id: selectedConversation.ref_id,
-        sender_type: 'staff',
-        sender_name: 'Support Team',
-        media_url: publicUrl,
-        media_type: mediaType,
-      });
-      if (error) throw error;
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const dataUrl = reader.result as string;
+        const mediaType = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : 'audio';
+        try {
+          await api.post('/api/messages', {
+            conversation_id: selectedConversation.id,
+            ref_id: selectedConversation.ref_id,
+            sender_type: 'staff',
+            sender_name: 'Support Team',
+            media_url: dataUrl,
+            media_type: mediaType,
+          });
+        } catch (err) {
+          console.error('Error sending media:', err);
+          toast({ title: "Error", description: "Failed to send media.", variant: "destructive" });
+        }
+        setIsSending(false);
+        e.target.value = "";
+      };
+      reader.readAsDataURL(file);
     } catch (err) {
       console.error('Error sending media:', err);
       toast({ title: "Error", description: "Failed to send media.", variant: "destructive" });
-    } finally {
       setIsSending(false);
       e.target.value = "";
     }
@@ -230,11 +168,7 @@ export default function AdminChat() {
   const handleCloseConversation = async () => {
     if (!selectedConversation) return;
     try {
-      const { error } = await supabase
-        .from('conversations')
-        .update({ status: 'closed' })
-        .eq('id', selectedConversation.id);
-      if (error) throw error;
+      await api.put(`/api/admin/conversations/${selectedConversation.id}`, { status: 'closed' });
       setSelectedConversation({ ...selectedConversation, status: 'closed' });
       toast({ title: "Conversation Closed", description: "The conversation has been marked as closed." });
     } catch (err) {
@@ -245,11 +179,7 @@ export default function AdminChat() {
   const handleReopenConversation = async () => {
     if (!selectedConversation) return;
     try {
-      const { error } = await supabase
-        .from('conversations')
-        .update({ status: 'open' })
-        .eq('id', selectedConversation.id);
-      if (error) throw error;
+      await api.put(`/api/admin/conversations/${selectedConversation.id}`, { status: 'open' });
       setSelectedConversation({ ...selectedConversation, status: 'open' });
       toast({ title: "Conversation Reopened", description: "The conversation is now open." });
     } catch (err) {

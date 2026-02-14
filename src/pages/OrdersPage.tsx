@@ -6,7 +6,7 @@ import { MainLayout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Order } from '@/types/database';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
@@ -31,13 +31,10 @@ export default function OrdersPage() {
   }, [user]);
 
   const fetchOrders = async () => {
-    const { data } = await supabase
-      .from('orders')
-      .select('*')
-      .eq('user_id', user?.id)
-      .order('created_at', { ascending: false });
-
-    if (data) setOrders(data as unknown as Order[]);
+    try {
+      const data = await api.get('/api/orders');
+      if (data) setOrders(data as unknown as Order[]);
+    } catch {}
     setLoading(false);
   };
 

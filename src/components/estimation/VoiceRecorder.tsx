@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Mic, Square, Play, Pause, Trash2, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface VoiceRecorderProps {
@@ -84,29 +83,22 @@ export function VoiceRecorder({ onRecordingComplete, existingUrl }: VoiceRecorde
   const uploadRecording = async (blob: Blob) => {
     setIsUploading(true);
     try {
-      const fileName = `voice/${Date.now()}-${Math.random().toString(36).substring(7)}.webm`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('estimation-files')
-        .upload(fileName, blob, {
-          contentType: 'audio/webm',
-          upsert: true,
-        });
-
-      if (uploadError) throw uploadError;
-
-      const { data: urlData } = supabase.storage
-        .from('estimation-files')
-        .getPublicUrl(fileName);
-
-      const publicUrl = urlData.publicUrl;
-      setAudioUrl(publicUrl);
-      onRecordingComplete(publicUrl);
-      toast.success('Voice recording saved!');
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const dataUrl = reader.result as string;
+        setAudioUrl(dataUrl);
+        onRecordingComplete(dataUrl);
+        toast.success('Voice recording saved!');
+        setIsUploading(false);
+      };
+      reader.onerror = () => {
+        toast.error('Failed to process recording');
+        setIsUploading(false);
+      };
+      reader.readAsDataURL(blob);
     } catch (error) {
-      toast.error('Failed to upload recording');
+      toast.error('Failed to process recording');
       console.error('Upload error:', error);
-    } finally {
       setIsUploading(false);
     }
   };

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
@@ -54,22 +54,15 @@ export function PremiumCollection() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { data: featured, error: featuredErr } = await supabase
-          .from('products')
-          .select('*')
-          .eq('is_active', true)
-          .eq('is_featured', true)
-          .limit(8);
-        if (!featuredErr && featured && featured.length > 0) {
-          setProducts(featured);
+        const data = await api.get('/api/products');
+        const allProducts = data || [];
+        const featured = allProducts.filter((p: any) => p.is_featured && p.is_active);
+        if (featured.length > 0) {
+          setProducts(featured.slice(0, 8));
           return;
         }
-        const { data: fallback } = await supabase
-          .from('products')
-          .select('*')
-          .eq('is_active', true)
-          .limit(8);
-        if (fallback && fallback.length > 0) setProducts(fallback);
+        const active = allProducts.filter((p: any) => p.is_active);
+        if (active.length > 0) setProducts(active.slice(0, 8));
       } catch {
         // silent fallback
       }

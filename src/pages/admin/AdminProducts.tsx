@@ -20,7 +20,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Search, Pencil, Trash2 } from 'lucide-react';
 
@@ -72,12 +72,7 @@ export default function AdminProducts() {
 
   const fetchProducts = async () => {
     try {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
+      const data = await api.get('/api/admin/products');
       setProducts(data || []);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -87,11 +82,12 @@ export default function AdminProducts() {
   };
 
   const fetchCategories = async () => {
-    const { data } = await supabase
-      .from('product_categories')
-      .select('id, name')
-      .eq('is_active', true);
-    setCategories(data || []);
+    try {
+      const data = await api.get('/api/admin/categories');
+      setCategories(data || []);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -112,19 +108,10 @@ export default function AdminProducts() {
       };
 
       if (editingProduct) {
-        const { error } = await supabase
-          .from('products')
-          .update(productData)
-          .eq('id', editingProduct.id);
-
-        if (error) throw error;
+        await api.put(`/api/admin/products/${editingProduct.id}`, productData);
         toast({ title: 'Product updated successfully' });
       } else {
-        const { error } = await supabase
-          .from('products')
-          .insert([productData]);
-
-        if (error) throw error;
+        await api.post('/api/admin/products', productData);
         toast({ title: 'Product created successfully' });
       }
 
@@ -157,8 +144,7 @@ export default function AdminProducts() {
     if (!confirm('Are you sure you want to delete this product?')) return;
 
     try {
-      const { error } = await supabase.from('products').delete().eq('id', id);
-      if (error) throw error;
+      await api.delete(`/api/admin/products/${id}`);
       toast({ title: 'Product deleted successfully' });
       fetchProducts();
     } catch (error: any) {

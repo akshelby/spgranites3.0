@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Product, ProductCategory } from '@/types/database';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
@@ -40,34 +40,19 @@ export default function ProductsPage() {
   }, [categorySlug]);
 
   const fetchCategories = async () => {
-    const { data } = await supabase
-      .from('product_categories')
-      .select('*')
-      .eq('is_active', true)
-      .order('name');
-    if (data) setCategories(data);
+    try {
+      const data = await api.get('/api/categories');
+      if (data) setCategories(data);
+    } catch {}
   };
 
   const fetchProducts = async () => {
     setLoading(true);
-    let query = supabase
-      .from('products')
-      .select('*, product_categories(*)')
-      .eq('is_active', true);
-
-    if (categorySlug) {
-      const { data: cat } = await supabase
-        .from('product_categories')
-        .select('id')
-        .eq('slug', categorySlug)
-        .maybeSingle();
-      if (cat) {
-        query = query.eq('category_id', cat.id);
-      }
-    }
-
-    const { data } = await query.order('created_at', { ascending: false });
-    if (data) setProducts(data as Product[]);
+    try {
+      const url = categorySlug ? `/api/products?category=${categorySlug}` : '/api/products';
+      const data = await api.get(url);
+      if (data) setProducts(data as Product[]);
+    } catch {}
     setLoading(false);
   };
 

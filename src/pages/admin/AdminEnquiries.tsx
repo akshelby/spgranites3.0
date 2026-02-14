@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, Check, Trash2, Phone, Mail } from 'lucide-react';
 import { format } from 'date-fns';
@@ -35,12 +35,7 @@ export default function AdminEnquiries() {
 
   const fetchEnquiries = async () => {
     try {
-      const { data, error } = await supabase
-        .from('enquiries')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
+      const data = await api.get('/api/admin/enquiries');
       setEnquiries(data || []);
     } catch (error) {
       console.error('Error fetching enquiries:', error);
@@ -51,12 +46,7 @@ export default function AdminEnquiries() {
 
   const markAsRead = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('enquiries')
-        .update({ is_read: true })
-        .eq('id', id);
-
-      if (error) throw error;
+      await api.put(`/api/admin/enquiries/${id}`, { is_read: true });
       toast({ title: 'Marked as read' });
       fetchEnquiries();
     } catch (error: any) {
@@ -68,8 +58,7 @@ export default function AdminEnquiries() {
     if (!confirm('Are you sure you want to delete this enquiry?')) return;
 
     try {
-      const { error } = await supabase.from('enquiries').delete().eq('id', id);
-      if (error) throw error;
+      await api.delete(`/api/admin/enquiries/${id}`);
       toast({ title: 'Enquiry deleted' });
       fetchEnquiries();
     } catch (error: any) {

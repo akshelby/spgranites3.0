@@ -26,7 +26,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, MapPin, Lock, Plus, Trash2, Edit, Home, Building2, MapPinned, Star, Check } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Profile, Address } from '@/types/database';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -104,43 +104,31 @@ export default function ProfilePage() {
   }, [user]);
 
   const fetchData = async () => {
-    const [profileRes, addressesRes] = await Promise.all([
-      supabase
-        .from('profiles')
-        .select('*')
-        .eq('user_id', user?.id)
-        .maybeSingle(),
-      supabase
-        .from('addresses')
-        .select('*')
-        .eq('user_id', user?.id)
-        .order('is_default', { ascending: false })
-        .order('created_at', { ascending: false }),
-    ]);
+    try {
+      const [profileData, addressData] = await Promise.all([
+        api.get('/api/profile'),
+        api.get('/api/addresses'),
+      ]);
 
-    if (profileRes.data) {
-      setProfile(profileRes.data as Profile);
-      profileForm.reset({
-        full_name: profileRes.data.full_name || '',
-        phone: profileRes.data.phone || '',
-        alternate_phone: profileRes.data.alternate_phone || '',
-        company_name: profileRes.data.company_name || '',
-        gst_number: profileRes.data.gst_number || '',
-      });
-    }
-    if (addressesRes.data) setAddresses(addressesRes.data as Address[]);
+      if (profileData) {
+        setProfile(profileData as Profile);
+        profileForm.reset({
+          full_name: profileData.full_name || '',
+          phone: profileData.phone || '',
+          alternate_phone: profileData.alternate_phone || '',
+          company_name: profileData.company_name || '',
+          gst_number: profileData.gst_number || '',
+        });
+      }
+      if (addressData) setAddresses(addressData as Address[]);
+    } catch {}
     setLoading(false);
   };
 
   const onProfileSubmit = async (data: ProfileFormData) => {
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update(data)
-        .eq('user_id', user?.id);
-
-      if (error) throw error;
+      await api.put('/api/profile', data);
       toast.success(t('profile.profileUpdated'));
     } catch {
       toast.error(t('profile.profileFailed'));
@@ -151,31 +139,16 @@ export default function ProfilePage() {
 
   const onAddressSubmit = async (data: AddressFormData) => {
     try {
-      if (data.is_default) {
-        await supabase
-          .from('addresses')
-          .update({ is_default: false })
-          .eq('user_id', user?.id);
-      }
-
       if (editingAddress) {
-        const { error } = await supabase
-          .from('addresses')
-          .update({ ...data, country: 'India' })
-          .eq('id', editingAddress.id);
-        if (error) throw error;
+        await api.put(`/api/addresses/${editingAddress.id}`, { ...data, country: 'India' });
         toast.success(t('profile.addressUpdated'));
       } else {
         const isFirst = addresses.length === 0;
-        const { error } = await supabase
-          .from('addresses')
-          .insert({
-            ...data,
-            user_id: user?.id,
-            country: 'India',
-            is_default: isFirst ? true : data.is_default,
-          } as any);
-        if (error) throw error;
+        await api.post('/api/addresses', {
+          ...data,
+          country: 'India',
+          is_default: isFirst ? true : data.is_default,
+        });
         toast.success(t('profile.addressAdded'));
       }
       setAddressDialogOpen(false);
@@ -200,7 +173,7 @@ export default function ProfilePage() {
 
   const deleteAddress = async (id: string) => {
     try {
-      await supabase.from('addresses').delete().eq('id', id);
+      await api.delete(`/api/addresses/${id}`);
       toast.success(t('profile.addressDeleted'));
       fetchData();
     } catch {
@@ -210,14 +183,7 @@ export default function ProfilePage() {
 
   const setDefaultAddress = async (id: string) => {
     try {
-      await supabase
-        .from('addresses')
-        .update({ is_default: false })
-        .eq('user_id', user?.id);
-      await supabase
-        .from('addresses')
-        .update({ is_default: true })
-        .eq('id', id);
+      await api.put(`/api/addresses/${id}`, { is_default: true });
       toast.success(t('profile.defaultUpdated'));
       fetchData();
     } catch {

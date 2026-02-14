@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Wrench, Settings, Sparkles, Hammer, MessageCircle, Ruler } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Service } from '@/types/database';
 
 const serviceIconMap: Record<string, typeof Wrench> = {
@@ -24,16 +24,19 @@ export function ServicesSection() {
   }, []);
 
   const fetchServices = async () => {
-    const { data } = await supabase
-      .from('services')
-      .select('*')
-      .eq('is_active', true)
-      .order('display_order')
-      .limit(6);
-
-    if (data && data.length > 0) {
-      setServices(data as Service[]);
-    } else {
+    try {
+      const data = await api.get('/api/services');
+      if (data && data.length > 0) {
+        setServices(data as Service[]);
+      } else {
+        setServices([
+          { id: '1', name: 'Installation', slug: 'installation', short_description: t('services.installationDesc'), description: null, image_url: null, icon: 'installation', display_order: 1, is_active: true, created_at: '', updated_at: '' },
+          { id: '2', name: 'Fabrication', slug: 'fabrication', short_description: t('services.fabricationDesc'), description: null, image_url: null, icon: 'fabrication', display_order: 2, is_active: true, created_at: '', updated_at: '' },
+          { id: '3', name: 'Polishing', slug: 'polishing', short_description: t('services.polishingDesc'), description: null, image_url: null, icon: 'polishing', display_order: 3, is_active: true, created_at: '', updated_at: '' },
+          { id: '4', name: 'Repair', slug: 'repair', short_description: t('services.repairDesc'), description: null, image_url: null, icon: 'repair', display_order: 4, is_active: true, created_at: '', updated_at: '' },
+        ]);
+      }
+    } catch {
       setServices([
         { id: '1', name: 'Installation', slug: 'installation', short_description: t('services.installationDesc'), description: null, image_url: null, icon: 'installation', display_order: 1, is_active: true, created_at: '', updated_at: '' },
         { id: '2', name: 'Fabrication', slug: 'fabrication', short_description: t('services.fabricationDesc'), description: null, image_url: null, icon: 'fabrication', display_order: 2, is_active: true, created_at: '', updated_at: '' },

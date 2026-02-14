@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { AdminLayout, DataTable, PageHeader } from '@/components/admin';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { Check, X, Trash2, Star } from 'lucide-react';
 import { format } from 'date-fns';
@@ -28,13 +28,8 @@ export default function AdminReviews() {
 
   const fetchReviews = async () => {
     try {
-      const { data, error } = await supabase
-        .from('customer_reviews')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setReviews(data || []);
+      const data = await api.get('/api/admin/reviews');
+      setReviews(data.customerReviews || []);
     } catch (error) {
       console.error('Error fetching reviews:', error);
     } finally {
@@ -44,12 +39,7 @@ export default function AdminReviews() {
 
   const toggleApproval = async (id: string, approved: boolean) => {
     try {
-      const { error } = await supabase
-        .from('customer_reviews')
-        .update({ is_approved: approved })
-        .eq('id', id);
-
-      if (error) throw error;
+      await api.put(`/api/admin/customer-reviews/${id}`, { is_approved: approved });
       toast({ title: approved ? 'Review approved' : 'Review rejected' });
       fetchReviews();
     } catch (error: any) {
@@ -61,8 +51,7 @@ export default function AdminReviews() {
     if (!confirm('Are you sure you want to delete this review?')) return;
 
     try {
-      const { error } = await supabase.from('customer_reviews').delete().eq('id', id);
-      if (error) throw error;
+      await api.delete(`/api/admin/customer-reviews/${id}`);
       toast({ title: 'Review deleted' });
       fetchReviews();
     } catch (error: any) {

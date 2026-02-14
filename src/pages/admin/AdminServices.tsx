@@ -13,7 +13,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 
@@ -53,12 +53,7 @@ export default function AdminServices() {
 
   const fetchServices = async () => {
     try {
-      const { data, error } = await supabase
-        .from('services')
-        .select('*')
-        .order('display_order');
-
-      if (error) throw error;
+      const data = await api.get('/api/admin/services');
       setServices(data || []);
     } catch (error) {
       console.error('Error fetching services:', error);
@@ -82,19 +77,10 @@ export default function AdminServices() {
       };
 
       if (editingService) {
-        const { error } = await supabase
-          .from('services')
-          .update(serviceData)
-          .eq('id', editingService.id);
-
-        if (error) throw error;
+        await api.put(`/api/admin/services/${editingService.id}`, serviceData);
         toast({ title: 'Service updated' });
       } else {
-        const { error } = await supabase
-          .from('services')
-          .insert([serviceData]);
-
-        if (error) throw error;
+        await api.post('/api/admin/services', serviceData);
         toast({ title: 'Service created' });
       }
 
@@ -124,8 +110,7 @@ export default function AdminServices() {
     if (!confirm('Are you sure you want to delete this service?')) return;
 
     try {
-      const { error } = await supabase.from('services').delete().eq('id', id);
-      if (error) throw error;
+      await api.delete(`/api/admin/services/${id}`);
       toast({ title: 'Service deleted' });
       fetchServices();
     } catch (error: any) {

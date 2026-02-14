@@ -26,7 +26,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Address } from '@/types/database';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -98,14 +98,10 @@ export default function PaymentPage() {
       return;
     }
     if (addressId) {
-      supabase
-        .from('addresses')
-        .select('*')
-        .eq('id', addressId)
-        .single()
-        .then(({ data }) => {
-          if (data) setAddress(data as Address);
-        });
+      api.get('/api/addresses').then((data: Address[]) => {
+        const addr = data?.find((a: Address) => a.id === addressId);
+        if (addr) setAddress(addr);
+      }).catch(() => {});
     }
   }, [user, items, addressId, navigate]);
 
@@ -160,27 +156,7 @@ export default function PaymentPage() {
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     try {
-      const { data: order, error: orderError } = await supabase
-        .from('orders')
-        .insert({
-          user_id: user.id,
-          order_number: '',
-          subtotal,
-          tax_amount: tax,
-          shipping_amount: shipping,
-          total_amount: total,
-          shipping_address: address as any,
-          billing_address: address as any,
-          payment_method: paymentMethod,
-          payment_status: paymentMethod === 'cod' ? 'pending' : 'paid',
-        })
-        .select()
-        .single();
-
-      if (orderError) throw orderError;
-
       const orderItems = items.map((item) => ({
-        order_id: order.id,
         product_id: item.productId,
         product_name: item.name,
         quantity: item.quantity,
@@ -188,11 +164,17 @@ export default function PaymentPage() {
         total_price: item.price * item.quantity,
       }));
 
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert(orderItems);
-
-      if (itemsError) throw itemsError;
+      const order = await api.post('/api/orders', {
+        subtotal,
+        tax_amount: tax,
+        shipping_amount: shipping,
+        total_amount: total,
+        shipping_address: address,
+        billing_address: address,
+        payment_method: paymentMethod,
+        payment_status: paymentMethod === 'cod' ? 'pending' : 'paid',
+        items: orderItems,
+      });
 
       setPaymentSuccess(true);
       clearCart();
