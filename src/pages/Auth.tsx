@@ -24,7 +24,7 @@ const Auth = () => {
   }, [user, authLoading, navigate, redirectTo]);
 
   const handleSuccess = () => {
-    navigate(redirectTo);
+    navigate('/');
   };
 
   if (authLoading) {
