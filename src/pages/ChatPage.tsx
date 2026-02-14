@@ -93,6 +93,7 @@ export default function ChatPage() {
   const [existingRefId, setExistingRefId] = useState("");
   const [copied, setCopied] = useState(false);
   const [history, setHistory] = useState<ChatHistoryEntry[]>(getHistory());
+  const [dbConversations, setDbConversations] = useState<ChatHistoryEntry[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const notificationSoundRef = useRef<HTMLAudioElement | null>(null);
 
@@ -100,6 +101,36 @@ export default function ChatPage() {
     notificationSoundRef.current = new Audio('/notification.mp3');
     notificationSoundRef.current.volume = 0.5;
   }, []);
+
+  useEffect(() => {
+    if (!user) {
+      setDbConversations([]);
+      return;
+    }
+    const fetchUserConversations = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('conversations')
+          .select('*')
+          .or(`customer_phone.eq.${user.id},customer_name.eq.${user.email}`)
+          .order('last_message_at', { ascending: false, nullsFirst: false });
+        if (error) throw error;
+        if (data && data.length > 0) {
+          const entries: ChatHistoryEntry[] = data.map((conv: any) => ({
+            refId: conv.ref_id,
+            conversationId: conv.id,
+            lastMessage: conv.last_message_preview || '',
+            lastMessageAt: conv.last_message_at || conv.created_at,
+            status: conv.status || 'open',
+          }));
+          setDbConversations(entries);
+        }
+      } catch (err) {
+        console.error('Error fetching user conversations:', err);
+      }
+    };
+    fetchUserConversations();
+  }, [user]);
 
   const fetchMessages = useCallback(async (showLoader = false) => {
     if (!refId || !conversationId) return;
@@ -180,7 +211,12 @@ export default function ChatPage() {
   const startNewConversation = async () => {
     const newRefId = generateRefId();
     try {
-      const { data, error } = await supabase.from('conversations').insert({ ref_id: newRefId }).select().single();
+      const insertData: any = { ref_id: newRefId };
+      if (user) {
+        insertData.customer_phone = user.id;
+        insertData.customer_name = user.email;
+      }
+      const { data, error } = await supabase.from('conversations').insert(insertData).select().single();
       if (error) throw error;
       setSession(newRefId, data.id);
       setShowStartScreen(false);
@@ -351,7 +387,16 @@ export default function ChatPage() {
             )}
 
             {/* Previous Conversations */}
-            {user && history.length > 0 && (
+            {user && (() => {
+              const mergedMap = new Map<string, ChatHistoryEntry>();
+              dbConversations.forEach(e => mergedMap.set(e.refId, e));
+              history.forEach(e => {
+                if (!mergedMap.has(e.refId)) mergedMap.set(e.refId, e);
+              });
+              const allConversations = Array.from(mergedMap.values()).sort((a, b) =>
+                new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
+              );
+              return allConversations.length > 0 ? (
               <div className="space-y-3">
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
@@ -361,7 +406,7 @@ export default function ChatPage() {
                 </div>
 
                 <div className="space-y-2">
-                  {history.map((entry) => (
+                  {allConversations.map((entry) => (
                     <button
                       key={entry.refId}
                       onClick={() => resumeFromHistory(entry)}
@@ -396,7 +441,8 @@ export default function ChatPage() {
                   ))}
                 </div>
               </div>
-            )}
+              ) : null;
+            })()}
 
             {/* Manual Resume */}
             {user && (
