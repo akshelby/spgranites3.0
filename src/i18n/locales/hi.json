@@ -34,7 +34,7 @@
     "awards": "पुरस्कार"
   },
   "categories": {
-    "title": "श्रेणियां खोजें",
+    "title": "SP Granites खोजें",
     "subtitle": "हर स्थान के लिए प्रीमियम स्टोन सतहें",
     "kitchenSlab": "किचन स्लैब",
     "kitchenSlabDesc": "प्रीमियम किचन काउंटरटॉप",
@@ -53,7 +53,11 @@
     "freeEstimation": "मुफ्त अनुमान",
     "freeEstimationDesc": "मुफ्त कोटेशन प्राप्त करें",
     "callUs": "हमें कॉल करें",
-    "callUsDesc": "हमारी टीम से बात करें"
+    "callUsDesc": "हमारी टीम से बात करें",
+    "whatsapp": "WhatsApp",
+    "whatsappDesc": "WhatsApp पर चैट करें",
+    "chatSupport": "चैट सहायता",
+    "chatSupportDesc": "हमसे लाइव चैट करें"
   },
   "featured": {
     "label": "विशेष संग्रह",

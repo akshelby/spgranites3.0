@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Gem, Bath, Utensils, LayoutGrid, Headset, Store, FileText, Phone } from 'lucide-react';
+import { Gem, Bath, Utensils, LayoutGrid, Headset, Store, FileText, Phone, MessageCircle, MessageSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { CategoryItem } from './CategoryItem';
 import { BhrundhavanIcon } from './BhrundhavanIcon';
@@ -109,6 +109,26 @@ const categories: Category[] = [
     bgColor: 'bg-blue-50 dark:bg-blue-900/30',
     borderColor: 'border-blue-200 dark:border-blue-800',
   },
+  {
+    id: 'whatsapp',
+    nameKey: 'categories.whatsapp',
+    icon: MessageSquare,
+    link: 'https://wa.me/919876543210',
+    descriptionKey: 'categories.whatsappDesc',
+    iconColor: 'text-green-600 dark:text-green-400',
+    bgColor: 'bg-green-50 dark:bg-green-900/30',
+    borderColor: 'border-green-200 dark:border-green-800',
+  },
+  {
+    id: 'chat-support',
+    nameKey: 'categories.chatSupport',
+    icon: MessageCircle,
+    link: '#chat',
+    descriptionKey: 'categories.chatSupportDesc',
+    iconColor: 'text-purple-700 dark:text-purple-400',
+    bgColor: 'bg-purple-50 dark:bg-purple-900/30',
+    borderColor: 'border-purple-200 dark:border-purple-800',
+  },
 ];
 
 const containerVariants = {
@@ -124,6 +144,10 @@ const containerVariants = {
 export function CategoriesSection() {
   const { t } = useTranslation();
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
+
+  const openChatWidget = () => {
+    window.dispatchEvent(new CustomEvent('open-chat-widget'));
+  };
 
   return (
     <section className="py-8 sm:py-12 md:py-16 bg-background" data-testid="categories-section">
@@ -162,7 +186,11 @@ export function CategoriesSection() {
               bgColor={category.bgColor}
               borderColor={category.borderColor}
               index={index}
-              onClick={category.id === 'contact-us' ? () => setContactDialogOpen(true) : undefined}
+              onClick={
+                category.id === 'contact-us' ? () => setContactDialogOpen(true) :
+                category.id === 'chat-support' ? openChatWidget :
+                undefined
+              }
             />
           ))}
         </motion.div>

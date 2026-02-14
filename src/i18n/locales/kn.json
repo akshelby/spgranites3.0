@@ -34,7 +34,7 @@
     "awards": "ಪ್ರಶಸ್ತಿಗಳು"
   },
   "categories": {
-    "title": "ವರ್ಗಗಳನ್ನು ಅನ್ವೇಷಿಸಿ",
+    "title": "SP Granites ಅನ್ವೇಷಿಸಿ",
     "subtitle": "ಪ್ರತಿ ಸ್ಥಳಕ್ಕಾಗಿ ಪ್ರೀಮಿಯಂ ಕಲ್ಲಿನ ಮೇಲ್ಮೈಗಳು",
     "kitchenSlab": "ಅಡುಗೆ ಸ್ಲಾಬ್",
     "kitchenSlabDesc": "ಪ್ರೀಮಿಯಂ ಅಡುಗೆ ಕೌಂಟರ್‌ಟಾಪ್",
@@ -53,7 +53,11 @@
     "freeEstimation": "ಉಚಿತ ಅಂದಾಜು",
     "freeEstimationDesc": "ಉಚಿತ ಕೋಟ್ ಪಡೆಯಿರಿ",
     "callUs": "ನಮಗೆ ಕರೆ ಮಾಡಿ",
-    "callUsDesc": "ನಮ್ಮ ತಂಡದೊಂದಿಗೆ ಮಾತನಾಡಿ"
+    "callUsDesc": "ನಮ್ಮ ತಂಡದೊಂದಿಗೆ ಮಾತನಾಡಿ",
+    "whatsapp": "WhatsApp",
+    "whatsappDesc": "WhatsApp ನಲ್ಲಿ ಚಾಟ್ ಮಾಡಿ",
+    "chatSupport": "ಚಾಟ್ ಸಹಾಯ",
+    "chatSupportDesc": "ನಮ್ಮೊಂದಿಗೆ ಲೈವ್ ಚಾಟ್"
   },
   "featured": {
     "label": "ವಿಶೇಷ ಸಂಗ್ರಹ",
