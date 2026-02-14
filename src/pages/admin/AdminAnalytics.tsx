@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AdminLayout, StatsCard, PageHeader } from '@/components/admin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Eye,
   Globe,
@@ -41,21 +41,26 @@ export default function AdminAnalytics() {
   const fetchAnalytics = async () => {
     try {
       const now = new Date();
-      const data = await api.get('/api/admin/analytics');
-      const visitors = data?.visitors || [];
+      const { data: visitors, error } = await supabase
+        .from('site_visitors')
+        .select('*')
+        .order('visited_at', { ascending: false });
+      if (error) throw error;
+
+      const visitorList = visitors || [];
 
       const todayStart = startOfDay(now);
       const weekStart = startOfDay(subDays(now, 7));
       const monthStart = startOfDay(subDays(now, 30));
 
-      let total = visitors.length;
+      let total = visitorList.length;
       let today = 0;
       let thisWeek = 0;
       let thisMonth = 0;
       const dailyMap = new Map<string, number>();
       const pageMap = new Map<string, number>();
 
-      visitors.forEach((v: any) => {
+      visitorList.forEach((v: any) => {
         const visitDate = new Date(v.visited_at);
         if (visitDate >= todayStart) today++;
         if (visitDate >= weekStart) thisWeek++;

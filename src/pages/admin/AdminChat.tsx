@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { api } from "@/lib/api";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Message, Conversation } from "@/components/chat/types";
 import { MessageBubble } from "@/components/chat/MessageBubble";
@@ -42,7 +42,11 @@ export default function AdminChat() {
 
   const loadConversations = useCallback(async () => {
     try {
-      const data = await api.get('/api/admin/conversations');
+      const { data, error } = await supabase
+        .from('conversations')
+        .select('*')
+        .order('last_message_at', { ascending: false });
+      if (error) throw error;
       const convs = (data as Conversation[]) || [];
       setConversations(convs);
       setStats({
@@ -66,7 +70,12 @@ export default function AdminChat() {
   const fetchMessages = useCallback(async () => {
     if (!selectedConversation) return;
     try {
-      const data = await api.get(`/api/conversations/${selectedConversation.id}/messages`);
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('conversation_id', selectedConversation.id)
+        .order('created_at', { ascending: true });
+      if (error) throw error;
       setMessages(prev => {
         const confirmed = (data as Message[]) || [];
         const pending = prev.filter(m => m._tempId && m._status === 'sending');
@@ -114,13 +123,18 @@ export default function AdminChat() {
     
     setIsSending(true);
     try {
-      const data = await api.post('/api/messages', {
-        conversation_id: selectedConversation.id,
-        ref_id: selectedConversation.ref_id,
-        sender_type: 'staff',
-        sender_name: 'Support Team',
-        content_text: text,
-      });
+      const { data, error } = await supabase
+        .from('messages')
+        .insert({
+          conversation_id: selectedConversation.id,
+          ref_id: selectedConversation.ref_id,
+          sender_type: 'staff',
+          sender_name: 'Support Team',
+          content_text: text,
+        })
+        .select()
+        .single();
+      if (error) throw error;
       setMessages(prev => prev.map(m => m._tempId === tempId ? { ...data as Message, _status: 'sent' as const } : m));
     } catch (err) {
       console.error('Error sending message:', err);
@@ -141,14 +155,17 @@ export default function AdminChat() {
         const dataUrl = reader.result as string;
         const mediaType = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : 'audio';
         try {
-          await api.post('/api/messages', {
-            conversation_id: selectedConversation.id,
-            ref_id: selectedConversation.ref_id,
-            sender_type: 'staff',
-            sender_name: 'Support Team',
-            media_url: dataUrl,
-            media_type: mediaType,
-          });
+          const { error: insertError } = await supabase
+            .from('messages')
+            .insert({
+              conversation_id: selectedConversation.id,
+              ref_id: selectedConversation.ref_id,
+              sender_type: 'staff',
+              sender_name: 'Support Team',
+              media_url: dataUrl,
+              media_type: mediaType,
+            });
+          if (insertError) throw insertError;
         } catch (err) {
           console.error('Error sending media:', err);
           toast({ title: "Error", description: "Failed to send media.", variant: "destructive" });
@@ -168,7 +185,11 @@ export default function AdminChat() {
   const handleCloseConversation = async () => {
     if (!selectedConversation) return;
     try {
-      await api.put(`/api/admin/conversations/${selectedConversation.id}`, { status: 'closed' });
+      const { error } = await supabase
+        .from('conversations')
+        .update({ status: 'closed' })
+        .eq('id', selectedConversation.id);
+      if (error) throw error;
       setSelectedConversation({ ...selectedConversation, status: 'closed' });
       toast({ title: "Conversation Closed", description: "The conversation has been marked as closed." });
     } catch (err) {
@@ -179,7 +200,11 @@ export default function AdminChat() {
   const handleReopenConversation = async () => {
     if (!selectedConversation) return;
     try {
-      await api.put(`/api/admin/conversations/${selectedConversation.id}`, { status: 'open' });
+      const { error } = await supabase
+        .from('conversations')
+        .update({ status: 'open' })
+        .eq('id', selectedConversation.id);
+      if (error) throw error;
       setSelectedConversation({ ...selectedConversation, status: 'open' });
       toast({ title: "Conversation Reopened", description: "The conversation is now open." });
     } catch (err) {

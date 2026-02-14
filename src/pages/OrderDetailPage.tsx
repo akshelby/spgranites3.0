@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/hooks/useAuth';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { Order, OrderItem } from '@/types/database';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -41,10 +41,13 @@ export default function OrderDetailPage() {
 
   const fetchOrder = async () => {
     try {
-      const data = await api.get(`/api/orders/${orderId}`);
-      if (data) {
-        setOrder(data as unknown as Order);
-        if (data.items) setItems(data.items as OrderItem[]);
+      const { data: orderData, error: orderError } = await supabase.from('orders').select('*').eq('id', orderId!).eq('user_id', user!.id).single();
+      if (orderError) throw orderError;
+      if (orderData) {
+        setOrder(orderData as unknown as Order);
+        const { data: itemsData, error: itemsError } = await supabase.from('order_items').select('*').eq('order_id', orderData.id);
+        if (itemsError) throw itemsError;
+        if (itemsData) setItems(itemsData as OrderItem[]);
       }
     } catch {}
     setLoading(false);

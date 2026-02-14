@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Star, Quote } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { Testimonial } from '@/types/database';
 
 export function TestimonialsSection() {
@@ -15,7 +15,8 @@ export function TestimonialsSection() {
 
   const fetchTestimonials = async () => {
     try {
-      const data = await api.get('/api/testimonials');
+      const { data, error } = await supabase.from('testimonials').select('*').eq('is_active', true).order('display_order', { ascending: true });
+      if (error) throw error;
       if (data && data.length > 0) {
         setTestimonials(data as Testimonial[]);
       } else {

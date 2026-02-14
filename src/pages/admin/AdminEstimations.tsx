@@ -30,7 +30,7 @@ import {
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent } from '@/components/ui/card';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import {
   Eye,
@@ -225,7 +225,11 @@ export default function AdminEstimations() {
   const fetchEstimations = async () => {
     setLoading(true);
     try {
-      const data = await api.get('/api/admin/estimations');
+      const { data, error } = await supabase
+        .from('estimation_enquiries')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
       setEstimations(data || []);
     } catch (error) {
       console.error('Error fetching estimations:', error);
@@ -249,11 +253,15 @@ export default function AdminEstimations() {
     if (!selectedEstimation) return;
 
     try {
-      await api.put(`/api/admin/estimations/${selectedEstimation.id}`, {
-        status: editData.status,
-        estimated_amount: editData.estimated_amount ? parseFloat(editData.estimated_amount) : null,
-        admin_notes: editData.admin_notes || null,
-      });
+      const { error } = await supabase
+        .from('estimation_enquiries')
+        .update({
+          status: editData.status,
+          estimated_amount: editData.estimated_amount ? parseFloat(editData.estimated_amount) : null,
+          admin_notes: editData.admin_notes || null,
+        })
+        .eq('id', selectedEstimation.id);
+      if (error) throw error;
       toast({ title: 'Estimation updated successfully' });
       fetchEstimations();
     } catch (error: any) {
@@ -265,7 +273,11 @@ export default function AdminEstimations() {
     if (!confirm('Are you sure you want to delete this estimation?')) return;
 
     try {
-      await api.delete(`/api/admin/estimations/${id}`);
+      const { error } = await supabase
+        .from('estimation_enquiries')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
       toast({ title: 'Estimation deleted' });
       setSelectedEstimation(null);
       fetchEstimations();

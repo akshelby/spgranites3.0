@@ -6,7 +6,8 @@ import { MainLayout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { useWishlist } from '@/contexts/WishlistContext';
 import { useCart } from '@/contexts/CartContext';
-import { api } from '@/lib/api';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { Product } from '@/types/database';
 import { useTranslation } from 'react-i18next';
 
@@ -14,6 +15,7 @@ export default function WishlistPage() {
   const { t } = useTranslation();
   const { items, removeFromWishlist } = useWishlist();
   const { addToCart } = useCart();
+  const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -22,15 +24,17 @@ export default function WishlistPage() {
   }, [items]);
 
   const fetchProducts = async () => {
-    if (items.length === 0) {
+    if (items.length === 0 || !user) {
       setProducts([]);
       setLoading(false);
       return;
     }
 
     try {
-      const data = await api.get('/api/wishlist');
-      if (data) setProducts(data as Product[]);
+      const productIds = items.map((i) => i.productId);
+      const { data, error } = await supabase.from('products').select('*, category:product_categories(name)').in('id', productIds);
+      if (error) throw error;
+      if (data) setProducts(data as any as Product[]);
     } catch {}
     setLoading(false);
   };

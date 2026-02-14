@@ -13,7 +13,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Pencil, Trash2, MapPin, Phone, Mail, ExternalLink } from 'lucide-react';
 
@@ -52,7 +52,11 @@ export default function AdminLocations() {
 
   const fetchLocations = async () => {
     try {
-      const data = await api.get('/api/admin/locations');
+      const { data, error } = await supabase
+        .from('store_locations')
+        .select('*')
+        .order('display_order', { ascending: true });
+      if (error) throw error;
       setLocations(data || []);
     } catch (error) {
       console.error('Error fetching locations:', error);
@@ -76,10 +80,17 @@ export default function AdminLocations() {
       };
 
       if (editingLocation) {
-        await api.put(`/api/admin/locations/${editingLocation.id}`, locationData);
+        const { error } = await supabase
+          .from('store_locations')
+          .update(locationData)
+          .eq('id', editingLocation.id);
+        if (error) throw error;
         toast({ title: 'Location updated' });
       } else {
-        await api.post('/api/admin/locations', locationData);
+        const { error } = await supabase
+          .from('store_locations')
+          .insert(locationData);
+        if (error) throw error;
         toast({ title: 'Location created' });
       }
 
@@ -109,7 +120,11 @@ export default function AdminLocations() {
     if (!confirm('Are you sure you want to delete this location?')) return;
 
     try {
-      await api.delete(`/api/admin/locations/${id}`);
+      const { error } = await supabase
+        .from('store_locations')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
       toast({ title: 'Location deleted' });
       fetchLocations();
     } catch (error: any) {

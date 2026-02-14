@@ -4,7 +4,7 @@ import { ArrowRight, ChevronLeft, ChevronRight, Gem } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 
 import blackGraniteImg from '@/assets/products/black-granite.jpg';
 import kitchenCountertopsImg from '@/assets/categories/kitchen-countertops.jpg';
@@ -45,7 +45,8 @@ export function HeroSection() {
 
   const fetchCarouselCards = async () => {
     try {
-      const data = await api.get('/api/hero-carousel/cards');
+      const { data, error } = await supabase.from('hero_carousel_cards').select('*').eq('is_active', true).order('display_order', { ascending: true });
+      if (error) throw error;
       if (data && data.length > 0) {
         const mappedCards = data.map((card: any) => ({
           ...card,

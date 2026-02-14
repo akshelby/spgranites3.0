@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Pencil, Trash2, Image, Settings } from 'lucide-react';
 
@@ -63,17 +63,26 @@ export default function AdminCarousel() {
 
   const fetchData = async () => {
     try {
-      const cardsData = await api.get('/api/admin/carousel/cards');
-      setCards(cardsData || []);
+      const { data: cardsData, error: cardsError } = await supabase
+        .from('hero_carousel_cards' as any)
+        .select('*')
+        .order('display_order', { ascending: true });
+      if (cardsError) throw cardsError;
+      setCards((cardsData as any) || []);
+
       try {
-        const settingsRes = await api.get('/api/admin/carousel/settings');
-        if (settingsRes) {
-          setSettings(settingsRes);
+        const { data: settingsRes, error: settingsError } = await supabase
+          .from('hero_carousel_settings' as any)
+          .select('*')
+          .limit(1)
+          .single();
+        if (!settingsError && settingsRes) {
+          setSettings(settingsRes as any);
           setSettingsData({
-            auto_rotate: settingsRes.auto_rotate,
-            rotation_speed: settingsRes.rotation_speed,
-            initial_visible_count: settingsRes.initial_visible_count,
-            scroll_sensitivity: settingsRes.scroll_sensitivity,
+            auto_rotate: (settingsRes as any).auto_rotate,
+            rotation_speed: (settingsRes as any).rotation_speed,
+            initial_visible_count: (settingsRes as any).initial_visible_count,
+            scroll_sensitivity: (settingsRes as any).scroll_sensitivity,
           });
         }
       } catch (e) {
@@ -97,10 +106,17 @@ export default function AdminCarousel() {
       };
 
       if (editingCard) {
-        await api.put(`/api/admin/carousel/cards/${editingCard.id}`, cardData);
+        const { error } = await supabase
+          .from('hero_carousel_cards' as any)
+          .update(cardData)
+          .eq('id', editingCard.id);
+        if (error) throw error;
         toast({ title: 'Card updated' });
       } else {
-        await api.post('/api/admin/carousel/cards', cardData);
+        const { error } = await supabase
+          .from('hero_carousel_cards' as any)
+          .insert(cardData);
+        if (error) throw error;
         toast({ title: 'Card created' });
       }
 
@@ -114,7 +130,18 @@ export default function AdminCarousel() {
 
   const handleSaveSettings = async () => {
     try {
-      await api.put('/api/admin/carousel/settings', settingsData);
+      if (settings) {
+        const { error } = await supabase
+          .from('hero_carousel_settings' as any)
+          .update(settingsData)
+          .eq('id', settings.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('hero_carousel_settings' as any)
+          .insert(settingsData);
+        if (error) throw error;
+      }
       toast({ title: 'Settings saved' });
       setSettingsOpen(false);
       fetchData();
@@ -138,7 +165,11 @@ export default function AdminCarousel() {
     if (!confirm('Are you sure you want to delete this card?')) return;
 
     try {
-      await api.delete(`/api/admin/carousel/cards/${id}`);
+      const { error } = await supabase
+        .from('hero_carousel_cards' as any)
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
       toast({ title: 'Card deleted' });
       fetchData();
     } catch (error: any) {

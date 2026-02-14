@@ -6,7 +6,7 @@ import { MainLayout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { Product } from '@/types/database';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
@@ -50,15 +50,18 @@ export default function ProductDetailPage() {
   const fetchProduct = async () => {
     setLoading(true);
     try {
-      const data = await api.get(`/api/products/${slug}`);
-      if (data) {
-        setProduct(data as Product);
-        if (data.reviews) {
-          setReviews(data.reviews as ProductReview[]);
+      const { data: productData, error: productError } = await supabase.from('products').select('*').eq('slug', slug).single();
+      if (productError) throw productError;
+      if (productData) {
+        let category = null;
+        if (productData.category_id) {
+          const { data: catData } = await supabase.from('product_categories').select('*').eq('id', productData.category_id).single();
+          category = catData;
         }
-        if (data.relatedProducts) {
-          setRelatedProducts(data.relatedProducts as Product[]);
-        }
+        const { data: reviewsData } = await supabase.from('product_reviews').select('*').eq('product_id', productData.id).eq('is_approved', true);
+        const fullProduct = { ...productData, category, reviews: reviewsData || [] } as Product;
+        setProduct(fullProduct);
+        setReviews((reviewsData || []) as ProductReview[]);
       }
     } catch {}
     setLoading(false);
@@ -72,17 +75,19 @@ export default function ProductDetailPage() {
     if (!user || !product) return;
     setSubmittingReview(true);
     try {
-      await api.post('/api/product-reviews', {
+      const { error } = await supabase.from('product_reviews').insert({
         product_id: product.id,
         rating: reviewRating,
         review_text: reviewText || null,
-      });
+        user_id: user.id,
+      }).select().single();
+      if (error) throw error;
       toast.success(t('products.reviewSubmitted'));
       setReviewText('');
       setReviewRating(5);
       fetchProduct();
     } catch (err: any) {
-      if (err?.message?.includes('already')) {
+      if (err?.message?.includes('already') || err?.code === '23505') {
         toast.error(t('products.alreadyReviewed'));
       } else {
         toast.error(t('products.reviewFailed'));

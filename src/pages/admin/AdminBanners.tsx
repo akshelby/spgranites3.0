@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Pencil, Trash2, Image } from 'lucide-react';
 
@@ -51,8 +51,12 @@ export default function AdminBanners() {
 
   const fetchBanners = async () => {
     try {
-      const data = await api.get('/api/admin/banners');
-      setBanners(data || []);
+      const { data, error } = await supabase
+        .from('banners')
+        .select('*')
+        .order('display_order', { ascending: true });
+      if (error) throw error;
+      setBanners((data as any) || []);
     } catch (error) {
       console.error('Error fetching banners:', error);
     } finally {
@@ -75,10 +79,17 @@ export default function AdminBanners() {
       };
 
       if (editingBanner) {
-        await api.put(`/api/admin/banners/${editingBanner.id}`, bannerData);
+        const { error } = await supabase
+          .from('banners')
+          .update(bannerData as any)
+          .eq('id', editingBanner.id);
+        if (error) throw error;
         toast({ title: 'Banner updated' });
       } else {
-        await api.post('/api/admin/banners', bannerData);
+        const { error } = await supabase
+          .from('banners')
+          .insert(bannerData as any);
+        if (error) throw error;
         toast({ title: 'Banner created' });
       }
 
@@ -108,7 +119,11 @@ export default function AdminBanners() {
     if (!confirm('Are you sure you want to delete this banner?')) return;
 
     try {
-      await api.delete(`/api/admin/banners/${id}`);
+      const { error } = await supabase
+        .from('banners')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
       toast({ title: 'Banner deleted' });
       fetchBanners();
     } catch (error: any) {

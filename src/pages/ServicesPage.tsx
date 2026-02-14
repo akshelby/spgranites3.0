@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MainLayout } from '@/components/layout';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { Service } from '@/types/database';
 import { useTranslation } from 'react-i18next';
 
@@ -16,7 +16,8 @@ export default function ServicesPage() {
 
   const fetchServices = async () => {
     try {
-      const data = await api.get('/api/services');
+      const { data, error } = await supabase.from('services').select('*').eq('is_active', true).order('display_order', { ascending: true });
+      if (error) throw error;
       if (data) setServices(data as Service[]);
     } catch {}
     setLoading(false);

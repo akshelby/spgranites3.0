@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Search, Shield } from 'lucide-react';
 import { format } from 'date-fns';
@@ -40,8 +40,24 @@ export default function AdminUsers() {
 
   const fetchUsers = async () => {
     try {
-      const data = await api.get('/api/admin/users');
-      setUsers(data || []);
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (profilesError) throw profilesError;
+
+      const { data: roles, error: rolesError } = await supabase
+        .from('user_roles')
+        .select('*');
+      if (rolesError) throw rolesError;
+
+      const rolesMap = new Map((roles || []).map((r: any) => [r.user_id, r.role]));
+      const usersWithRoles = (profiles || []).map((p: any) => ({
+        ...p,
+        user_id: p.user_id || p.id,
+        role: rolesMap.get(p.user_id || p.id) || 'user',
+      }));
+      setUsers(usersWithRoles);
     } catch (error) {
       console.error('Error fetching users:', error);
     } finally {
@@ -51,7 +67,25 @@ export default function AdminUsers() {
 
   const updateUserRole = async (userId: string, newRole: string) => {
     try {
-      await api.put(`/api/admin/users/${userId}/role`, { role: newRole });
+      const { data: existing } = await supabase
+        .from('user_roles')
+        .select('*')
+        .eq('user_id', userId)
+        .single();
+
+      if (existing) {
+        const { error } = await supabase
+          .from('user_roles')
+          .update({ role: newRole as any })
+          .eq('user_id', userId);
+        if (error) throw error;
+      } else {
+        const insertData: any = { user_id: userId, role: newRole };
+        const { error } = await supabase
+          .from('user_roles')
+          .insert(insertData);
+        if (error) throw error;
+      }
       toast({ title: 'User role updated' });
       fetchUsers();
     } catch (error: any) {

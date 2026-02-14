@@ -4,7 +4,7 @@ import { ArrowLeft, Bell, BellOff, Copy, Check, MessageSquare, Clock, ChevronRig
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { api } from "@/lib/api";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { Message } from "@/components/chat/types";
@@ -105,7 +105,8 @@ export default function ChatPage() {
     if (!refId || !conversationId) return;
     if (showLoader) setIsLoading(true);
     try {
-      const data = await api.get(`/api/conversations/${conversationId}/messages`);
+      const { data, error } = await supabase.from('messages').select('*').eq('conversation_id', conversationId).order('created_at', { ascending: true });
+      if (error) throw error;
       setMessages(prev => {
         const confirmed = (data as Message[]) || [];
         const pending = prev.filter(m => m._tempId && m._status === 'sending');
@@ -179,7 +180,8 @@ export default function ChatPage() {
   const startNewConversation = async () => {
     const newRefId = generateRefId();
     try {
-      const data = await api.post('/api/conversations', { ref_id: newRefId });
+      const { data, error } = await supabase.from('conversations').insert({ ref_id: newRefId }).select().single();
+      if (error) throw error;
       setSession(newRefId, data.id);
       setShowStartScreen(false);
     } catch {
@@ -201,13 +203,13 @@ export default function ChatPage() {
   const resumeConversation = async () => {
     if (!existingRefId.trim()) return;
     try {
-      const data = await api.get(`/api/conversations?ref_id=${existingRefId.trim().toUpperCase()}`);
-      if (!data || (Array.isArray(data) && data.length === 0)) {
+      const { data, error } = await supabase.from('conversations').select('*').eq('ref_id', existingRefId.trim().toUpperCase()).maybeSingle();
+      if (error) throw error;
+      if (!data) {
         toast({ title: "Not Found", description: "No conversation found with this Reference ID.", variant: "destructive" });
         return;
       }
-      const conv = Array.isArray(data) ? data[0] : data;
-      setSession(conv.ref_id, conv.id);
+      setSession(data.ref_id, data.id);
       setShowStartScreen(false);
     } catch {
       toast({ title: "Not Found", description: "No conversation found with this Reference ID.", variant: "destructive" });
@@ -225,8 +227,10 @@ export default function ChatPage() {
     };
     setMessages(prev => [...prev, optimisticMessage]);
     try {
-      const data = await api.post('/api/messages', { conversation_id: conversationId, ref_id: refId, sender_type: 'customer', content_text: text });
-      setMessages(prev => prev.map(m => m._tempId === tempId ? { ...data as Message, _status: 'sent' as const } : m));
+      const { data: msg, error } = await supabase.from('messages').insert({ conversation_id: conversationId, ref_id: refId, sender_type: 'customer', content_text: text }).select().single();
+      if (error) throw error;
+      await supabase.from('conversations').update({ last_message_at: msg.created_at, last_message_preview: msg.content_text?.substring(0, 100), updated_at: new Date().toISOString() }).eq('id', msg.conversation_id);
+      setMessages(prev => prev.map(m => m._tempId === tempId ? { ...msg as Message, _status: 'sent' as const } : m));
     } catch {
       setMessages(prev => prev.map(m => m._tempId === tempId ? { ...m, _status: 'failed' as const } : m));
       toast({ title: "Error", description: "Failed to send message.", variant: "destructive" });
@@ -239,9 +243,11 @@ export default function ChatPage() {
       const reader = new FileReader();
       reader.onload = async () => {
         const dataUrl = reader.result as string;
-        await api.post('/api/messages', {
+        const { data: msg, error } = await supabase.from('messages').insert({
           conversation_id: conversationId, ref_id: refId, sender_type: 'customer', media_url: dataUrl, media_type: type,
-        });
+        }).select().single();
+        if (error) throw error;
+        await supabase.from('conversations').update({ last_message_at: msg.created_at, last_message_preview: `[Media: ${type}]`, updated_at: new Date().toISOString() }).eq('id', msg.conversation_id);
         fetchMessages(false);
       };
       reader.readAsDataURL(file);

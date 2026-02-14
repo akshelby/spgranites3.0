@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { api, getToken, setToken, removeToken } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
+import type { Session, User } from '@supabase/supabase-js';
 
 type AppRole = 'admin' | 'moderator' | 'user';
 
@@ -10,7 +11,7 @@ interface AuthUser {
 
 interface AuthContextType {
   user: AuthUser | null;
-  session: { token: string } | null;
+  session: Session | null;
   role: AppRole | null;
   loading: boolean;
   signUp: (email: string, password: string) => Promise<{ error: Error | null }>;
@@ -20,65 +21,68 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function mapUser(user: User | null): AuthUser | null {
+  if (!user) return null;
+  return { id: user.id, email: user.email || '' };
+}
+
+async function fetchRole(userId: string): Promise<AppRole> {
+  const { data } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', userId)
+    .maybeSingle();
+  return (data?.role as AppRole) || 'user';
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
-  const [session, setSession] = useState<{ token: string } | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = getToken();
-    if (token) {
-      api.get('/api/auth/me')
-        .then((data) => {
-          if (data.user) {
-            setUser(data.user);
-            setSession({ token });
-            setRole(data.role as AppRole);
-          } else {
-            removeToken();
-          }
-        })
-        .catch(() => {
-          removeToken();
-        })
-        .finally(() => setLoading(false));
-    } else {
+    supabase.auth.getSession().then(async ({ data: { session: s } }) => {
+      setSession(s);
+      const mapped = mapUser(s?.user ?? null);
+      setUser(mapped);
+      if (mapped) {
+        const r = await fetchRole(mapped.id);
+        setRole(r);
+      }
       setLoading(false);
-    }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, s) => {
+      setSession(s);
+      const mapped = mapUser(s?.user ?? null);
+      setUser(mapped);
+      if (mapped) {
+        const r = await fetchRole(mapped.id);
+        setRole(r);
+      } else {
+        setRole(null);
+      }
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const signUp = async (email: string, password: string) => {
-    try {
-      const data = await api.post('/api/auth/signup', { email, password });
-      setToken(data.token);
-      setUser(data.user);
-      setSession({ token: data.token });
-      setRole('user');
-      return { error: null };
-    } catch (error: any) {
-      return { error: new Error(error.message) };
-    }
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) return { error: new Error(error.message) };
+    return { error: null };
   };
 
   const signIn = async (email: string, password: string) => {
-    try {
-      const data = await api.post('/api/auth/signin', { email, password });
-      setToken(data.token);
-      setUser(data.user);
-      setSession({ token: data.token });
-      setRole(data.role as AppRole);
-      return { error: null };
-    } catch (error: any) {
-      return { error: new Error(error.message) };
-    }
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { error: new Error(error.message) };
+    return { error: null };
   };
 
   const signOut = async () => {
-    try {
-      await api.post('/api/auth/signout');
-    } catch {}
-    removeToken();
+    await supabase.auth.signOut();
     setUser(null);
     setSession(null);
     setRole(null);

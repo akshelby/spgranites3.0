@@ -26,7 +26,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/hooks/useAuth';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { Address } from '@/types/database';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -97,11 +97,11 @@ export default function PaymentPage() {
       navigate('/cart');
       return;
     }
-    if (addressId) {
-      api.get('/api/addresses').then((data: Address[]) => {
-        const addr = data?.find((a: Address) => a.id === addressId);
-        if (addr) setAddress(addr);
-      }).catch(() => {});
+    if (addressId && user) {
+      supabase.from('addresses').select('*').eq('user_id', user.id).then(({ data }) => {
+        const addr = data?.find((a: any) => a.id === addressId);
+        if (addr) setAddress(addr as any as Address);
+      });
     }
   }, [user, items, addressId, navigate]);
 
@@ -164,17 +164,26 @@ export default function PaymentPage() {
         total_price: item.price * item.quantity,
       }));
 
-      const order = await api.post('/api/orders', {
+      const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+      const orderData: any = {
+        user_id: user!.id,
+        order_number: orderNumber,
         subtotal,
         tax_amount: tax,
         shipping_amount: shipping,
         total_amount: total,
         shipping_address: address,
         billing_address: address,
-        payment_method: paymentMethod,
         payment_status: paymentMethod === 'cod' ? 'pending' : 'paid',
-        items: orderItems,
-      });
+        status: 'pending',
+      };
+      const { data: order, error: orderError } = await supabase.from('orders').insert(orderData).select().single();
+      if (orderError || !order) throw orderError;
+
+      const { error: itemsError } = await supabase.from('order_items').insert(
+        orderItems.map((item) => ({ ...item, order_id: order.id }))
+      );
+      if (itemsError) throw itemsError;
 
       setPaymentSuccess(true);
       clearCart();

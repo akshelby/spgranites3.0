@@ -26,7 +26,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { User, MapPin, Lock, Plus, Trash2, Edit, Home, Building2, MapPinned, Star, Check } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { Profile, Address } from '@/types/database';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -105,22 +105,22 @@ export default function ProfilePage() {
 
   const fetchData = async () => {
     try {
-      const [profileData, addressData] = await Promise.all([
-        api.get('/api/profile'),
-        api.get('/api/addresses'),
+      const [profileRes, addressRes] = await Promise.all([
+        supabase.from('profiles').select('*').eq('user_id', user!.id).maybeSingle(),
+        supabase.from('addresses').select('*').eq('user_id', user!.id),
       ]);
 
-      if (profileData) {
-        setProfile(profileData as Profile);
+      if (profileRes.data) {
+        setProfile(profileRes.data as Profile);
         profileForm.reset({
-          full_name: profileData.full_name || '',
-          phone: profileData.phone || '',
-          alternate_phone: profileData.alternate_phone || '',
-          company_name: profileData.company_name || '',
-          gst_number: profileData.gst_number || '',
+          full_name: profileRes.data.full_name || '',
+          phone: profileRes.data.phone || '',
+          alternate_phone: profileRes.data.alternate_phone || '',
+          company_name: profileRes.data.company_name || '',
+          gst_number: profileRes.data.gst_number || '',
         });
       }
-      if (addressData) setAddresses(addressData as Address[]);
+      if (addressRes.data) setAddresses(addressRes.data as Address[]);
     } catch {}
     setLoading(false);
   };
@@ -128,7 +128,8 @@ export default function ProfilePage() {
   const onProfileSubmit = async (data: ProfileFormData) => {
     setSaving(true);
     try {
-      await api.put('/api/profile', data);
+      const { error } = await supabase.from('profiles').update(data).eq('user_id', user!.id).select().single();
+      if (error) throw error;
       toast.success(t('profile.profileUpdated'));
     } catch {
       toast.error(t('profile.profileFailed'));
@@ -140,15 +141,19 @@ export default function ProfilePage() {
   const onAddressSubmit = async (data: AddressFormData) => {
     try {
       if (editingAddress) {
-        await api.put(`/api/addresses/${editingAddress.id}`, { ...data, country: 'India' });
+        const { error } = await supabase.from('addresses').update({ ...data, country: 'India' }).eq('id', editingAddress.id).eq('user_id', user!.id).select().single();
+        if (error) throw error;
         toast.success(t('profile.addressUpdated'));
       } else {
         const isFirst = addresses.length === 0;
-        await api.post('/api/addresses', {
+        const insertData: any = {
           ...data,
           country: 'India',
           is_default: isFirst ? true : data.is_default,
-        });
+          user_id: user!.id,
+        };
+        const { error } = await supabase.from('addresses').insert(insertData).select().single();
+        if (error) throw error;
         toast.success(t('profile.addressAdded'));
       }
       setAddressDialogOpen(false);
@@ -173,7 +178,8 @@ export default function ProfilePage() {
 
   const deleteAddress = async (id: string) => {
     try {
-      await api.delete(`/api/addresses/${id}`);
+      const { error } = await supabase.from('addresses').delete().eq('id', id).eq('user_id', user!.id);
+      if (error) throw error;
       toast.success(t('profile.addressDeleted'));
       fetchData();
     } catch {
@@ -183,7 +189,8 @@ export default function ProfilePage() {
 
   const setDefaultAddress = async (id: string) => {
     try {
-      await api.put(`/api/addresses/${id}`, { is_default: true });
+      const { error } = await supabase.from('addresses').update({ is_default: true }).eq('id', id).eq('user_id', user!.id).select().single();
+      if (error) throw error;
       toast.success(t('profile.defaultUpdated'));
       fetchData();
     } catch {
