@@ -6,6 +6,8 @@ import { Footer } from './Footer';
 import { FloatingActionButton } from './FloatingActionButton';
 import { MiniCart } from '@/components/cart/MiniCart';
 import { TabBar } from './TabBar';
+import { ChatProvider } from '@/components/chat/ChatContext';
+import { ChatWidget } from '@/components/chat/ChatWidget';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -20,25 +22,28 @@ export function MainLayout({ children, hideFooter = false }: MainLayoutProps) {
   }, [pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <div className="pt-16 lg:pt-20">
-        <div className="sticky top-16 lg:top-20 z-40 lg:hidden">
-          <TabBar />
+    <ChatProvider>
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <div className="pt-16 lg:pt-20">
+          <div className="sticky top-16 lg:top-20 z-40 lg:hidden">
+            <TabBar />
+          </div>
         </div>
+        <motion.main
+          key={pathname}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="flex-1"
+        >
+          {children}
+        </motion.main>
+        {!hideFooter && <Footer />}
+        <FloatingActionButton />
+        <MiniCart />
+        <ChatWidget />
       </div>
-      <motion.main
-        key={pathname}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="flex-1"
-      >
-        {children}
-      </motion.main>
-      {!hideFooter && <Footer />}
-      <FloatingActionButton />
-      <MiniCart />
-    </div>
+    </ChatProvider>
   );
 }
