@@ -71,8 +71,8 @@ export function HeroSection() {
   const prevSlide = () => setCurrentIndex((prev) => (prev - 1 + cards.length) % cards.length);
 
   return (
-    <section className="relative min-h-[55vh] sm:min-h-[70vh] lg:min-h-[90vh] flex items-center overflow-hidden bg-background" data-testid="hero-section">
-      <div className="container mx-auto px-4 py-8 sm:py-14 lg:py-20 relative z-10">
+    <section className="relative min-h-[55vh] sm:min-h-[70vh] lg:min-h-[80vh] flex items-center overflow-hidden bg-background" data-testid="hero-section">
+      <div className="container mx-auto px-4 py-8 sm:py-14 lg:py-12 relative z-10">
         <div className="grid lg:grid-cols-2 gap-6 sm:gap-10 lg:gap-16 items-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}

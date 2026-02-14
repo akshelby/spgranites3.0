@@ -172,7 +172,7 @@ export function CategoriesSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-50px' }}
-          className="grid grid-cols-4 sm:flex sm:flex-wrap sm:justify-center gap-3 sm:gap-6 md:gap-8 lg:gap-10 xl:gap-12"
+          className="grid grid-cols-4 sm:flex sm:flex-wrap sm:justify-center gap-3 sm:gap-6 md:gap-8 lg:gap-8 xl:gap-10"
         >
           {categories.map((category, index) => (
             <CategoryItem

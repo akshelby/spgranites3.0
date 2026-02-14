@@ -23,7 +23,7 @@ export function MainLayout({ children, hideFooter = false }: MainLayoutProps) {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <div className="pt-16 lg:pt-20">
-        <div className="sticky top-16 lg:top-20 z-40">
+        <div className="sticky top-16 lg:top-20 z-40 lg:hidden">
           <TabBar />
         </div>
       </div>
