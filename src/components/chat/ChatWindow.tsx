@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { X, Bell, BellOff, Copy, Check, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { X, Bell, BellOff, Copy, Check, ArrowLeft, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { Message, Conversation } from "./types";
 import { MessageBubble } from "./MessageBubble";
 import { DateDivider } from "./DateDivider";
@@ -50,6 +52,8 @@ export function ChatWindow({
   const [copied, setCopied] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const notificationSoundRef = useRef<HTMLAudioElement | null>(null);
 
   // Initialize notification sound
@@ -303,46 +307,69 @@ export function ChatWindow({
       {showStartScreen ? (
         <div className="flex-1 flex flex-col items-center justify-center p-6 space-y-6">
           <div className="text-center space-y-2">
-            <h3 className="text-xl font-semibold text-[#1A1A1A]">Welcome to S P Granites</h3>
+            <h3 className="text-xl font-semibold text-[#1A1A1A] dark:text-foreground">Welcome to S P Granites</h3>
             <p className="text-sm text-muted-foreground">
-              Start a new conversation or resume an existing one
+              {user ? 'Start a new conversation or resume an existing one' : 'Sign in to start a support conversation'}
             </p>
           </div>
 
-          <Button
-            className="w-full bg-[#E60000] hover:bg-[#cc0000] text-white rounded-2xl h-12"
-            onClick={startNewConversation}
-          >
-            Start New Complaint
-          </Button>
-
-          <div className="w-full space-y-3">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-muted-foreground">Or resume</span>
-              </div>
-            </div>
-
-            <div className="flex gap-2">
-              <Input
-                placeholder="Enter Reference ID (e.g., SPG-XXXXX)"
-                value={existingRefId}
-                onChange={(e) => setExistingRefId(e.target.value.toUpperCase())}
-                className="rounded-xl"
-              />
+          {user ? (
+            <>
               <Button
-                variant="outline"
-                className="rounded-xl px-6"
-                onClick={resumeConversation}
-                disabled={!existingRefId.trim()}
+                className="w-full bg-[#E60000] hover:bg-[#cc0000] text-white rounded-2xl h-12"
+                onClick={startNewConversation}
               >
-                Resume
+                Start New Support
               </Button>
+
+              <div className="w-full space-y-3">
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white dark:bg-card px-2 text-muted-foreground">Or resume</span>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Enter Reference ID (e.g., SPG-XXXXX)"
+                    value={existingRefId}
+                    onChange={(e) => setExistingRefId(e.target.value.toUpperCase())}
+                    className="rounded-xl"
+                  />
+                  <Button
+                    variant="outline"
+                    className="rounded-xl px-6"
+                    onClick={resumeConversation}
+                    disabled={!existingRefId.trim()}
+                  >
+                    Resume
+                  </Button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="w-full space-y-3">
+              <Button
+                className="w-full bg-primary hover:bg-primary/90 text-white rounded-2xl h-12"
+                onClick={() => { onClose(); navigate('/auth?redirect=/chat'); }}
+              >
+                <LogIn className="w-4 h-4 mr-2" />
+                Sign In to Start Support
+              </Button>
+              <p className="text-center text-xs text-muted-foreground">
+                Don't have an account?{' '}
+                <button
+                  onClick={() => { onClose(); navigate('/auth?mode=signup&redirect=/chat'); }}
+                  className="text-primary font-medium hover:underline"
+                >
+                  Sign Up
+                </button>
+              </p>
             </div>
-          </div>
+          )}
         </div>
       ) : (
         <>

@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Bell, BellOff, Copy, Check, MessageSquare, Clock, ChevronRight, Trash2 } from "lucide-react";
+import { ArrowLeft, Bell, BellOff, Copy, Check, MessageSquare, Clock, ChevronRight, Trash2, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { Message } from "@/components/chat/types";
 import { MessageBubble } from "@/components/chat/MessageBubble";
 import { DateDivider } from "@/components/chat/DateDivider";
@@ -80,6 +81,7 @@ function removeFromHistory(refId: string) {
 export default function ChatPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { user } = useAuth();
   const saved = getSavedSession();
 
   const [refId, setRefId] = useState<string | null>(saved.refId);
@@ -314,15 +316,36 @@ export default function ChatPage() {
               </p>
             </div>
 
-            <Button
-              className="w-full bg-[#E60000] hover:bg-[#cc0000] text-white rounded-2xl h-12"
-              onClick={startNewConversation}
-            >
-              Start New Complaint
-            </Button>
+            {user ? (
+              <Button
+                className="w-full bg-[#E60000] hover:bg-[#cc0000] text-white rounded-2xl h-12"
+                onClick={startNewConversation}
+              >
+                Start New Support
+              </Button>
+            ) : (
+              <div className="space-y-3">
+                <Button
+                  className="w-full bg-primary hover:bg-primary/90 text-white rounded-2xl h-12"
+                  onClick={() => navigate('/auth?redirect=/chat')}
+                >
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Sign In to Start Support
+                </Button>
+                <p className="text-center text-xs text-muted-foreground">
+                  Don't have an account?{' '}
+                  <button
+                    onClick={() => navigate('/auth?mode=signup&redirect=/chat')}
+                    className="text-primary font-medium hover:underline"
+                  >
+                    Sign Up
+                  </button>
+                </p>
+              </div>
+            )}
 
             {/* Previous Conversations */}
-            {history.length > 0 && (
+            {user && history.length > 0 && (
               <div className="space-y-3">
                 <div className="relative">
                   <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
