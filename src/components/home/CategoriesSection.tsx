@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Gem, Bath, Utensils, LayoutGrid, Headset, Store, FileText, Phone, MessageCircle, MessageSquare } from 'lucide-react';
+import { Sparkles, Bath, UtensilsCrossed, Grid3X3, HeadphonesIcon, MapPin, ClipboardList, PhoneCall, MessageCircleHeart, Send } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { CategoryItem } from './CategoryItem';
 import { BhrundhavanIcon } from './BhrundhavanIcon';
@@ -24,7 +24,7 @@ const categories: Category[] = [
   {
     id: 'kitchen-slab',
     nameKey: 'categories.kitchenSlab',
-    icon: Gem,
+    icon: Sparkles,
     link: '/products?category=kitchen-slab',
     descriptionKey: 'categories.kitchenSlabDesc',
     iconColor: 'text-emerald-700 dark:text-emerald-400',
@@ -44,7 +44,7 @@ const categories: Category[] = [
   {
     id: 'dining-top',
     nameKey: 'categories.diningTop',
-    icon: Utensils,
+    icon: UtensilsCrossed,
     link: '/products?category=dining-top',
     descriptionKey: 'categories.diningTopDesc',
     iconColor: 'text-red-700 dark:text-red-400',
@@ -64,7 +64,7 @@ const categories: Category[] = [
   {
     id: 'tiles-fixing',
     nameKey: 'categories.tilesFixing',
-    icon: LayoutGrid,
+    icon: Grid3X3,
     link: '/services',
     descriptionKey: 'categories.tilesFixingDesc',
     iconColor: 'text-zinc-700 dark:text-zinc-400',
@@ -74,7 +74,7 @@ const categories: Category[] = [
   {
     id: 'contact-us',
     nameKey: 'categories.contactUs',
-    icon: Headset,
+    icon: HeadphonesIcon,
     link: '/contact',
     descriptionKey: 'categories.contactUsDesc',
     iconColor: 'text-teal-700 dark:text-teal-400',
@@ -84,7 +84,7 @@ const categories: Category[] = [
   {
     id: 'offline-stores',
     nameKey: 'categories.offlineStores',
-    icon: Store,
+    icon: MapPin,
     link: '/stores',
     descriptionKey: 'categories.offlineStoresDesc',
     iconColor: 'text-neutral-700 dark:text-neutral-400',
@@ -94,7 +94,7 @@ const categories: Category[] = [
   {
     id: 'free-estimation',
     nameKey: 'categories.freeEstimation',
-    icon: FileText,
+    icon: ClipboardList,
     link: '/estimation',
     descriptionKey: 'categories.freeEstimationDesc',
     iconColor: 'text-amber-700 dark:text-amber-400',
@@ -104,7 +104,7 @@ const categories: Category[] = [
   {
     id: 'call-us',
     nameKey: 'categories.callUs',
-    icon: Phone,
+    icon: PhoneCall,
     link: 'tel:+919876543210',
     descriptionKey: 'categories.callUsDesc',
     iconColor: 'text-blue-700 dark:text-blue-400',
@@ -114,7 +114,7 @@ const categories: Category[] = [
   {
     id: 'whatsapp',
     nameKey: 'categories.whatsapp',
-    icon: MessageSquare,
+    icon: Send,
     link: 'https://wa.me/919876543210',
     descriptionKey: 'categories.whatsappDesc',
     iconColor: 'text-white',
@@ -126,7 +126,7 @@ const categories: Category[] = [
   {
     id: 'chat-support',
     nameKey: 'categories.chatSupport',
-    icon: MessageCircle,
+    icon: MessageCircleHeart,
     link: '#chat',
     descriptionKey: 'categories.chatSupportDesc',
     iconColor: 'text-white',
