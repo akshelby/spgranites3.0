@@ -1,12 +1,24 @@
 import { motion } from 'framer-motion';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import heroCountertopImg from '@/assets/hero-countertop.jpg';
 
 export function HeroSection() {
   return (
     <section className="min-h-screen flex items-center bg-background relative overflow-hidden" data-testid="hero-section">
-      {/* Subtle background pattern */}
+      {/* Animated gradient orbs */}
+      <motion.div
+        animate={{ x: [0, 30, 0], y: [0, -20, 0], scale: [1, 1.1, 1] }}
+        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-20 -left-32 w-96 h-96 rounded-full bg-gradient-to-br from-destructive/10 to-transparent blur-3xl"
+      />
+      <motion.div
+        animate={{ x: [0, -20, 0], y: [0, 30, 0], scale: [1, 1.15, 1] }}
+        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute bottom-20 -right-32 w-[500px] h-[500px] rounded-full bg-gradient-to-tl from-[hsl(220,60%,30%)]/8 to-transparent blur-3xl"
+      />
+
+      {/* Subtle dot pattern */}
       <div className="absolute inset-0 opacity-[0.03]" style={{
         backgroundImage: `radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)`,
         backgroundSize: '40px 40px',
@@ -25,9 +37,9 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted mb-6 sm:mb-8"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/80 backdrop-blur-sm border border-border/50 mb-6 sm:mb-8"
             >
-              <span className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
+              <Sparkles className="w-3.5 h-3.5 text-destructive" />
               <span className="text-xs sm:text-sm font-medium text-muted-foreground tracking-wide">
                 S P Granites — Since 2014
               </span>
@@ -41,8 +53,17 @@ export function HeroSection() {
               data-testid="text-hero-title"
             >
               Premium Granite{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[hsl(0,0%,15%)] to-[hsl(220,60%,30%)] dark:from-[hsl(0,0%,90%)] dark:to-[hsl(220,60%,70%)]">
-                &amp; Quartz
+              <span className="relative">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[hsl(220,60%,25%)] to-[hsl(220,70%,45%)] dark:from-[hsl(220,50%,70%)] dark:to-[hsl(220,60%,85%)]">
+                  &amp; Quartz
+                </span>
+                <motion.span
+                  className="absolute -bottom-1 left-0 w-full h-1 bg-gradient-to-r from-destructive to-destructive/40 rounded-full"
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ delay: 0.8, duration: 0.6, ease: 'easeOut' }}
+                  style={{ originX: 0 }}
+                />
               </span>{' '}
               Countertops
             </motion.h1>
@@ -66,15 +87,16 @@ export function HeroSection() {
             >
               <Link
                 to="/estimation"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-sm sm:text-base font-semibold text-white bg-gradient-to-r from-destructive to-[hsl(0,72%,40%)] shadow-lg shadow-destructive/25 hover:shadow-xl hover:shadow-destructive/30 hover:scale-105 transition-all duration-300"
+                className="group inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-sm sm:text-base font-semibold text-white bg-gradient-to-r from-destructive to-[hsl(0,72%,40%)] shadow-lg shadow-destructive/25 hover:shadow-xl hover:shadow-destructive/30 hover:scale-105 transition-all duration-300 relative overflow-hidden"
                 data-testid="button-get-estimate"
               >
+                <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                 Get Free Estimate
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
               </Link>
               <Link
                 to="/products"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-sm sm:text-base font-semibold border-2 border-border text-foreground hover:bg-muted hover:scale-105 transition-all duration-300 shadow-sm"
+                className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full text-sm sm:text-base font-semibold border-2 border-border text-foreground hover:bg-muted hover:scale-105 transition-all duration-300 shadow-sm backdrop-blur-sm"
                 data-testid="button-view-work"
               >
                 View Our Work
@@ -94,15 +116,42 @@ export function HeroSection() {
               transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
               className="relative"
             >
-              <div className="rounded-2xl overflow-hidden shadow-2xl shadow-foreground/10">
+              <div className="rounded-2xl overflow-hidden shadow-2xl shadow-foreground/10 ring-1 ring-border/30">
                 <img
                   src={heroCountertopImg}
                   alt="Premium granite countertop in a luxury kitchen"
                   className="w-full h-[300px] sm:h-[400px] lg:h-[500px] xl:h-[560px] object-cover"
                 />
+                {/* Gradient overlay on image */}
+                <div className="absolute inset-0 bg-gradient-to-t from-background/20 via-transparent to-transparent" />
               </div>
+
+              {/* Floating badge */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1, duration: 0.5 }}
+                className="absolute -bottom-4 -left-4 sm:-bottom-6 sm:-left-6 bg-card/90 backdrop-blur-md border border-border/50 rounded-2xl px-4 py-3 sm:px-5 sm:py-4 shadow-xl"
+              >
+                <p className="text-xs sm:text-sm font-bold text-foreground">500+ Projects</p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground">Delivered with excellence</p>
+              </motion.div>
+
+              {/* Floating quality badge */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1.2, duration: 0.5 }}
+                className="absolute -top-3 -right-3 sm:-top-5 sm:-right-5 bg-gradient-to-br from-destructive to-[hsl(0,72%,40%)] rounded-full w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center shadow-lg shadow-destructive/30"
+              >
+                <div className="text-center text-white">
+                  <p className="text-sm sm:text-base font-bold leading-none">10+</p>
+                  <p className="text-[8px] sm:text-[10px] font-medium opacity-90">Years</p>
+                </div>
+              </motion.div>
+
               {/* Soft glow behind image */}
-              <div className="absolute -inset-4 -z-10 rounded-3xl bg-gradient-to-br from-muted via-transparent to-muted opacity-60 blur-2xl" />
+              <div className="absolute -inset-4 -z-10 rounded-3xl bg-gradient-to-br from-destructive/5 via-transparent to-[hsl(220,60%,30%)]/5 opacity-80 blur-2xl" />
             </motion.div>
           </motion.div>
         </div>
