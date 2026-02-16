@@ -27,8 +27,8 @@ export function CategoryItem({ name, icon: Icon, link, iconColor, bgColor, borde
       <motion.div
         className={cn(
           'relative w-14 h-14 sm:w-[4.5rem] sm:h-[4.5rem] md:w-24 md:h-24 lg:w-28 lg:h-28',
-          'rounded-2xl sm:rounded-3xl flex items-center justify-center',
-          'border-2 transition-all duration-300 shadow-soft',
+          'rounded-xl sm:rounded-2xl flex items-center justify-center',
+          'border-2 transition-all duration-300',
           prominent ? prominentBg : (bgColor || 'bg-card'),
           prominent ? 'border-transparent shadow-lg' : (borderColor || 'border-border'),
           'group-hover:shadow-lg group-hover:scale-105'

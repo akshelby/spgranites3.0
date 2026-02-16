@@ -36,7 +36,7 @@ export function TestimonialsSection() {
   };
 
   return (
-    <section className="py-10 sm:py-14 lg:py-20 bg-muted/30" data-testid="testimonials-section">
+    <section className="py-8 sm:py-12 lg:py-16 bg-muted/50" data-testid="testimonials-section">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -45,7 +45,7 @@ export function TestimonialsSection() {
           className="text-center mb-4 sm:mb-8 lg:mb-12"
         >
           <span className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-testimonials-label">{t('testimonials.label')}</span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold mt-1 sm:mt-2 mb-2 sm:mb-4 leading-tight" data-testid="text-testimonials-title">
+          <h2 className="text-xl sm:text-3xl lg:text-4xl font-display font-bold mt-1 sm:mt-2 mb-1 sm:mb-4" data-testid="text-testimonials-title">
             {t('testimonials.title')}
           </h2>
           <p className="text-muted-foreground text-xs sm:text-sm lg:text-base max-w-2xl mx-auto">
@@ -61,7 +61,7 @@ export function TestimonialsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="bg-card p-4 sm:p-5 lg:p-8 rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative"
+              className="bg-card p-4 sm:p-5 lg:p-8 rounded-md border border-border relative"
               data-testid={`testimonial-card-${testimonial.id}`}
             >
               <Quote className="absolute top-3 right-3 h-5 w-5 sm:h-8 sm:w-8 lg:h-10 lg:w-10 text-primary/15" />

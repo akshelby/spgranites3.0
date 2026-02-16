@@ -93,7 +93,7 @@ export function FeaturedProducts() {
   if (products.length === 0) return null;
 
   return (
-    <section className="py-10 sm:py-14 lg:py-20 bg-muted/30" data-testid="featured-products-section">
+    <section className="py-8 sm:py-12 lg:py-16 bg-muted/40" data-testid="featured-products-section">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -102,7 +102,7 @@ export function FeaturedProducts() {
           className="text-center mb-4 sm:mb-8 lg:mb-12"
         >
           <span className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-featured-label">{t('featured.label')}</span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold mt-1 sm:mt-2 mb-2 sm:mb-4 leading-tight" data-testid="text-featured-title">
+          <h2 className="text-xl sm:text-3xl lg:text-4xl font-display font-bold mt-1 sm:mt-2 mb-1 sm:mb-4" data-testid="text-featured-title">
             {t('featured.title')}
           </h2>
           <p className="text-muted-foreground text-xs sm:text-sm lg:text-base max-w-2xl mx-auto">
@@ -118,7 +118,7 @@ export function FeaturedProducts() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.05 }}
-              className="group bg-card rounded-2xl overflow-hidden border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300"
+              className="group bg-card rounded-md overflow-hidden border border-border"
               data-testid={`card-product-${product.id}`}
             >
               <div className="relative aspect-[4/3] lg:aspect-[3/2] overflow-hidden">

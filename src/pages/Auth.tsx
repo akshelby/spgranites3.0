@@ -37,7 +37,7 @@ const Auth = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md relative shadow-soft rounded-2xl border-border/60">
+      <Card className="w-full max-w-md relative">
         <Button
           variant="ghost"
           size="icon"
