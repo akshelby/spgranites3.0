@@ -1,24 +1,13 @@
-import { MainLayout } from '@/components/layout';
-import {
-  HeroSection,
-  StatsSection,
-  PremiumCollection,
-  CategoriesSection,
-  FeaturedProducts,
-  ServicesSection,
-  TestimonialsSection,
-} from '@/components/home';
+import { SaasHero } from '@/components/home/SaasHero';
+import { SaasFeatures } from '@/components/home/SaasFeatures';
+import { SaasCTA } from '@/components/home/SaasCTA';
 
 export default function HomePage() {
   return (
-    <MainLayout>
-      <HeroSection />
-      <PremiumCollection />
-      <StatsSection />
-      <CategoriesSection />
-      <FeaturedProducts />
-      <ServicesSection />
-      <TestimonialsSection />
-    </MainLayout>
+    <main>
+      <SaasHero />
+      <SaasFeatures />
+      <SaasCTA />
+    </main>
   );
 }
