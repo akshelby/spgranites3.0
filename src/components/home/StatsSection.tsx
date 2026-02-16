@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Award, Users, Briefcase, Clock } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { Briefcase, Clock, Gem, Zap } from 'lucide-react';
 
 function Counter({ value, suffix }: { value: number; suffix: string }) {
   const [count, setCount] = useState(0);
@@ -10,12 +9,10 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
 
   useEffect(() => {
     if (!isInView) return;
-
     const duration = 2000;
     const steps = 60;
     const increment = value / steps;
     let current = 0;
-
     const timer = setInterval(() => {
       current += increment;
       if (current >= value) {
@@ -25,7 +22,6 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
         setCount(Math.floor(current));
       }
     }, duration / steps);
-
     return () => clearInterval(timer);
   }, [isInView, value]);
 
@@ -37,37 +33,52 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
   );
 }
 
+const stats = [
+  { icon: Briefcase, value: 500, suffix: '+', label: 'Projects Completed' },
+  { icon: Clock, value: 10, suffix: '+', label: 'Years Experience' },
+  { icon: Gem, value: 100, suffix: '%', label: 'Premium Quality Materials' },
+  { icon: Zap, value: 48, suffix: 'hr', label: 'Fast Installation' },
+];
+
 export function StatsSection() {
-  const { t } = useTranslation();
-
-  const stats = [
-    { icon: Clock, value: 25, suffix: '+', label: t('stats.yearsExperience') },
-    { icon: Users, value: 500, suffix: '+', label: t('stats.happyClients') },
-    { icon: Briefcase, value: 1000, suffix: '+', label: t('stats.projectsDone') },
-    { icon: Award, value: 50, suffix: '+', label: t('stats.awards') },
-  ];
-
   return (
-    <section className="py-8 sm:py-12 lg:py-20 bg-foreground text-background" data-testid="stats-section">
-      <div className="container mx-auto px-4 max-w-6xl">
-        <div className="grid grid-cols-4 gap-3 sm:gap-6 lg:gap-12">
+    <section className="py-16 sm:py-20 lg:py-28 bg-background" data-testid="stats-section">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-10 sm:mb-14 lg:mb-16"
+        >
+          <span className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-[0.2em]">
+            Why Us
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold mt-2 sm:mt-3 tracking-tight">
+            Why Choose S P Granites
+          </h2>
+        </motion.div>
+
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 max-w-5xl mx-auto">
           {stats.map((stat, index) => (
             <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
+              key={stat.label}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="text-center"
+              transition={{ delay: index * 0.1, duration: 0.5 }}
+              className="text-center p-5 sm:p-6 lg:p-8 rounded-2xl bg-muted/40 border border-border/50"
               data-testid={`stat-${index}`}
             >
-              <div className="w-9 h-9 sm:w-12 sm:h-12 lg:w-16 lg:h-16 mx-auto mb-2 sm:mb-3 lg:mb-4 rounded-full bg-white/10 flex items-center justify-center">
-                <stat.icon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-7 lg:w-7 text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.7)]" />
+              <div className="w-12 h-12 sm:w-14 sm:h-14 mx-auto mb-3 sm:mb-4 rounded-full bg-muted flex items-center justify-center">
+                <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 text-foreground" />
               </div>
-              <div className="text-lg sm:text-2xl lg:text-5xl font-bold font-display mb-0.5 sm:mb-1 lg:mb-2">
+              <div className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight mb-1 sm:mb-2">
                 <Counter value={stat.value} suffix={stat.suffix} />
               </div>
-              <p className="text-[10px] sm:text-xs lg:text-base opacity-60 leading-tight">{stat.label}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground font-medium">
+                {stat.label}
+              </p>
             </motion.div>
           ))}
         </div>

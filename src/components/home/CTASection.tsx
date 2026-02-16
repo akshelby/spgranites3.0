@@ -1,57 +1,38 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Phone } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 
 export function CTASection() {
-  const { t } = useTranslation();
-
   return (
-    <section className="py-8 sm:py-12 lg:py-16 bg-primary text-primary-foreground relative overflow-hidden" data-testid="cta-section">
-      <div className="absolute inset-0 opacity-[0.06]">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='1' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")`,
-        }} />
-      </div>
+    <section className="py-16 sm:py-20 lg:py-28 bg-foreground text-background relative overflow-hidden" data-testid="cta-section">
+      {/* Subtle pattern overlay */}
+      <div className="absolute inset-0 opacity-[0.04]" style={{
+        backgroundImage: `radial-gradient(circle at 1px 1px, hsl(var(--background)) 1px, transparent 0)`,
+        backgroundSize: '32px 32px',
+      }} />
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto"
         >
-          <h2 className="text-xl sm:text-3xl lg:text-5xl font-display font-bold mb-3 sm:mb-6" data-testid="text-cta-title">
-            {t('cta.title')}
+          <h2 className="text-2xl sm:text-3xl lg:text-5xl xl:text-6xl font-bold tracking-tight mb-4 sm:mb-6 leading-tight" data-testid="text-cta-title">
+            Transform Your Space with Premium Stone
           </h2>
-          <p className="text-sm sm:text-base lg:text-lg opacity-85 mb-4 sm:mb-8">
-            {t('cta.subtitle')}
+          <p className="text-sm sm:text-base lg:text-lg opacity-60 mb-8 sm:mb-10 max-w-2xl mx-auto leading-relaxed">
+            Get a free consultation and estimate for your next project. Our team of experts is ready to bring your vision to life.
           </p>
-          <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center items-center">
-            <Button
-              size="lg"
-              asChild
-              className="group w-full sm:w-auto text-xs sm:text-sm bg-white text-primary border border-white"
-              data-testid="button-cta-estimation"
-            >
-              <Link to="/estimation">
-                {t('cta.getEstimation')}
-                <ArrowRight className="ml-1 sm:ml-2 h-3.5 w-3.5 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              asChild
-              className="w-full sm:w-auto bg-transparent border border-white/60 text-white text-xs sm:text-sm"
-              data-testid="button-cta-call"
-            >
-              <a href="tel:+919876543210">
-                <Phone className="mr-1 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                {t('cta.callUs')}
-              </a>
-            </Button>
-          </div>
+          <Link
+            to="/estimation"
+            className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full text-sm sm:text-base font-semibold text-white bg-gradient-to-r from-destructive to-[hsl(0,72%,40%)] shadow-lg shadow-destructive/30 hover:shadow-xl hover:shadow-destructive/40 hover:scale-105 transition-all duration-300"
+            data-testid="button-cta-quote"
+          >
+            Request a Quote
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </motion.div>
       </div>
     </section>
