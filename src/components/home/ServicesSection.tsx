@@ -48,7 +48,7 @@ export function ServicesSection() {
   };
 
   return (
-    <section className="py-8 sm:py-12 lg:py-16 bg-background" data-testid="services-section">
+    <section className="py-12 sm:py-16 lg:py-24 bg-background" data-testid="services-section">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -57,7 +57,7 @@ export function ServicesSection() {
           className="text-center mb-4 sm:mb-8 lg:mb-12"
         >
           <span className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-services-label">{t('services.label')}</span>
-          <h2 className="text-xl sm:text-3xl lg:text-4xl font-display font-bold mt-1 sm:mt-2 mb-1 sm:mb-4" data-testid="text-services-title">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-black mt-2 sm:mt-3 mb-3 sm:mb-5 leading-tight tracking-tight" data-testid="text-services-title">
             {t('services.title')}
           </h2>
           <p className="text-muted-foreground text-xs sm:text-sm lg:text-base max-w-2xl mx-auto">
@@ -75,10 +75,10 @@ export function ServicesSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.08 }}
-                className="group p-3 sm:p-4 lg:p-8 bg-card rounded-md border border-border transition-all"
+                className="group p-4 sm:p-5 lg:p-8 bg-card rounded-2xl border border-border/40 shadow-soft hover:shadow-float hover:-translate-y-2 transition-all duration-500"
                 data-testid={`service-card-${service.id}`}
               >
-                <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full bg-primary/10 flex items-center justify-center mb-3 sm:mb-4">
+                <div className="w-11 h-11 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-2xl bg-primary/8 flex items-center justify-center mb-3 sm:mb-4">
                   <IconComponent className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-primary" />
                 </div>
                 <h3 className="text-sm sm:text-base lg:text-lg font-semibold mb-1 sm:mb-2 lg:mb-3">
