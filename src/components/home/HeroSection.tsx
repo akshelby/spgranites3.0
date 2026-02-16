@@ -1,9 +1,82 @@
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import heroCountertopImg from '@/assets/hero-countertop.jpg';
+import kitchenImg from '@/assets/categories/kitchen-countertops.jpg';
+import flooringImg from '@/assets/categories/flooring.jpg';
+import bathroomImg from '@/assets/categories/bathroom.jpg';
+import staircasesImg from '@/assets/categories/staircases.jpg';
+import blackGraniteImg from '@/assets/products/black-granite.jpg';
+
+interface CarouselCard {
+  id: string;
+  title: string;
+  image_url: string;
+  display_order: number;
+}
+
+const localImages: Record<string, string> = {
+  'Black Galaxy Granite': blackGraniteImg,
+  'Kitchen Countertops': kitchenImg,
+  'Luxury Flooring': flooringImg,
+  'Modern Bathrooms': bathroomImg,
+  'Stone Staircases': staircasesImg,
+};
+
+function getCardImage(card: CarouselCard): string {
+  if (localImages[card.title]) return localImages[card.title];
+  if (card.image_url && card.image_url !== '/placeholder.svg') return card.image_url;
+  return heroCountertopImg;
+}
 
 export function HeroSection() {
+  const [cards, setCards] = useState<CarouselCard[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [autoRotate, setAutoRotate] = useState(true);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [rotationSpeed, setRotationSpeed] = useState(3000);
+
+  useEffect(() => {
+    const fetchCards = async () => {
+      try {
+        const { data: settings } = await supabase
+          .from('hero_carousel_settings')
+          .select('*')
+          .limit(1)
+          .single();
+        if (settings) {
+          setAutoRotate(settings.auto_rotate);
+          setRotationSpeed(settings.rotation_speed || 3000);
+        }
+        const { data } = await supabase
+          .from('hero_carousel_cards')
+          .select('*')
+          .eq('is_active', true)
+          .order('display_order');
+        if (data && data.length > 0) setCards(data);
+      } catch {
+        // silent
+      }
+    };
+    fetchCards();
+  }, []);
+
+  useEffect(() => {
+    if (!autoRotate || cards.length <= 1) return;
+    timerRef.current = setInterval(() => {
+      setActiveIndex(prev => (prev + 1) % cards.length);
+    }, rotationSpeed);
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [autoRotate, cards.length, rotationSpeed]);
+
+  const goTo = useCallback((i: number) => {
+    setActiveIndex(i);
+    setAutoRotate(false);
+    setTimeout(() => setAutoRotate(true), 6000);
+  }, []);
+
   return (
     <section className="min-h-screen flex items-center bg-background relative overflow-hidden" data-testid="hero-section">
       {/* Animated gradient orbs */}
@@ -104,7 +177,7 @@ export function HeroSection() {
             </motion.div>
           </motion.div>
 
-          {/* Right: Hero Image */}
+          {/* Right: Hero Carousel */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -116,15 +189,66 @@ export function HeroSection() {
               transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
               className="relative"
             >
-              <div className="rounded-2xl overflow-hidden shadow-2xl shadow-foreground/10 ring-1 ring-border/30">
-                <img
-                  src={heroCountertopImg}
-                  alt="Premium granite countertop in a luxury kitchen"
-                  className="w-full h-[300px] sm:h-[400px] lg:h-[500px] xl:h-[560px] object-cover"
-                />
-                {/* Gradient overlay on image */}
+              {/* Main carousel image */}
+              <div className="rounded-2xl overflow-hidden shadow-2xl shadow-foreground/10 ring-1 ring-border/30 relative">
+                {cards.length > 0 ? (
+                  cards.map((card, i) => (
+                    <motion.img
+                      key={card.id}
+                      src={getCardImage(card)}
+                      alt={card.title}
+                      className="w-full h-[300px] sm:h-[400px] lg:h-[500px] xl:h-[560px] object-cover"
+                      initial={false}
+                      animate={{ opacity: i === activeIndex ? 1 : 0 }}
+                      transition={{ duration: 0.6 }}
+                      style={{
+                        position: i === 0 ? 'relative' : 'absolute',
+                        inset: i === 0 ? undefined : 0,
+                      }}
+                      draggable={false}
+                    />
+                  ))
+                ) : (
+                  <img
+                    src={heroCountertopImg}
+                    alt="Premium granite countertop"
+                    className="w-full h-[300px] sm:h-[400px] lg:h-[500px] xl:h-[560px] object-cover"
+                  />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-background/20 via-transparent to-transparent" />
+
+                {/* Card title overlay */}
+                {cards.length > 0 && (
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <motion.p
+                      key={activeIndex}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-white text-sm sm:text-lg font-semibold drop-shadow-lg"
+                    >
+                      {cards[activeIndex]?.title}
+                    </motion.p>
+                  </div>
+                )}
               </div>
+
+              {/* Dots indicator */}
+              {cards.length > 1 && (
+                <div className="flex justify-center gap-2 mt-4">
+                  {cards.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => goTo(i)}
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        i === activeIndex
+                          ? 'w-6 bg-destructive'
+                          : 'w-2 bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                      }`}
+                      aria-label={`Go to slide ${i + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
 
               {/* Floating badge */}
               <motion.div
@@ -137,7 +261,7 @@ export function HeroSection() {
                 <p className="text-[10px] sm:text-xs text-muted-foreground">Delivered with excellence</p>
               </motion.div>
 
-              {/* Floating quality badge */}
+              {/* Quality badge */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -150,7 +274,6 @@ export function HeroSection() {
                 </div>
               </motion.div>
 
-              {/* Soft glow behind image */}
               <div className="absolute -inset-4 -z-10 rounded-3xl bg-gradient-to-br from-destructive/5 via-transparent to-[hsl(220,60%,30%)]/5 opacity-80 blur-2xl" />
             </motion.div>
           </motion.div>
