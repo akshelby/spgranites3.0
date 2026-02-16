@@ -6,25 +6,25 @@
 
 @layer base {
   :root {
-    /* Light Theme - CRED-inspired Clean & Bold */
-    --background: 0 0% 97%;
-    --foreground: 0 0% 8%;
+    /* Light Theme - Premium Soft UI */
+    --background: 240 5% 96%;
+    --foreground: 0 0% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 8%;
+    --card-foreground: 0 0% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 8%;
+    --popover-foreground: 0 0% 10%;
 
     /* Deep forest green primary */
     --primary: 152 55% 28%;
     --primary-foreground: 0 0% 100%;
 
     /* Neutral warm gray secondary */
-    --secondary: 0 0% 93%;
+    --secondary: 240 4% 91%;
     --secondary-foreground: 0 0% 15%;
 
-    --muted: 0 0% 95%;
+    --muted: 240 5% 94%;
     --muted-foreground: 0 0% 42%;
 
     /* Subtle green-tinted accent */
@@ -35,11 +35,11 @@
     --destructive: 0 72% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 89%;
-    --input: 0 0% 89%;
+    --border: 240 5% 90%;
+    --input: 240 5% 90%;
     --ring: 152 55% 28%;
 
-    --radius: 0.75rem;
+    --radius: 0.875rem;
 
     /* Sidebar */
     --sidebar-background: 0 0% 98%;
@@ -152,17 +152,21 @@
     @apply bg-gradient-to-r from-primary to-[hsl(var(--gold-light))] bg-clip-text text-transparent;
   }
 
-  /* Premium shadow updated for green palette */
-
   /* Glass effect */
   .glass {
-    @apply bg-background/80 backdrop-blur-md border border-border/50;
+    @apply bg-background/80 backdrop-blur-md border border-border/40;
+  }
+
+  /* Soft UI shadow */
+  .shadow-soft {
+    box-shadow: 0 2px 8px -2px rgba(0,0,0,0.06),
+                0 4px 16px -4px rgba(0,0,0,0.08);
   }
 
   /* Premium shadow */
   .shadow-premium {
-    box-shadow: 0 4px 20px -5px hsl(var(--primary) / 0.15),
-                0 8px 40px -10px hsl(var(--foreground) / 0.1);
+    box-shadow: 0 4px 20px -5px hsl(var(--primary) / 0.12),
+                0 8px 40px -10px rgba(0,0,0,0.08);
   }
 
   /* Hover lift effect */
@@ -171,8 +175,9 @@
   }
 
   .hover-lift:hover {
-    @apply -translate-y-1;
-    box-shadow: 0 10px 30px -10px hsl(var(--foreground) / 0.15);
+    @apply -translate-y-1.5;
+    box-shadow: 0 12px 32px -8px rgba(0,0,0,0.12),
+                0 4px 16px -4px rgba(0,0,0,0.06);
   }
 
   /* Container padding */

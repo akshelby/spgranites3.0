@@ -156,7 +156,7 @@ export function CategoriesSection() {
   };
 
   return (
-    <section className="py-8 sm:py-12 md:py-16 bg-background" data-testid="categories-section">
+    <section className="py-10 sm:py-14 md:py-20 bg-background" data-testid="categories-section">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -165,7 +165,7 @@ export function CategoriesSection() {
           transition={{ duration: 0.5 }}
           className="text-center mb-4 sm:mb-8 md:mb-12"
         >
-          <h2 className="text-xl sm:text-3xl md:text-4xl font-display font-bold text-foreground" data-testid="text-categories-title">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-foreground leading-tight" data-testid="text-categories-title">
             {t('categories.title')}
           </h2>
           <p className="mt-1 text-xs sm:text-sm md:text-base text-muted-foreground">

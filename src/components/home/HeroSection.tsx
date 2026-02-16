@@ -98,7 +98,7 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25, duration: 0.5 }}
-              className="text-2xl sm:text-4xl lg:text-6xl font-display font-bold leading-tight mb-3 sm:mb-6"
+              className="text-3xl sm:text-5xl lg:text-6xl font-display font-bold leading-[1.15] mb-3 sm:mb-6"
               data-testid="text-hero-title"
             >
               {t('hero.title')}{' '}
@@ -110,7 +110,7 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35 }}
-              className="text-sm sm:text-base lg:text-lg text-muted-foreground mb-4 sm:mb-8 max-w-xl mx-auto lg:mx-0"
+              className="text-sm sm:text-base lg:text-lg text-muted-foreground mb-4 sm:mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed"
               data-testid="text-hero-subtitle"
             >
               {t('hero.subtitle')}
@@ -147,7 +147,7 @@ export function HeroSection() {
             className="relative h-[250px] sm:h-[350px] lg:h-[500px]"
             data-testid="hero-carousel"
           >
-            <div className="relative w-full h-full rounded-2xl overflow-hidden">
+            <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-lg">
               <AnimatePresence mode="wait">
                 {cards.length > 0 && (
                   <motion.div
