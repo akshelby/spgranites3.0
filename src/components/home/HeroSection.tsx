@@ -75,9 +75,9 @@ export function HeroSection() {
   const prevSlide = () => setCurrentIndex((prev) => (prev - 1 + cards.length) % cards.length);
 
   return (
-    <section className="relative min-h-[55vh] sm:min-h-[70vh] lg:min-h-[85vh] flex items-center overflow-hidden bg-background" data-testid="hero-section">
-      <div className="container mx-auto px-4 py-10 sm:py-16 lg:py-14 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-20 items-center">
+    <section className="relative min-h-[55vh] sm:min-h-[70vh] lg:min-h-[80vh] flex items-center overflow-hidden bg-background" data-testid="hero-section">
+      <div className="container mx-auto px-4 py-8 sm:py-14 lg:py-12 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-6 sm:gap-10 lg:gap-16 items-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -98,7 +98,7 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25, duration: 0.5 }}
-              className="text-4xl sm:text-5xl lg:text-7xl font-display font-black leading-[1.08] mb-4 sm:mb-7 tracking-tight"
+              className="text-3xl sm:text-5xl lg:text-6xl font-display font-bold leading-[1.15] mb-3 sm:mb-6"
               data-testid="text-hero-title"
             >
               {t('hero.title')}{' '}
@@ -110,7 +110,7 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35 }}
-              className="text-sm sm:text-base lg:text-lg text-muted-foreground mb-5 sm:mb-10 max-w-lg mx-auto lg:mx-0 leading-relaxed"
+              className="text-sm sm:text-base lg:text-lg text-muted-foreground mb-4 sm:mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed"
               data-testid="text-hero-subtitle"
             >
               {t('hero.subtitle')}
@@ -147,7 +147,7 @@ export function HeroSection() {
             className="relative h-[250px] sm:h-[350px] lg:h-[500px]"
             data-testid="hero-carousel"
           >
-            <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-float">
+            <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-lg">
               <AnimatePresence mode="wait">
                 {cards.length > 0 && (
                   <motion.div
