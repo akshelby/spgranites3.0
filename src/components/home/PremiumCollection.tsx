@@ -192,13 +192,14 @@ export function PremiumCollection() {
 
   const anglePerCard = 360 / cardCount;
   const isLargeDesktop = !isMobile && typeof window !== 'undefined' && window.innerWidth >= 1280;
-  const cardW = isMobile ? 120 : isLargeDesktop ? 220 : 180;
-  const cardH = isMobile ? 170 : isLargeDesktop ? 320 : 260;
-  const containerH = isMobile ? 260 : isLargeDesktop ? 440 : 380;
+  const isTablet = !isMobile && typeof window !== 'undefined' && window.innerWidth >= 640 && window.innerWidth < 1280;
+  const cardW = isMobile ? 120 : isLargeDesktop ? 280 : isTablet ? 230 : 180;
+  const cardH = isMobile ? 170 : isLargeDesktop ? 400 : isTablet ? 340 : 260;
+  const containerH = isMobile ? 260 : isLargeDesktop ? 520 : isTablet ? 460 : 380;
   const halfCard = cardW / 2;
-  const gap = isMobile ? 8 : isLargeDesktop ? 16 : 12;
+  const gap = isMobile ? 8 : isLargeDesktop ? 20 : isTablet ? 16 : 12;
   const minRadius = Math.ceil((halfCard + gap) / Math.sin(Math.PI / cardCount));
-  const radius = Math.max(minRadius, isMobile ? 100 : isLargeDesktop ? 240 : 160);
+  const radius = Math.max(minRadius, isMobile ? 100 : isLargeDesktop ? 320 : isTablet ? 260 : 160);
 
   return (
     <section className="py-10 sm:py-16 md:py-20 bg-muted/30 overflow-hidden">
@@ -222,7 +223,7 @@ export function PremiumCollection() {
           className="relative mx-auto select-none"
           style={{
             height: `${containerH}px`,
-            perspective: isMobile ? '800px' : isLargeDesktop ? '1600px' : '1200px',
+            perspective: isMobile ? '800px' : isLargeDesktop ? '1800px' : isTablet ? '1400px' : '1200px',
             cursor: isDragging ? 'grabbing' : 'grab',
             touchAction: 'pan-y',
           }}
