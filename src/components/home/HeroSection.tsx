@@ -128,7 +128,7 @@ export function HeroSection() {
                   <ArrowRight className="ml-1 sm:ml-2 h-3.5 w-3.5 sm:h-4 sm:w-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild className="w-full sm:w-auto text-xs sm:text-sm" data-testid="button-free-estimation">
+              <Button size="lg" variant="outline" asChild className="w-full sm:w-auto text-xs sm:text-sm hover:bg-foreground hover:text-background" data-testid="button-free-estimation">
                 <Link to="/estimation">{t('hero.freeEstimation')}</Link>
               </Button>
               <Button size="lg" variant="outline" asChild className="w-full sm:w-auto border-primary/30 text-primary text-xs sm:text-sm" data-testid="button-visualizer-cta">
