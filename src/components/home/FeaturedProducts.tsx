@@ -114,24 +114,24 @@ export function FeaturedProducts() {
   if (products.length === 0) return null;
 
   return (
-    <section className="py-10 sm:py-14 lg:py-20 bg-muted/30" data-testid="featured-products-section">
+    <section className="py-8 sm:py-10 lg:py-14 bg-muted/30" data-testid="featured-products-section">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-4 sm:mb-8 lg:mb-12"
+          className="text-center mb-3 sm:mb-6 lg:mb-8"
         >
-          <span className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-featured-label">{t('featured.label')}</span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold mt-1 sm:mt-2 mb-2 sm:mb-4 leading-tight" data-testid="text-featured-title">
+          <span className="text-[11px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-featured-label">{t('featured.label')}</span>
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold mt-1 sm:mt-1.5 mb-1.5 sm:mb-3 leading-tight" data-testid="text-featured-title">
             {t('featured.title')}
           </h2>
-          <p className="text-muted-foreground text-xs sm:text-sm lg:text-base max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-[11px] sm:text-xs lg:text-sm max-w-2xl mx-auto">
             {t('featured.subtitle')}
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6 xl:gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-2.5 sm:gap-3 lg:gap-5 xl:gap-6">
           {products.map((product, index) => (
             <motion.div
               key={product.id}
@@ -166,19 +166,19 @@ export function FeaturedProducts() {
                   </button>
                 )}
               </div>
-              <div className="p-2.5 sm:p-4 lg:p-5">
+              <div className="p-2 sm:p-3 lg:p-4">
                 <Link to={`/products/${product.slug}`}>
-                  <h3 className="text-xs sm:text-sm lg:text-base font-semibold line-clamp-1" data-testid={`text-product-name-${product.id}`}>
+                  <h3 className="text-[11px] sm:text-xs lg:text-sm font-semibold line-clamp-1" data-testid={`text-product-name-${product.id}`}>
                     {product.name}
                   </h3>
                 </Link>
-                <div className="flex items-center justify-between gap-1 mt-1.5 sm:mt-3">
+                <div className="flex items-center justify-between gap-1 mt-1 sm:mt-2">
                   <div>
-                    <span className="text-sm sm:text-base lg:text-lg font-bold text-foreground" data-testid={`text-price-${product.id}`}>
+                    <span className="text-xs sm:text-sm lg:text-base font-bold text-foreground" data-testid={`text-price-${product.id}`}>
                       {formatPrice(product.price)}
                     </span>
                     {product.compare_price && product.compare_price > product.price && (
-                      <span className="text-[10px] sm:text-xs lg:text-sm text-muted-foreground line-through ml-1">
+                      <span className="text-[9px] sm:text-[11px] lg:text-xs text-muted-foreground line-through ml-1">
                         {formatPrice(product.compare_price)}
                       </span>
                     )}

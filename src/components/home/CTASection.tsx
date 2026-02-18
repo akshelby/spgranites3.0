@@ -8,7 +8,7 @@ export function CTASection() {
   const { t } = useTranslation();
 
   return (
-    <section className="py-10 sm:py-14 lg:py-20 bg-primary text-primary-foreground relative overflow-hidden" data-testid="cta-section">
+    <section className="py-8 sm:py-10 lg:py-14 bg-primary text-primary-foreground relative overflow-hidden" data-testid="cta-section">
       <div className="absolute inset-0 opacity-[0.06]">
         <div className="absolute inset-0" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='1' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")`,
@@ -22,10 +22,10 @@ export function CTASection() {
           viewport={{ once: true }}
           className="text-center max-w-3xl mx-auto"
         >
-          <h2 className="text-xl sm:text-3xl lg:text-5xl font-display font-bold mb-3 sm:mb-6" data-testid="text-cta-title">
+          <h2 className="text-lg sm:text-2xl lg:text-3xl font-display font-bold mb-2 sm:mb-4" data-testid="text-cta-title">
             {t('cta.title')}
           </h2>
-          <p className="text-sm sm:text-base lg:text-lg opacity-85 mb-4 sm:mb-8">
+          <p className="text-xs sm:text-sm lg:text-base opacity-85 mb-3 sm:mb-6">
             {t('cta.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center items-center">

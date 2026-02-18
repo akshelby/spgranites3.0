@@ -48,24 +48,24 @@ export function ServicesSection() {
   };
 
   return (
-    <section className="py-10 sm:py-14 lg:py-20 bg-background" data-testid="services-section">
+    <section className="py-8 sm:py-10 lg:py-14 bg-background" data-testid="services-section">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-4 sm:mb-8 lg:mb-12"
+          className="text-center mb-3 sm:mb-6 lg:mb-8"
         >
-          <span className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-services-label">{t('services.label')}</span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold mt-1 sm:mt-2 mb-2 sm:mb-4 leading-tight" data-testid="text-services-title">
+          <span className="text-[11px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-services-label">{t('services.label')}</span>
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold mt-1 sm:mt-1.5 mb-1.5 sm:mb-3 leading-tight" data-testid="text-services-title">
             {t('services.title')}
           </h2>
-          <p className="text-muted-foreground text-xs sm:text-sm lg:text-base max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-[11px] sm:text-xs lg:text-sm max-w-2xl mx-auto">
             {t('services.subtitle')}
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-2.5 sm:gap-3 lg:gap-5">
           {services.map((service, index) => {
             const IconComponent = serviceIconMap[service.icon || service.slug] || Wrench;
             return (
@@ -75,16 +75,16 @@ export function ServicesSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.08 }}
-                className="group p-3 sm:p-4 lg:p-8 bg-card rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300"
+                className="group p-2.5 sm:p-3 lg:p-6 bg-card rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300"
                 data-testid={`service-card-${service.id}`}
               >
-                <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-full bg-primary/10 flex items-center justify-center mb-3 sm:mb-4">
-                  <IconComponent className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-primary" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full bg-primary/10 flex items-center justify-center mb-2 sm:mb-3">
+                  <IconComponent className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-primary" />
                 </div>
-                <h3 className="text-sm sm:text-base lg:text-lg font-semibold mb-1 sm:mb-2 lg:mb-3">
+                <h3 className="text-xs sm:text-sm lg:text-base font-semibold mb-1 sm:mb-1.5 lg:mb-2">
                   {service.name}
                 </h3>
-                <p className="text-xs sm:text-sm lg:text-base text-muted-foreground line-clamp-2 lg:line-clamp-3">
+                <p className="text-[11px] sm:text-xs lg:text-sm text-muted-foreground line-clamp-2 lg:line-clamp-3">
                   {service.short_description}
                 </p>
               </motion.div>

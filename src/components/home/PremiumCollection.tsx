@@ -206,19 +206,19 @@ export function PremiumCollection() {
   const radius = Math.max(minRadius, isMobile ? 100 : isLargeDesktop ? 320 : isTablet ? 260 : 160);
 
   return (
-    <section className="py-10 sm:py-16 md:py-20 bg-muted/30 overflow-hidden">
+    <section className="py-8 sm:py-12 md:py-16 bg-muted/30 overflow-hidden">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-4 sm:mb-6"
+          className="text-center mb-3 sm:mb-5"
         >
-          <h2 className="text-xl sm:text-3xl md:text-4xl font-display font-bold text-foreground">
+          <h2 className="text-lg sm:text-2xl md:text-3xl font-display font-bold text-foreground">
             Premium Collection
           </h2>
-          <p className="mt-1 sm:mt-2 text-xs sm:text-sm text-muted-foreground">
+          <p className="mt-1 sm:mt-1.5 text-[11px] sm:text-xs text-muted-foreground">
             Swipe to rotate
           </p>
         </motion.div>
