@@ -32,7 +32,7 @@ export function CTASection() {
             <Button
               size="lg"
               asChild
-              className="group w-full sm:w-auto text-xs sm:text-sm bg-white text-primary border border-white"
+              className="group w-full sm:w-auto text-xs sm:text-sm bg-white text-primary border border-white hover:bg-white/90 hover:text-primary"
               data-testid="button-cta-estimation"
             >
               <Link to="/estimation">
