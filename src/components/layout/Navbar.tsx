@@ -97,7 +97,7 @@ export function Navbar() {
             </div>
           </Link>
 
-          <div className="hidden lg:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-1 overflow-x-auto max-w-[calc(100%-320px)] scrollbar-hide">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -108,7 +108,7 @@ export function Navbar() {
                   addTab(link.href, link.name);
                 }}
                 className={cn(
-                  'px-4 py-2 text-sm font-medium rounded-lg transition-colors',
+                  'px-3 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap shrink-0',
                   location.pathname === link.href
                     ? 'text-primary bg-primary/10'
                     : 'text-muted-foreground hover:text-foreground hover:bg-accent'

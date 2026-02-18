@@ -237,6 +237,10 @@
   animation: scale-in 0.4s ease-out forwards;
 }
 
+/* Hide scrollbar but keep scrollable */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* Staggered animation delays */
 .stagger-1 { animation-delay: 0.1s; }
 .stagger-2 { animation-delay: 0.2s; }
