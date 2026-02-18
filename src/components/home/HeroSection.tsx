@@ -84,6 +84,16 @@ export function HeroSection() {
             transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="text-center lg:text-left"
           >
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="mb-2 sm:mb-3"
+            >
+              <h2 className="font-display text-2xl sm:text-3xl font-bold text-foreground">SP Granites</h2>
+              <p className="text-sm text-muted-foreground -mt-0.5">Premium Stone Works</p>
+            </motion.div>
+
             <motion.span
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
