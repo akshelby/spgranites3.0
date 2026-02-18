@@ -86,9 +86,7 @@ export function Navbar() {
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16 lg:h-20">
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-gradient-premium rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">SP</span>
-            </div>
+            <img src="/logo-sp.svg" alt="SP Granites" className="w-10 h-10 object-contain" />
             <div className="hidden sm:block">
               <h1 className="font-display text-xl font-bold text-foreground">
                 SP Granites
