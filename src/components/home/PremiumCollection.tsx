@@ -201,7 +201,7 @@ export function PremiumCollection() {
   const cardH = isMobile ? 170 : isLargeDesktop ? 400 : isTablet ? 340 : 260;
   const containerH = isMobile ? 260 : isLargeDesktop ? 520 : isTablet ? 460 : 380;
   const halfCard = cardW / 2;
-  const gap = isMobile ? 8 : isLargeDesktop ? 12 : isTablet ? 10 : 10;
+  const gap = isMobile ? 4 : isLargeDesktop ? 6 : isTablet ? 5 : 5;
   const minRadius = Math.ceil((halfCard + gap) / Math.sin(Math.PI / cardCount));
   const radius = Math.max(minRadius, isMobile ? 100 : isLargeDesktop ? 320 : isTablet ? 260 : 160);
 
