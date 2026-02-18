@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Navbar } from './Navbar';
@@ -6,8 +6,7 @@ import { Footer } from './Footer';
 import { FloatingActionButton } from './FloatingActionButton';
 import { MiniCart } from '@/components/cart/MiniCart';
 import { TabBar } from './TabBar';
-import { ChatProvider } from '@/components/chat/ChatContext';
-import { ChatWidget } from '@/components/chat/ChatWidget';
+import { AIChatPanel } from '@/components/ai/AIChatPanel';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -16,34 +15,33 @@ interface MainLayoutProps {
 
 export function MainLayout({ children, hideFooter = false }: MainLayoutProps) {
   const { pathname } = useLocation();
+  const [isAIChatOpen, setIsAIChatOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
 
   return (
-    <ChatProvider>
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        <div className="pt-16 lg:pt-20">
-          <div className="sticky top-16 lg:top-20 z-40 lg:hidden">
-            <TabBar />
-          </div>
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <div className="pt-16 lg:pt-20">
+        <div className="sticky top-16 lg:top-20 z-40 lg:hidden">
+          <TabBar />
         </div>
-        <motion.main
-          key={pathname}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="flex-1"
-        >
-          {children}
-        </motion.main>
-        {!hideFooter && <Footer />}
-        <FloatingActionButton />
-        <MiniCart />
-        <ChatWidget />
       </div>
-    </ChatProvider>
+      <motion.main
+        key={pathname}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="flex-1"
+      >
+        {children}
+      </motion.main>
+      {!hideFooter && <Footer />}
+      <AIChatPanel isOpen={isAIChatOpen} onClose={() => setIsAIChatOpen(false)} />
+      <FloatingActionButton isAIChatOpen={isAIChatOpen} onToggle={() => setIsAIChatOpen(prev => !prev)} />
+      <MiniCart />
+    </div>
   );
 }

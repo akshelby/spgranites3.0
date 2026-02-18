@@ -97,6 +97,14 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+- **2026-02-18**: Added AI Assistant feature
+  - Integrated OpenAI (via Replit AI Integrations) for customer support AI chatbot
+  - Added `/api/ai-chat` endpoint with streaming SSE responses, rate limiting, input validation
+  - Created AIChatPanel component with suggested prompts, streaming text display
+  - Floating action button now toggles AI chat panel (replaces old chat widget)
+  - AI assistant is trained on SP Granites context (products, services, stone care tips)
+  - Uses gpt-5-nano model for fast, cost-effective responses
+  - Vite proxy configured to forward `/api` requests to backend on port 3001
 - **2026-02-16**: Added missing sections and finished incomplete items
   - Added CTA (Call to Action) section to homepage
   - Created Privacy Policy page (`/privacy`) and Terms of Service page (`/terms`)

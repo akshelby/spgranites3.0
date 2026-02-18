@@ -4,6 +4,12 @@ import { eq, desc, and, ilike, sql, asc } from "drizzle-orm";
 import * as schema from "../shared/schema";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import OpenAI from "openai";
+
+const openai = new OpenAI({
+  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+});
 
 function generateToken(): string {
   return crypto.randomBytes(48).toString("hex");
@@ -1045,6 +1051,95 @@ export function registerRoutes(app: Express) {
       res.json(conv);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
+    }
+  });
+
+  // ===== AI ASSISTANT =====
+  const aiRateLimit = new Map<string, number[]>();
+  app.post("/api/ai-chat", async (req: Request, res: Response) => {
+    try {
+      const clientIp = req.ip || req.headers['x-forwarded-for'] || 'unknown';
+      const now = Date.now();
+      const windowMs = 60000;
+      const maxRequests = 10;
+      const timestamps = aiRateLimit.get(String(clientIp)) || [];
+      const recent = timestamps.filter(t => now - t < windowMs);
+      if (recent.length >= maxRequests) {
+        return res.status(429).json({ error: "Too many requests. Please wait a moment." });
+      }
+      recent.push(now);
+      aiRateLimit.set(String(clientIp), recent);
+
+      const { messages: chatMessages } = req.body;
+      if (!chatMessages || !Array.isArray(chatMessages)) {
+        return res.status(400).json({ error: "messages array is required" });
+      }
+
+      if (chatMessages.length > 50) {
+        return res.status(400).json({ error: "Too many messages. Please start a new conversation." });
+      }
+
+      for (const msg of chatMessages) {
+        if (!msg.role || !msg.content || typeof msg.content !== 'string') {
+          return res.status(400).json({ error: "Invalid message format" });
+        }
+        if (msg.content.length > 2000) {
+          return res.status(400).json({ error: "Message too long (max 2000 characters)" });
+        }
+      }
+
+      const systemPrompt = `You are the SP Granites AI Assistant — a friendly and knowledgeable customer support agent for SP Granites, a premium granite, marble, and natural stone products company with 25+ years of experience in India.
+
+Your role:
+- Help customers with product inquiries about granite, marble, quartz, and natural stone
+- Provide guidance on stone selection for kitchens, bathrooms, flooring, countertops, and exterior use
+- Answer questions about pricing (give general ranges, suggest contacting the store for exact quotes)
+- Help with order tracking, estimation requests, and store locations
+- Provide care and maintenance tips for stone surfaces
+- Guide customers to the right pages on the website (Products, Services, Estimation, Contact)
+
+Tone: Warm, professional, and helpful. Keep responses concise but informative. Use simple language.
+
+Key facts about SP Granites:
+- Premium stone products: granite, marble, quartz, sandstone, slate
+- Services: cutting, polishing, installation, restoration, custom fabrication
+- Based in India with physical store locations
+- Offers free estimation for projects
+- Website has a Stone Visualizer tool to preview stones in rooms
+
+If you don't know something specific (like exact prices or stock availability), suggest the customer contact the store directly or submit an estimation request on the website.`;
+
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
+
+      const stream = await openai.chat.completions.create({
+        model: "gpt-5-nano",
+        messages: [
+          { role: "system", content: systemPrompt },
+          ...chatMessages.map((m: any) => ({ role: m.role, content: m.content })),
+        ],
+        stream: true,
+        max_completion_tokens: 8192,
+      });
+
+      for await (const chunk of stream) {
+        const content = chunk.choices[0]?.delta?.content || "";
+        if (content) {
+          res.write(`data: ${JSON.stringify({ content })}\n\n`);
+        }
+      }
+
+      res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+      res.end();
+    } catch (error: any) {
+      console.error("AI chat error:", error);
+      if (res.headersSent) {
+        res.write(`data: ${JSON.stringify({ error: "Something went wrong" })}\n\n`);
+        res.end();
+      } else {
+        res.status(500).json({ error: "Failed to get AI response" });
+      }
     }
   });
 }
