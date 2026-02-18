@@ -48,9 +48,9 @@ export function StatsSection() {
   ];
 
   return (
-    <section className="py-10 sm:py-14 lg:py-20 bg-foreground text-background" data-testid="stats-section">
-      <div className="container mx-auto px-4 max-w-6xl">
-        <div className="grid grid-cols-4 gap-3 sm:gap-6 lg:gap-12">
+    <section className="py-6 sm:py-8 lg:py-10 bg-foreground text-background" data-testid="stats-section">
+      <div className="container mx-auto px-4 max-w-5xl">
+        <div className="grid grid-cols-4 gap-3 sm:gap-6 lg:gap-10">
           {stats.map((stat, index) => (
             <motion.div
               key={index}
@@ -61,13 +61,13 @@ export function StatsSection() {
               className="text-center"
               data-testid={`stat-${index}`}
             >
-              <div className="w-9 h-9 sm:w-12 sm:h-12 lg:w-16 lg:h-16 mx-auto mb-2 sm:mb-3 lg:mb-4 rounded-full bg-white/10 flex items-center justify-center">
-                <stat.icon className="h-4 w-4 sm:h-5 sm:w-5 lg:h-7 lg:w-7 text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.7)]" />
+              <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 mx-auto mb-1.5 sm:mb-2 lg:mb-3 rounded-full bg-white/10 flex items-center justify-center">
+                <stat.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.7)]" />
               </div>
-              <div className="text-lg sm:text-2xl lg:text-5xl font-bold font-display mb-0.5 sm:mb-1 lg:mb-2">
+              <div className="text-base sm:text-xl lg:text-3xl font-bold font-display mb-0.5 sm:mb-1">
                 <Counter value={stat.value} suffix={stat.suffix} />
               </div>
-              <p className="text-[10px] sm:text-xs lg:text-base opacity-60 leading-tight">{stat.label}</p>
+              <p className="text-[9px] sm:text-[11px] lg:text-sm opacity-60 leading-tight">{stat.label}</p>
             </motion.div>
           ))}
         </div>
