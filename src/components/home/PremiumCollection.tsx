@@ -122,12 +122,12 @@ export function PremiumCollection() {
     for (let i = 0; i < count; i++) {
       const el = cardRefs.current[i];
       if (!el) continue;
-      let cardAngle = ((i * perCard + rotationRef.current) % 360 + 360) % 360;
-      const dist = cardAngle > 180 ? 360 - cardAngle : cardAngle;
-      const isBackside = dist > 90;
-      if (isBackside) {
-        const opacity = 1 - ((dist - 90) / 90) * 0.6;
-        el.style.opacity = `${opacity}`;
+      const rawAngle = (i * perCard + rotationRef.current) % 360;
+      const normalized = ((rawAngle % 360) + 360) % 360;
+      const dist = normalized > 180 ? 360 - normalized : normalized;
+      if (dist > 90) {
+        const t = (dist - 90) / 90;
+        el.style.opacity = `${1 - t * 0.6}`;
       } else {
         el.style.opacity = '1';
       }
