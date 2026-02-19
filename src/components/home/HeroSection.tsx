@@ -88,7 +88,7 @@ export function HeroSection() {
               className="mb-2 sm:mb-3"
             >
               <h2 className="brand-name-hero text-4xl sm:text-5xl leading-none">SP Granites</h2>
-              <div className="flex items-center gap-3 mt-1.5">
+              <div className="flex items-center justify-center gap-3 mt-1.5">
                 <span className="brand-divider !w-8" />
                 <span className="brand-tagline text-[10px] sm:text-xs text-muted-foreground/60">Premium Stone Works</span>
                 <span className="brand-divider !w-8" style={{background: 'linear-gradient(270deg, #dc2626, transparent)'}} />
