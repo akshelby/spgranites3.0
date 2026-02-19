@@ -5,8 +5,14 @@ import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Testimonial } from '@/types/database';
 
+const defaultTestimonials: Testimonial[] = [
+  { id: '1', customer_name: 'Rajesh Kumar', company: 'Home Owner', designation: null, review_text: 'Excellent quality granite and professional installation. The team was punctual and the work was completed perfectly.', rating: 5, image_url: null, is_active: true, display_order: 1, created_at: '', updated_at: '' },
+  { id: '2', customer_name: 'Priya Sharma', company: 'Interior Designer', designation: 'Lead Designer', review_text: 'I recommend SP Granites to all my clients. Their marble collection is stunning and the craftsmanship is top-notch.', rating: 5, image_url: null, is_active: true, display_order: 2, created_at: '', updated_at: '' },
+  { id: '3', customer_name: 'Anand Builders', company: 'Construction Company', designation: 'Project Manager', review_text: 'We have been working with SP Granites for over 5 years. Reliable, quality products, and excellent customer service.', rating: 5, image_url: null, is_active: true, display_order: 3, created_at: '', updated_at: '' },
+];
+
 export function TestimonialsSection() {
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(defaultTestimonials);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -27,11 +33,7 @@ export function TestimonialsSection() {
         ]);
       }
     } catch {
-      setTestimonials([
-        { id: '1', customer_name: 'Rajesh Kumar', company: 'Home Owner', designation: null, review_text: 'Excellent quality granite and professional installation. The team was punctual and the work was completed perfectly.', rating: 5, image_url: null, is_active: true, display_order: 1, created_at: '', updated_at: '' },
-        { id: '2', customer_name: 'Priya Sharma', company: 'Interior Designer', designation: 'Lead Designer', review_text: 'I recommend SP Granites to all my clients. Their marble collection is stunning and the craftsmanship is top-notch.', rating: 5, image_url: null, is_active: true, display_order: 2, created_at: '', updated_at: '' },
-        { id: '3', customer_name: 'Anand Builders', company: 'Construction Company', designation: 'Project Manager', review_text: 'We have been working with SP Granites for over 5 years. Reliable, quality products, and excellent customer service.', rating: 5, image_url: null, is_active: true, display_order: 3, created_at: '', updated_at: '' },
-      ]);
+      setTestimonials(defaultTestimonials);
     }
   };
 
@@ -53,15 +55,11 @@ export function TestimonialsSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 lg:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-3 lg:gap-5">
           {testimonials.map((testimonial, index) => (
-            <motion.div
+            <div
               key={testimonial.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-card p-2.5 sm:p-4 lg:p-6 rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col"
+              className="bg-card p-3 sm:p-4 lg:p-6 rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col"
               data-testid={`testimonial-card-${testimonial.id}`}
             >
               <Quote className="absolute top-2 right-2 h-3.5 w-3.5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-primary/15" />
@@ -116,7 +114,7 @@ export function TestimonialsSection() {
                   )}
                 </div>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
