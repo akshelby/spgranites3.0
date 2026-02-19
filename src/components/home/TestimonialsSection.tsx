@@ -53,7 +53,7 @@ export function TestimonialsSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-3 lg:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3 lg:gap-5">
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={testimonial.id}
@@ -61,11 +61,23 @@ export function TestimonialsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="bg-card p-3 sm:p-4 lg:p-6 rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative"
+              className="bg-card p-2.5 sm:p-4 lg:p-6 rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col"
               data-testid={`testimonial-card-${testimonial.id}`}
             >
-              <Quote className="absolute top-2.5 right-2.5 h-4 w-4 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-primary/15" />
-              <div className="flex gap-0.5 mb-1.5 sm:mb-3">
+              <Quote className="absolute top-2 right-2 h-3.5 w-3.5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-primary/15" />
+
+              {testimonial.image_url && (
+                <div className="mb-2 sm:mb-3 rounded-xl overflow-hidden aspect-[4/3]">
+                  <img
+                    src={testimonial.image_url}
+                    alt={`Review by ${testimonial.customer_name}`}
+                    loading="lazy"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+
+              <div className="flex gap-0.5 mb-1 sm:mb-2">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star
                     key={i}
@@ -77,17 +89,27 @@ export function TestimonialsSection() {
                   />
                 ))}
               </div>
-              <p className="text-[11px] sm:text-xs lg:text-sm text-muted-foreground mb-2.5 sm:mb-4 line-clamp-3 sm:line-clamp-4 lg:line-clamp-none">
+
+              <p className="text-[10px] sm:text-xs lg:text-sm text-muted-foreground mb-2 sm:mb-3 line-clamp-3 sm:line-clamp-4 lg:line-clamp-none flex-1">
                 "{testimonial.review_text}"
               </p>
-              <div className="flex items-center gap-2 sm:gap-2.5">
-                <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-[11px] sm:text-xs lg:text-sm">
-                  {testimonial.customer_name.charAt(0)}
-                </div>
-                <div>
-                  <h4 className="text-[11px] sm:text-xs lg:text-sm font-semibold">{testimonial.customer_name}</h4>
+
+              <div className="flex items-center gap-1.5 sm:gap-2.5 mt-auto pt-1.5 sm:pt-2 border-t border-border/40">
+                {testimonial.image_url ? (
+                  <img
+                    src={testimonial.image_url}
+                    alt={testimonial.customer_name}
+                    className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-full object-cover ring-2 ring-primary/20"
+                  />
+                ) : (
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-[10px] sm:text-xs lg:text-sm">
+                    {testimonial.customer_name.charAt(0)}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <h4 className="text-[10px] sm:text-xs lg:text-sm font-semibold truncate">{testimonial.customer_name}</h4>
                   {testimonial.company && (
-                    <p className="text-[9px] sm:text-[11px] lg:text-xs text-muted-foreground">
+                    <p className="text-[8px] sm:text-[10px] lg:text-xs text-muted-foreground truncate">
                       {testimonial.designation && `${testimonial.designation}, `}
                       {testimonial.company}
                     </p>
