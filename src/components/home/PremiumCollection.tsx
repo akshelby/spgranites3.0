@@ -14,36 +14,48 @@ interface CollectionProduct {
 }
 
 import blackGraniteImg from '@/assets/products/black-granite.jpg';
+import absoluteBlackImg from '@/assets/products/absolute-black-granite.png';
 import brownGraniteImg from '@/assets/products/brown-granite.png';
 import greenGraniteImg from '@/assets/products/green-granite.jpg';
 import bluePearlImg from '@/assets/products/blue-pearl.png';
 import redGraniteImg from '@/assets/products/red-granite.jpg';
 import greyGraniteImg from '@/assets/products/grey-granite.jpg';
+import kashmirWhiteImg from '@/assets/products/kashmir-white-granite.png';
+import steelGreyImg from '@/assets/products/steel-grey-granite.png';
+import imperialRedImg from '@/assets/products/imperial-red-granite.png';
+import greenGalaxyImg from '@/assets/products/green-galaxy-granite.png';
+import brownPearlImg from '@/assets/products/brown-pearl-granite.png';
+import blueGalaxyImg from '@/assets/products/blue-galaxy-granite.png';
+import forestGreenImg from '@/assets/products/forest-green-granite.png';
 
 const productImages: Record<string, string> = {
   'black-galaxy-granite': blackGraniteImg,
-  'absolute-black-granite': blackGraniteImg,
-  'kashmir-white-granite': greyGraniteImg,
+  'absolute-black-granite': absoluteBlackImg,
+  'kashmir-white-granite': kashmirWhiteImg,
   'tan-brown-granite': brownGraniteImg,
   'blue-pearl-granite': bluePearlImg,
-  'imperial-red-granite': redGraniteImg,
-  'steel-grey-granite': greyGraniteImg,
-  'green-galaxy-granite': greenGraniteImg,
+  'imperial-red-granite': imperialRedImg,
+  'steel-grey-granite': steelGreyImg,
+  'green-galaxy-granite': greenGalaxyImg,
+  'red-granite': redGraniteImg,
+  'brown-pearl-granite': brownPearlImg,
+  'blue-galaxy-granite': blueGalaxyImg,
+  'forest-green-granite': forestGreenImg,
 };
 
 const fallbackProducts: CollectionProduct[] = [
   { id: 'fb-1', name: 'Black Galaxy Granite', slug: 'black-galaxy-granite', price: 4500, images: [blackGraniteImg], is_active: true },
-  { id: 'fb-2', name: 'Absolute Black Granite', slug: 'absolute-black-granite', price: 3800, images: [blackGraniteImg], is_active: true },
+  { id: 'fb-2', name: 'Absolute Black Granite', slug: 'absolute-black-granite', price: 3800, images: [absoluteBlackImg], is_active: true },
   { id: 'fb-3', name: 'Tan Brown Granite', slug: 'tan-brown-granite', price: 2800, images: [brownGraniteImg], is_active: true },
   { id: 'fb-4', name: 'Blue Pearl Granite', slug: 'blue-pearl-granite', price: 5200, images: [bluePearlImg], is_active: true },
-  { id: 'fb-5', name: 'Green Galaxy Granite', slug: 'green-galaxy-granite', price: 3500, images: [greenGraniteImg], is_active: true },
-  { id: 'fb-6', name: 'Imperial Red Granite', slug: 'imperial-red-granite', price: 4000, images: [redGraniteImg], is_active: true },
-  { id: 'fb-7', name: 'Kashmir White Granite', slug: 'kashmir-white-granite', price: 3200, images: [greyGraniteImg], is_active: true },
-  { id: 'fb-8', name: 'Steel Grey Granite', slug: 'steel-grey-granite', price: 2900, images: [greyGraniteImg], is_active: true },
+  { id: 'fb-5', name: 'Green Galaxy Granite', slug: 'green-galaxy-granite', price: 3500, images: [greenGalaxyImg], is_active: true },
+  { id: 'fb-6', name: 'Imperial Red Granite', slug: 'imperial-red-granite', price: 4000, images: [imperialRedImg], is_active: true },
+  { id: 'fb-7', name: 'Kashmir White Granite', slug: 'kashmir-white-granite', price: 3200, images: [kashmirWhiteImg], is_active: true },
+  { id: 'fb-8', name: 'Steel Grey Granite', slug: 'steel-grey-granite', price: 2900, images: [steelGreyImg], is_active: true },
   { id: 'fb-9', name: 'Red Granite', slug: 'red-granite', price: 3600, images: [redGraniteImg], is_active: true },
-  { id: 'fb-10', name: 'Brown Pearl Granite', slug: 'brown-pearl-granite', price: 3100, images: [brownGraniteImg], is_active: true },
-  { id: 'fb-11', name: 'Blue Galaxy Granite', slug: 'blue-galaxy-granite', price: 4800, images: [bluePearlImg], is_active: true },
-  { id: 'fb-12', name: 'Forest Green Granite', slug: 'forest-green-granite', price: 3400, images: [greenGraniteImg], is_active: true },
+  { id: 'fb-10', name: 'Brown Pearl Granite', slug: 'brown-pearl-granite', price: 3100, images: [brownPearlImg], is_active: true },
+  { id: 'fb-11', name: 'Blue Galaxy Granite', slug: 'blue-galaxy-granite', price: 4800, images: [blueGalaxyImg], is_active: true },
+  { id: 'fb-12', name: 'Forest Green Granite', slug: 'forest-green-granite', price: 3400, images: [forestGreenImg], is_active: true },
 ];
 
 function getProductImage(product: CollectionProduct): string {
