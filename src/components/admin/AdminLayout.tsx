@@ -79,7 +79,7 @@ function SidebarContent({ collapsed, onItemClick }: { collapsed: boolean; onItem
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
               <span className="text-sm font-bold text-primary-foreground">SG</span>
             </div>
-            <span className="font-semibold">Shree Granites</span>
+            <span className="brand-name text-lg">SP Granites</span>
           </Link>
         )}
         {collapsed && (

@@ -4,6 +4,48 @@
 
 /* SP Granites Design System - Premium Stone-Inspired Theme */
 
+/* Brand Name Typography */
+.brand-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #b91c1c 0%, #dc2626 40%, #f87171 60%, #dc2626 80%, #991b1b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  position: relative;
+  display: inline-block;
+}
+
+.brand-name-light {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #ffffff 0%, #fecaca 40%, #ffffff 60%, #fecaca 80%, #ffffff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+}
+
+.brand-name-white {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  color: white;
+  display: inline-block;
+}
+
+.brand-tagline {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.6em;
+  opacity: 0.7;
+}
+
 /* ===== CTA Ribbon Buttons ===== */
 .cta-ribbon-btn {
   position: relative;

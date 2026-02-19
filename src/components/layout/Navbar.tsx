@@ -85,8 +85,12 @@ export function Navbar() {
     >
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16 lg:h-20">
-          <Link to="/" className="flex items-center">
+          <Link to="/" className="flex items-center gap-2">
             <img src="/logo-sp.svg" alt="SP Granites" className="w-10 h-10 object-contain" />
+            <div className="hidden sm:block leading-tight">
+              <span className="brand-name text-xl">SP Granites</span>
+              <p className="brand-tagline text-[8px] text-muted-foreground -mt-0.5">Premium Stone Works</p>
+            </div>
           </Link>
 
           <div className="hidden lg:flex items-center gap-1.5 overflow-x-auto max-w-[calc(100%-360px)] scrollbar-hide border-2 border-gray-300 rounded-xl px-3 py-1.5 bg-gray-50/50 mr-2">

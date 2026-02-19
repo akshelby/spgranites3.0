@@ -40,8 +40,8 @@ export function Footer() {
                 <span className="text-white font-bold text-sm sm:text-lg">SP</span>
               </div>
               <div>
-                <h3 className="font-display text-base sm:text-xl font-bold">SP Granites</h3>
-                <p className="text-[10px] sm:text-xs text-gray-400">Premium Stone Works</p>
+                <h3 className="brand-name-white text-base sm:text-xl">SP Granites</h3>
+                <p className="brand-tagline text-[10px] sm:text-xs text-gray-400">Premium Stone Works</p>
               </div>
             </div>
             <p className="text-gray-400 text-xs sm:text-sm leading-relaxed">
