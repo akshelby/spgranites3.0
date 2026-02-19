@@ -146,6 +146,7 @@ export function FeaturedProducts() {
                 <img
                   src={getProductImage(product)}
                   alt={product.name}
+                  loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
                 {product.compare_price && product.compare_price > product.price && (
