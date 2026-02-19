@@ -64,7 +64,7 @@ export function StatsSection() {
               <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 mx-auto mb-1.5 sm:mb-2 lg:mb-3 rounded-full bg-white/10 flex items-center justify-center">
                 <stat.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.7)]" />
               </div>
-              <div className="text-base sm:text-xl lg:text-3xl font-bold font-display mb-0.5 sm:mb-1">
+              <div className="text-base sm:text-xl lg:text-3xl font-bold font-display mb-0.5 sm:mb-1 text-red-500">
                 <Counter value={stat.value} suffix={stat.suffix} />
               </div>
               <p className="text-[9px] sm:text-[11px] lg:text-sm opacity-60 leading-tight">{stat.label}</p>

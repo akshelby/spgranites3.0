@@ -215,7 +215,7 @@ export function PremiumCollection() {
           transition={{ duration: 0.5 }}
           className="text-center mb-3 sm:mb-5"
         >
-          <h2 className="text-lg sm:text-2xl md:text-3xl font-display font-bold text-foreground">
+          <h2 className="text-lg sm:text-2xl md:text-3xl font-display font-bold text-red-600">
             Premium Collection
           </h2>
           <p className="mt-1 sm:mt-1.5 text-[11px] sm:text-xs text-muted-foreground">
