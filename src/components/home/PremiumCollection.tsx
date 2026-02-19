@@ -126,10 +126,10 @@ export function PremiumCollection() {
       const dist = cardAngle > 180 ? 360 - cardAngle : cardAngle;
       const isBackside = dist > 90;
       if (isBackside) {
-        const blurAmount = ((dist - 90) / 90) * 3;
-        el.style.filter = `blur(${blurAmount}px)`;
+        const opacity = 1 - ((dist - 90) / 90) * 0.6;
+        el.style.opacity = `${opacity}`;
       } else {
-        el.style.filter = 'none';
+        el.style.opacity = '1';
       }
     }
   }, []);
