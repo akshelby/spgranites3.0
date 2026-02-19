@@ -39,7 +39,7 @@ export default function TestimonialsPage() {
     try {
       const [testimonialRes, reviewRes] = await Promise.all([
         supabase.from('testimonials').select('*').eq('is_active', true).order('display_order', { ascending: true }),
-        supabase.from('customer_reviews').select('*').eq('is_approved', true).order('created_at', { ascending: false }),
+        supabase.from('customer_reviews').select('*').order('created_at', { ascending: false }),
       ]);
       if (testimonialRes.data) setTestimonials(testimonialRes.data as Testimonial[]);
       if (reviewRes.data) setCustomerReviews(reviewRes.data as CustomerReview[]);
@@ -78,8 +78,6 @@ export default function TestimonialsPage() {
   const getMyReview = (reviewId: string) => {
     return myReviews.find(r => r.id === reviewId) || null;
   };
-
-  const pendingReviews = myReviews.filter(r => !r.is_approved);
 
   return (
     <MainLayout>
@@ -127,31 +125,6 @@ export default function TestimonialsPage() {
             <ReviewForm onSuccess={() => fetchData()} />
           )}
         </motion.div>
-
-        {user && pendingReviews.length > 0 && (
-          <section className="mb-6 sm:mb-8">
-            <h2 className="text-sm sm:text-lg font-display font-bold mb-3 sm:mb-4 flex items-center gap-2">
-              Your Pending Reviews
-              <span className="text-[10px] sm:text-xs font-normal text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                Awaiting approval
-              </span>
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-              {pendingReviews.map((review, index) => (
-                <ReviewCard
-                  key={review.id}
-                  review={review}
-                  index={index}
-                  isOwner={true}
-                  onEdit={() => setEditingReview(review)}
-                  onDelete={() => setDeleteId(review.id)}
-                  onPhotoClick={(photos, idx) => setShowPhotoModal({ photos, index: idx })}
-                  isPending
-                />
-              ))}
-            </div>
-          </section>
-        )}
 
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
@@ -291,16 +264,15 @@ interface ReviewCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onPhotoClick: (photos: string[], index: number) => void;
-  isPending?: boolean;
 }
 
-function ReviewCard({ review, index, isOwner, onEdit, onDelete, onPhotoClick, isPending }: ReviewCardProps) {
+function ReviewCard({ review, index, isOwner, onEdit, onDelete, onPhotoClick }: ReviewCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.03 }}
-      className={`bg-card p-3 sm:p-4 rounded-lg border ${isPending ? 'border-yellow-500/40 bg-yellow-50/30 dark:bg-yellow-950/10' : 'border-border'} relative`}
+      className="bg-card p-3 sm:p-4 rounded-lg border border-border relative"
       data-testid={`card-review-${review.id}`}
     >
       {isOwner && (
@@ -385,11 +357,6 @@ function ReviewCard({ review, index, isOwner, onEdit, onDelete, onPhotoClick, is
             </div>
           )}
 
-          {isPending && (
-            <p className="text-[10px] sm:text-xs text-yellow-600 dark:text-yellow-400 mt-2 font-medium">
-              Pending approval
-            </p>
-          )}
         </div>
       </div>
     </motion.div>

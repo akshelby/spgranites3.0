@@ -159,7 +159,7 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
         photos: uploadedPhotos,
         video_url: finalVideoUrl || null,
         city: city.trim() || null,
-        is_approved: false,
+        is_approved: true,
       };
 
       if (editReview) {
@@ -169,13 +169,13 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
           .eq('id', editReview.id)
           .eq('user_id', user!.id);
         if (error) throw error;
-        toast.success('Review updated! It will appear after approval.');
+        toast.success('Review updated successfully!');
       } else {
         const { error } = await supabase
           .from('customer_reviews')
           .insert(reviewData as any);
         if (error) throw error;
-        toast.success('Review submitted! It will appear after approval.');
+        toast.success('Review posted successfully!');
       }
 
       setRating(5);
