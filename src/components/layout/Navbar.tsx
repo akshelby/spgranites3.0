@@ -201,10 +201,9 @@ export function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button asChild size="sm" className="h-auto py-1 px-3 leading-tight">
-                <Link to="/auth" className="flex flex-col items-center text-[11px]">
-                  <span>Sign</span>
-                  <span className="-mt-1">In</span>
+              <Button asChild size="sm" className="h-auto py-1.5 px-3">
+                <Link to="/auth" className="text-xs whitespace-nowrap">
+                  Sign In
                 </Link>
               </Button>
             )}
