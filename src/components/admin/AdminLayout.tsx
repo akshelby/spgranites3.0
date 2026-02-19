@@ -36,6 +36,8 @@ import {
   Settings,
   MessageCircle,
   Phone,
+  UserPlus,
+  Handshake,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -61,6 +63,9 @@ const menuItems = [
   { icon: Phone, label: 'Contact Numbers', href: '/admin/contact-numbers' },
   { icon: Users, label: 'Users', href: '/admin/users' },
   { icon: BarChart3, label: 'Analytics', href: '/admin/analytics' },
+  { icon: Handshake, label: 'CRM', href: '/admin/crm' },
+  { icon: Users, label: 'CRM Customers', href: '/admin/crm/customers' },
+  { icon: UserPlus, label: 'CRM Leads', href: '/admin/crm/leads' },
 ];
 
 function SidebarContent({ collapsed, onItemClick }: { collapsed: boolean; onItemClick?: () => void }) {

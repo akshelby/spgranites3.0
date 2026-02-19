@@ -52,6 +52,9 @@ import {
   AdminAnalytics,
   AdminChat,
   AdminContactNumbers,
+  AdminCRMOverview,
+  AdminCustomers,
+  AdminLeads,
 } from "./pages/admin";
 
 const queryClient = new QueryClient();
@@ -109,6 +112,9 @@ const App = () => (
                 <Route path="/admin/analytics" element={<ProtectedRoute requiredRole="admin"><AdminAnalytics /></ProtectedRoute>} />
                 <Route path="/admin/chat" element={<ProtectedRoute requiredRole="admin"><AdminChat /></ProtectedRoute>} />
                 <Route path="/admin/contact-numbers" element={<ProtectedRoute requiredRole="admin"><AdminContactNumbers /></ProtectedRoute>} />
+                <Route path="/admin/crm" element={<ProtectedRoute requiredRole="admin"><AdminCRMOverview /></ProtectedRoute>} />
+                <Route path="/admin/crm/customers" element={<ProtectedRoute requiredRole="admin"><AdminCustomers /></ProtectedRoute>} />
+                <Route path="/admin/crm/leads" element={<ProtectedRoute requiredRole="admin"><AdminLeads /></ProtectedRoute>} />
 
                 {/* Catch-all */}
                 <Route path="*" element={<NotFound />} />

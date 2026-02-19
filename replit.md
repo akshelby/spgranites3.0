@@ -97,6 +97,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+- **2026-02-19**: Added CRM (Customer Relationship Management) system
+  - Three new database tables: `leads`, `crm_notes`, `crm_followups`
+  - CRM Overview page (`/admin/crm`) with pipeline stats, recent leads, and upcoming follow-ups
+  - Customers page (`/admin/crm/customers`) with search, order totals, and detail drawer with notes/follow-ups/timeline
+  - Leads page (`/admin/crm/leads`) with status pipeline filters, CRUD, quick status update, mobile FAB
+  - Notes system: add notes to any customer or lead
+  - Follow-ups system: schedule follow-ups with channel (call/WhatsApp/email/visit), mark done/skip
+  - Activity Timeline: unified view of orders, notes, and follow-ups per customer/lead
+  - Mobile-first design with Sheet drawers, floating action buttons, responsive card layouts
+  - Components in `src/components/admin/crm/`: NoteForm, NotesList, FollowupForm, FollowupList, ActivityTimeline, LeadForm, CRMDetailPanel
 - **2026-02-18**: Added AI Assistant feature
   - Integrated OpenAI (via Replit AI Integrations) for customer support AI chatbot
   - Added `/api/ai-chat` endpoint with streaming SSE responses, rate limiting, input validation

@@ -15,3 +15,6 @@ export { default as AdminUsers } from './AdminUsers';
 export { default as AdminAnalytics } from './AdminAnalytics';
 export { default as AdminChat } from './AdminChat';
 export { default as AdminContactNumbers } from './AdminContactNumbers';
+export { default as AdminCRMOverview } from './AdminCRMOverview';
+export { default as AdminCustomers } from './AdminCustomers';
+export { default as AdminLeads } from './AdminLeads';
