@@ -2,6 +2,7 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
 interface CollectionProduct {
   id: string;
@@ -41,8 +42,6 @@ const fallbackProducts: CollectionProduct[] = [
   { id: 'fb-8', name: 'Steel Grey Granite', slug: 'steel-grey-granite', price: 2900, images: [greyGraniteImg], is_active: true },
   { id: 'fb-9', name: 'Red Granite', slug: 'red-granite', price: 3600, images: [redGraniteImg], is_active: true },
   { id: 'fb-10', name: 'Brown Pearl Granite', slug: 'brown-pearl-granite', price: 3100, images: [brownGraniteImg], is_active: true },
-  { id: 'fb-11', name: 'Blue Galaxy Granite', slug: 'blue-galaxy-granite', price: 4800, images: [bluePearlImg], is_active: true },
-  { id: 'fb-12', name: 'Forest Green Granite', slug: 'forest-green-granite', price: 3400, images: [greenGraniteImg], is_active: true },
 ];
 
 function getProductImage(product: CollectionProduct): string {
@@ -54,7 +53,8 @@ function getProductImage(product: CollectionProduct): string {
 
 export function PremiumCollection() {
   const [products, setProducts] = useState<CollectionProduct[]>(fallbackProducts);
-  const discRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const spinnerRef = useRef<HTMLDivElement>(null);
   const rotationRef = useRef(0);
   const autoRotateRef = useRef(true);
   const isDraggingRef = useRef(false);
@@ -79,12 +79,12 @@ export function PremiumCollection() {
         const allProducts = data || [];
         const featured = allProducts.filter((p: any) => p.is_featured && p.is_active);
         if (featured.length > 0) {
-          setProducts(featured.slice(0, 12));
+          setProducts(featured.slice(0, 10));
           return;
         }
         const active = allProducts.filter((p: any) => p.is_active);
         if (active.length > 0) {
-          setProducts(active.slice(0, 12));
+          setProducts(active.slice(0, 10));
         } else {
           setProducts(fallbackProducts);
         }
@@ -101,15 +101,17 @@ export function PremiumCollection() {
   }, []);
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 640);
+    const check = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
     check();
     window.addEventListener('resize', check);
     return () => window.removeEventListener('resize', check);
   }, []);
 
   const applyRotation = useCallback(() => {
-    if (!discRef.current) return;
-    discRef.current.style.transform = `rotateX(65deg) rotateZ(${rotationRef.current}deg)`;
+    if (!spinnerRef.current) return;
+    spinnerRef.current.style.transform = `translateX(-50%) translateY(-50%) rotateY(${rotationRef.current}deg)`;
   }, []);
 
   useEffect(() => {
@@ -118,12 +120,11 @@ export function PremiumCollection() {
       const dt = now - lastTime;
       lastTime = now;
       if (autoRotateRef.current && !isDraggingRef.current && products.length > 0) {
-        rotationRef.current += 0.25 * (dt / 16);
+        rotationRef.current -= 0.6 * (dt / 16);
         applyRotation();
       }
       animFrameRef.current = requestAnimationFrame(tick);
     };
-    applyRotation();
     animFrameRef.current = requestAnimationFrame(tick);
     return () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
@@ -167,8 +168,10 @@ export function PremiumCollection() {
 
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
     if (isHorizontalSwipe.current === false) return;
+
     const dx = Math.abs(e.clientX - startXRef.current);
     const dy = Math.abs(e.clientY - pointerStartY.current);
+
     if (isHorizontalSwipe.current === null) {
       if (dx + dy < 8) return;
       if (dx > dy) {
@@ -180,12 +183,14 @@ export function PremiumCollection() {
         return;
       }
     }
+
     e.preventDefault();
     const now = performance.now();
     const deltaX = e.clientX - startXRef.current;
     const sensitivity = 0.4;
     rotationRef.current = startRotRef.current + deltaX * sensitivity;
     applyRotation();
+
     const dt = now - lastMoveRef.current.time;
     if (dt > 0) {
       velocityRef.current = ((e.clientX - lastMoveRef.current.x) * sensitivity) / Math.max(dt / 16, 1);
@@ -207,37 +212,42 @@ export function PremiumCollection() {
   if (cardCount === 0) return null;
 
   const anglePerCard = 360 / cardCount;
-  const cardW = isMobile ? 80 : 140;
-  const cardH = isMobile ? 100 : 180;
-  const radius = isMobile ? 160 : 320;
-  const containerH = isMobile ? 340 : 550;
+  const isLargeDesktop = !isMobile && typeof window !== 'undefined' && window.innerWidth >= 1280;
+  const isTablet = !isMobile && typeof window !== 'undefined' && window.innerWidth >= 640 && window.innerWidth < 1280;
+  const cardW = isMobile ? 120 : isLargeDesktop ? 300 : isTablet ? 250 : 180;
+  const cardH = isMobile ? 170 : isLargeDesktop ? 400 : isTablet ? 340 : 260;
+  const containerH = isMobile ? 260 : isLargeDesktop ? 520 : isTablet ? 460 : 380;
+  const halfCard = cardW / 2;
+  const gap = isMobile ? 4 : isLargeDesktop ? 6 : isTablet ? 5 : 5;
+  const minRadius = Math.ceil((halfCard + gap) / Math.sin(Math.PI / cardCount));
+  const radius = Math.max(minRadius, isMobile ? 100 : isLargeDesktop ? 320 : isTablet ? 260 : 160);
 
   return (
-    <section className="py-8 sm:py-14 md:py-16 bg-muted/30 overflow-hidden">
+    <section className="py-8 sm:py-12 md:py-16 bg-muted/30 overflow-hidden">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-4 sm:mb-6"
+          className="text-center mb-3 sm:mb-5"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-red-600">
+          <h2 className="text-lg sm:text-2xl md:text-3xl font-display font-bold text-red-600">
             Premium Collection
           </h2>
-          <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-muted-foreground">
-            Swipe to spin the disc
+          <p className="mt-1 sm:mt-1.5 text-[11px] sm:text-xs text-muted-foreground">
+            Swipe to rotate
           </p>
         </motion.div>
 
         <div
-          ref={(el) => { if (el) el.style.perspective = isMobile ? '800px' : '1200px'; }}
+          ref={containerRef}
           className="relative mx-auto select-none"
           style={{
             height: `${containerH}px`,
+            perspective: isMobile ? '800px' : isLargeDesktop ? '1800px' : isTablet ? '1400px' : '1200px',
             cursor: 'grab',
             touchAction: 'pan-y',
-            perspectiveOrigin: '50% 40%',
           }}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
@@ -246,36 +256,36 @@ export function PremiumCollection() {
           data-testid="premium-collection-carousel"
         >
           <div
-            ref={discRef}
-            className="absolute left-1/2 top-1/2"
+            ref={spinnerRef}
+            className="absolute left-1/2 top-1/2 w-0 h-0"
             style={{
-              width: 0,
-              height: 0,
               transformStyle: 'preserve-3d',
-              transform: `rotateX(65deg) rotateZ(0deg)`,
+              transform: `translateX(-50%) translateY(-50%) rotateY(0deg)`,
               willChange: 'transform',
-              marginLeft: 0,
-              marginTop: 0,
             }}
           >
             {products.map((product, index) => {
               const angle = index * anglePerCard;
+
               return (
                 <div
                   key={product.id}
-                  className="absolute"
+                  className="absolute backface-hidden"
                   style={{
                     width: `${cardW}px`,
                     height: `${cardH}px`,
                     left: `${-cardW / 2}px`,
                     top: `${-cardH / 2}px`,
-                    transform: `rotateZ(${angle}deg) translateY(${-radius}px) rotateZ(${-angle}deg) rotateX(-65deg)`,
                     transformStyle: 'preserve-3d',
+                    transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
+                    backfaceVisibility: 'hidden',
                   }}
                 >
                   <Link
                     to={`/products/${product.slug || product.id}`}
-                    className="block w-full h-full rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow"
+                    className={cn(
+                      'block w-full h-full rounded-xl overflow-hidden shadow-lg',
+                    )}
                     onClick={(e) => { if (isDraggingRef.current) e.preventDefault(); }}
                     data-testid={`collection-card-${product.id}`}
                   >
@@ -288,12 +298,12 @@ export function PremiumCollection() {
                         onError={(e) => { (e.target as HTMLImageElement).src = blackGraniteImg; }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                      <div className="absolute bottom-0 left-0 right-0 p-1.5 sm:p-2.5">
-                        <h3 className="text-white text-[9px] sm:text-xs font-semibold leading-tight">
+                      <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-4">
+                        <h3 className="text-white text-xs sm:text-base font-semibold leading-tight">
                           {product.name}
                         </h3>
                         {product.price && (
-                          <p className="text-white/80 text-[8px] sm:text-[11px] mt-0.5">
+                          <p className="text-white/80 text-[10px] sm:text-sm mt-0.5 sm:mt-1">
                             ₹{Number(product.price).toLocaleString('en-IN')}
                           </p>
                         )}
@@ -305,6 +315,8 @@ export function PremiumCollection() {
             })}
           </div>
         </div>
+
+        <p className="text-center text-xs text-muted-foreground mt-2">Swipe</p>
       </div>
     </section>
   );
