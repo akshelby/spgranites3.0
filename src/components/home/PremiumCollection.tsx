@@ -119,15 +119,19 @@ export function PremiumCollection() {
     const count = cardRefs.current.length;
     if (count === 0) return;
     const perCard = 360 / count;
+    const currentRot = rotationRef.current;
     for (let i = 0; i < count; i++) {
       const el = cardRefs.current[i];
       if (!el) continue;
-      let cardAngle = ((i * perCard + rotationRef.current) % 360 + 360) % 360;
+      const baseAngle = i * perCard;
+      let cardAngle = ((baseAngle + currentRot) % 360 + 360) % 360;
       const dist = cardAngle > 180 ? 360 - cardAngle : cardAngle;
       const opacity = 0.25 + 0.75 * Math.pow(1 - dist / 180, 1.5);
       const scale = 0.85 + 0.15 * (1 - dist / 180);
+      const r = Number(el.dataset.radius);
+      const faceAngle = -(baseAngle + currentRot);
       el.style.opacity = `${opacity}`;
-      el.style.transform = `rotateY(${i * perCard}deg) translateZ(${Number(el.dataset.radius)}px) scale(${scale})`;
+      el.style.transform = `rotateY(${baseAngle}deg) translateZ(${r}px) rotateY(${faceAngle}deg) scale(${scale})`;
     }
   }, []);
 
