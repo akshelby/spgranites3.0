@@ -194,10 +194,11 @@ export default function ProductsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: Math.min(index * 0.015, 0.3) }}
                 className={cn(
-                  'group bg-card rounded-lg overflow-hidden border border-border hover-elevate transition-all',
+                  'group bg-card rounded-lg overflow-hidden border border-border hover-elevate transition-all cursor-pointer',
                   viewMode === 'list' && 'flex'
                 )}
                 data-testid={`card-product-${product.id}`}
+                onClick={() => window.location.href = `/products/${product.slug}`}
               >
                 <div
                   className={cn(
@@ -218,7 +219,7 @@ export default function ProductsPage() {
                   )}
                   {user && (
                     <button
-                      onClick={() => handleWishlistToggle(product.id)}
+                      onClick={(e) => { e.stopPropagation(); handleWishlistToggle(product.id); }}
                       className={cn(
                         'absolute top-1 right-1 sm:top-1.5 sm:right-1.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/90 flex items-center justify-center transition-colors',
                         isInWishlist(product.id)
@@ -234,11 +235,9 @@ export default function ProductsPage() {
                   )}
                 </div>
                 <div className={cn("p-2 sm:p-2.5 flex-1", viewMode === 'list' && 'flex flex-col justify-center')}>
-                  <Link to={`/products/${product.slug}`} data-testid={`link-product-${product.id}`}>
-                    <h3 className="text-xs sm:text-sm font-medium line-clamp-2 leading-tight">
-                      {product.name}
-                    </h3>
-                  </Link>
+                  <h3 className="text-xs sm:text-sm font-medium line-clamp-2 leading-tight" data-testid={`link-product-${product.id}`}>
+                    {product.name}
+                  </h3>
                   <div className="mt-1 sm:mt-1.5 flex items-center gap-1 flex-wrap">
                     <span className="text-sm sm:text-base font-bold text-primary" data-testid={`text-price-${product.id}`}>
                       {formatPrice(product.price)}
@@ -253,7 +252,7 @@ export default function ProductsPage() {
                     size="sm"
                     variant="outline"
                     className="w-full mt-1.5 text-[10px] sm:text-xs"
-                    onClick={() => handleAddToCart(product)}
+                    onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
                     data-testid={`button-add-cart-${product.id}`}
                   >
                     <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
