@@ -34,9 +34,7 @@ export function CategoryItemPill({
   const pillContent = (
     <motion.div
       className="relative"
-      whileHover={{ y: -3, scale: 1.04 }}
-      whileTap={{ y: 1, scale: 0.96 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 18 }}
+      transition={{ duration: 0.15 }}
     >
       <motion.div
         className={cn(
@@ -55,7 +53,6 @@ export function CategoryItemPill({
           border: `1.5px solid ${prominent ? 'transparent' : accentColor}44`,
           minWidth: '88px',
         }}
-        whileTap={{ boxShadow: pressedShadow } as never}
       >
         {/* Sliding red fill on hover (only for non-prominent) */}
         {!prominent && (
