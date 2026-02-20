@@ -80,7 +80,7 @@
 .cta-ribbon-btn {
   position: relative;
   display: inline-flex;
-  background: #dc2626;
+  background: #1a1a1a;
   color: #ffffff;
   font-weight: 700;
   font-size: 0.85rem;
@@ -101,7 +101,7 @@
   }
 }
 .cta-ribbon-btn:hover {
-  background: #b91c1c;
+  background: #333333;
   transform: scale(1.04);
 }
 .cta-ribbon-btn-inner {
