@@ -158,10 +158,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
       setSession(null);
       setRole(null);
-      await supabase.auth.signOut({ scope: 'local' });
+      await supabase.auth.signOut();
     } catch (err) {
       console.error('Sign out error:', err);
     }
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('sb-')) localStorage.removeItem(key);
+    });
     window.location.href = '/auth';
   };
 
