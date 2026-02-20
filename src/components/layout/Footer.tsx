@@ -36,9 +36,7 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
           <div className="space-y-3 sm:space-y-4 col-span-2 sm:col-span-1">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 sm:w-11 sm:h-11 bg-gradient-premium rounded-lg flex items-center justify-center shadow-lg shadow-red-900/30">
-                <span className="text-white font-bold text-sm sm:text-lg" style={{fontFamily: "'Playfair Display', Georgia, serif"}}>SP</span>
-              </div>
+              <img src="/images/sp-logo-dark.png" alt="SP Granites" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
               <div className="flex flex-col">
                 <h3 className="brand-name-white text-lg sm:text-xl leading-none">SP Granites</h3>
                 <span className="brand-tagline text-[10px] sm:text-[11px] text-gray-400/70 mt-1">Premium Stone Works</span>
