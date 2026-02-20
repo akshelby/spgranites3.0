@@ -79,25 +79,27 @@ export function CategoryItem({
           }}
         />
 
-        {/* Soft red glow behind — hidden in dark mode */}
-        <div className="absolute inset-0 rounded-full blur-md opacity-30 scale-90 bg-red-500 transition-all duration-300 group-hover:opacity-55 group-hover:scale-100 dark:hidden" style={{ zIndex: 2 }} />
-
-        {/* Icon circle — transparent background in dark mode */}
+        {/*
+          Icon circle:
+          - Light mode: no background fill, icon is black (text-foreground)
+          - Dark mode: coloured gradient bg, icon is white/foreground
+          - Prominent (WhatsApp/Chat): always coloured bg
+        */}
         <div
           className={cn(
             'category-icon-circle',
             'relative w-14 h-14 sm:w-16 sm:h-16 md:w-[72px] md:h-[72px]',
             'rounded-full flex items-center justify-center',
-            'shadow-lg transition-all duration-300 group-hover:shadow-xl',
-            bg
+            'transition-all duration-300',
+            prominent && bg,
           )}
           style={{ zIndex: 3 }}
         >
-          {/* Inner highlight arc — hidden in dark mode */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/25 to-transparent pointer-events-none dark:hidden" />
-
           <Icon
-            className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white dark:text-foreground relative z-10 drop-shadow"
+            className={cn(
+              'w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 relative z-10',
+              prominent ? 'text-white' : 'text-foreground'
+            )}
             strokeWidth={1.75}
           />
         </div>
