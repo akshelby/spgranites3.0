@@ -3,27 +3,122 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- TODO: Set the document title to the name of your application -->
     <title>SP Granites - Premium Stone Works</title>
     <meta name="description" content="SP Granites - Premium Granite, Marble & Stone Products" />
     <meta name="author" content="SP Granites" />
+    <link rel="icon" type="image/png" href="/images/sp-logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap" rel="stylesheet" />
 
-    <!-- TODO: Update og:title to match your application name -->
-    <meta property="og:title" content="Lovable App" />
-    <meta property="og:description" content="Lovable Generated Project" />
+    <meta property="og:title" content="SP Granites - Premium Stone Works" />
+    <meta property="og:description" content="Premium Granite, Marble & Stone Products" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:image" content="/images/sp-logo.png" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@Lovable" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta name="twitter:image" content="/images/sp-logo.png" />
+
+    <style>
+      #splash-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #121212;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+      }
+      #splash-loader.fade-out {
+        opacity: 0;
+        visibility: hidden;
+      }
+      #splash-logo {
+        width: 90px;
+        height: 90px;
+        animation: logoPulse 1.6s ease-in-out infinite, logoGlow 2s ease-in-out infinite;
+        filter: drop-shadow(0 0 20px rgba(220, 38, 38, 0.4));
+      }
+      #splash-text {
+        margin-top: 20px;
+        font-family: 'Playfair Display', Georgia, serif;
+        font-weight: 900;
+        font-size: 1.4rem;
+        letter-spacing: 0.05em;
+        color: #fff;
+        opacity: 0;
+        animation: textFadeIn 0.6s ease 0.3s forwards;
+      }
+      #splash-tagline {
+        margin-top: 6px;
+        font-family: 'Playfair Display', Georgia, serif;
+        font-style: italic;
+        font-size: 0.7rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.45);
+        opacity: 0;
+        animation: textFadeIn 0.6s ease 0.5s forwards;
+      }
+      #splash-bar-wrapper {
+        margin-top: 28px;
+        width: 120px;
+        height: 2px;
+        background: rgba(255,255,255,0.08);
+        border-radius: 2px;
+        overflow: hidden;
+        opacity: 0;
+        animation: textFadeIn 0.4s ease 0.6s forwards;
+      }
+      #splash-bar {
+        width: 40%;
+        height: 100%;
+        background: linear-gradient(90deg, #dc2626, #ef4444);
+        border-radius: 2px;
+        animation: barSlide 1.2s ease-in-out infinite;
+      }
+      @keyframes logoPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.06); }
+      }
+      @keyframes logoGlow {
+        0%, 100% { filter: drop-shadow(0 0 15px rgba(220,38,38,0.3)); }
+        50% { filter: drop-shadow(0 0 30px rgba(220,38,38,0.6)); }
+      }
+      @keyframes textFadeIn {
+        to { opacity: 1; }
+      }
+      @keyframes barSlide {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(350%); }
+      }
+    </style>
   </head>
 
   <body>
+    <div id="splash-loader">
+      <img id="splash-logo" src="/images/sp-logo.png" alt="SP Granites" />
+      <div id="splash-text">SP Granites</div>
+      <div id="splash-tagline">Premium Stone Works</div>
+      <div id="splash-bar-wrapper">
+        <div id="splash-bar"></div>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      function hideSplash() {
+        var s = document.getElementById('splash-loader');
+        if (s) {
+          s.classList.add('fade-out');
+          setTimeout(function() { s.remove(); }, 600);
+        }
+      }
+      window.addEventListener('DOMContentLoaded', function() {
+        setTimeout(hideSplash, 1200);
+      });
+    </script>
   </body>
 </html>
