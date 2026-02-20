@@ -32,6 +32,9 @@ interface Category {
   prominentBg?: string;
 }
 
+const RED = 'bg-gradient-to-br from-red-500 to-red-700';
+const RED_GLOW = 'bg-red-500';
+
 const categories: Category[] = [
   {
     id: 'kitchen-slab',
@@ -40,9 +43,9 @@ const categories: Category[] = [
     link: '/products?category=kitchen-slab',
     descriptionKey: 'categories.kitchenSlabDesc',
     iconColor: 'text-white',
-    bgColor: 'bg-gradient-to-br from-red-500 to-red-700',
+    bgColor: RED,
     borderColor: '',
-    glowColor: 'bg-red-500',
+    glowColor: RED_GLOW,
   },
   {
     id: 'vanity-top',
@@ -51,9 +54,9 @@ const categories: Category[] = [
     link: '/products?category=vanity-top',
     descriptionKey: 'categories.vanityTopDesc',
     iconColor: 'text-white',
-    bgColor: 'bg-gradient-to-br from-violet-500 to-purple-700',
+    bgColor: RED,
     borderColor: '',
-    glowColor: 'bg-violet-500',
+    glowColor: RED_GLOW,
   },
   {
     id: 'dining-top',
@@ -62,9 +65,9 @@ const categories: Category[] = [
     link: '/products?category=dining-top',
     descriptionKey: 'categories.diningTopDesc',
     iconColor: 'text-white',
-    bgColor: 'bg-gradient-to-br from-red-600 to-rose-800',
+    bgColor: RED,
     borderColor: '',
-    glowColor: 'bg-rose-600',
+    glowColor: RED_GLOW,
   },
   {
     id: 'bhrundhavan',
@@ -73,9 +76,9 @@ const categories: Category[] = [
     link: '/products?category=bhrundhavan',
     descriptionKey: 'categories.bhrundhavanDesc',
     iconColor: 'text-white',
-    bgColor: 'bg-gradient-to-br from-zinc-800 to-zinc-950',
+    bgColor: RED,
     borderColor: '',
-    glowColor: 'bg-zinc-700',
+    glowColor: RED_GLOW,
   },
   {
     id: 'tiles-fixing',
@@ -84,9 +87,9 @@ const categories: Category[] = [
     link: '/services',
     descriptionKey: 'categories.tilesFixingDesc',
     iconColor: 'text-white',
-    bgColor: 'bg-gradient-to-br from-violet-600 to-indigo-800',
+    bgColor: RED,
     borderColor: '',
-    glowColor: 'bg-violet-600',
+    glowColor: RED_GLOW,
   },
   {
     id: 'contact-us',
@@ -95,9 +98,9 @@ const categories: Category[] = [
     link: '/contact',
     descriptionKey: 'categories.contactUsDesc',
     iconColor: 'text-white',
-    bgColor: 'bg-gradient-to-br from-red-500 to-red-700',
+    bgColor: RED,
     borderColor: '',
-    glowColor: 'bg-red-500',
+    glowColor: RED_GLOW,
   },
   {
     id: 'offline-stores',
@@ -106,9 +109,9 @@ const categories: Category[] = [
     link: '/stores',
     descriptionKey: 'categories.offlineStoresDesc',
     iconColor: 'text-white',
-    bgColor: 'bg-gradient-to-br from-zinc-700 to-zinc-900',
+    bgColor: RED,
     borderColor: '',
-    glowColor: 'bg-zinc-700',
+    glowColor: RED_GLOW,
   },
   {
     id: 'free-estimation',
@@ -117,9 +120,9 @@ const categories: Category[] = [
     link: '/estimation',
     descriptionKey: 'categories.freeEstimationDesc',
     iconColor: 'text-white',
-    bgColor: 'bg-gradient-to-br from-purple-500 to-violet-700',
+    bgColor: RED,
     borderColor: '',
-    glowColor: 'bg-purple-500',
+    glowColor: RED_GLOW,
   },
   {
     id: 'call-us',
@@ -128,9 +131,9 @@ const categories: Category[] = [
     link: 'tel:+919876543210',
     descriptionKey: 'categories.callUsDesc',
     iconColor: 'text-white',
-    bgColor: 'bg-gradient-to-br from-red-500 to-red-700',
+    bgColor: RED,
     borderColor: '',
-    glowColor: 'bg-red-500',
+    glowColor: RED_GLOW,
   },
   {
     id: 'whatsapp',
