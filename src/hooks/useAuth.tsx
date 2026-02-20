@@ -65,19 +65,29 @@ async function ensureAdminRole(userId: string, email: string): Promise<void> {
 }
 
 async function fetchRole(userId: string, email?: string): Promise<AppRole> {
-  if (email) {
-    await ensureProfile(userId, email);
-    await ensureAdminRole(userId, email);
-  }
   if (email && ADMIN_EMAILS.includes(email.toLowerCase())) {
+    try {
+      await ensureProfile(userId, email);
+      await ensureAdminRole(userId, email);
+    } catch (err) {
+      console.error('Error in admin setup (non-blocking):', err);
+    }
     return 'admin';
   }
-  const { data } = await supabase
-    .from('user_roles')
-    .select('role')
-    .eq('user_id', userId)
-    .maybeSingle();
-  return (data?.role as AppRole) || 'user';
+  try {
+    if (email) {
+      await ensureProfile(userId, email);
+    }
+    const { data } = await supabase
+      .from('user_roles')
+      .select('role')
+      .eq('user_id', userId)
+      .maybeSingle();
+    return (data?.role as AppRole) || 'user';
+  } catch (err) {
+    console.error('Error fetching role:', err);
+    return 'user';
+  }
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
