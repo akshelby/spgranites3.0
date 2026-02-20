@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PasswordInput } from './PasswordInput';
 import { toast } from 'sonner';
-import { Loader2, Mail } from 'lucide-react';
+import { Loader2, Mail, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
 
@@ -29,12 +29,15 @@ interface EmailAuthFormProps {
 }
 
 export function EmailAuthForm({ mode, onSuccess }: EmailAuthFormProps) {
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, resetPassword } = useAuth();
   const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetSent, setResetSent] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
 
   const validateForm = () => {
@@ -59,43 +62,133 @@ export function EmailAuthForm({ mode, onSuccess }: EmailAuthFormProps) {
     }
   };
 
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetEmail || !z.string().email().safeParse(resetEmail).success) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+    setLoading(true);
+    const { error } = await resetPassword(resetEmail);
+    setLoading(false);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      setResetSent(true);
+      toast.success('Password reset link sent! Check your email.');
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setLoading(true);
     
-    if (mode === 'signup') {
-      const { error } = await signUp(email, password);
-      setLoading(false);
+    try {
+      if (mode === 'signup') {
+        const { error } = await signUp(email, password);
+        setLoading(false);
 
-      if (error) {
-        if (error.message.includes('User already registered')) {
-          toast.error('An account with this email already exists');
+        if (error) {
+          if (error.message.includes('User already registered')) {
+            toast.error('An account with this email already exists');
+          } else {
+            toast.error(error.message);
+          }
         } else {
-          toast.error(error.message);
+          toast.success('Account created! Please check your email to verify your account.');
         }
       } else {
-        toast.success('Account created! Please check your email to verify your account.');
-      }
-    } else {
-      const { error } = await signIn(email, password);
-      setLoading(false);
+        const { error } = await signIn(email, password);
+        setLoading(false);
 
-      if (error) {
-        if (error.message.includes('Invalid login credentials')) {
-          toast.error('Invalid email or password');
-        } else if (error.message.includes('Email not confirmed')) {
-          toast.error('Please verify your email before signing in');
+        if (error) {
+          if (error.message.includes('Invalid login credentials')) {
+            toast.error('Invalid email or password');
+          } else if (error.message.includes('Email not confirmed')) {
+            toast.error('Please verify your email before signing in');
+          } else {
+            toast.error(error.message);
+          }
         } else {
-          toast.error(error.message);
+          toast.success('Signed in successfully!');
+          onSuccess();
         }
-      } else {
-        toast.success('Signed in successfully!');
-        onSuccess();
       }
+    } catch (err: any) {
+      setLoading(false);
+      toast.error(err?.message || 'Something went wrong. Please try again.');
     }
   };
+
+  if (showForgotPassword) {
+    return (
+      <div className="space-y-4">
+        <button
+          type="button"
+          onClick={() => { setShowForgotPassword(false); setResetSent(false); }}
+          className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Sign In
+        </button>
+
+        {resetSent ? (
+          <div className="text-center space-y-3 py-4">
+            <div className="mx-auto w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+              <Mail className="h-6 w-6 text-green-600 dark:text-green-400" />
+            </div>
+            <h3 className="font-semibold text-lg">Check your email</h3>
+            <p className="text-sm text-muted-foreground">
+              We've sent a password reset link to <strong>{resetEmail}</strong>. Click the link in the email to set a new password.
+            </p>
+            <Button
+              variant="outline"
+              className="mt-2"
+              onClick={() => { setShowForgotPassword(false); setResetSent(false); }}
+            >
+              Back to Sign In
+            </Button>
+          </div>
+        ) : (
+          <form onSubmit={handleResetPassword} className="space-y-4">
+            <div className="space-y-1">
+              <h3 className="font-semibold text-lg">Forgot your password?</h3>
+              <p className="text-sm text-muted-foreground">
+                Enter your email address and we'll send you a link to reset your password.
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="reset-email">Email</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="reset-email"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  className="pl-10"
+                  disabled={loading}
+                />
+              </div>
+            </div>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                'Send Reset Link'
+              )}
+            </Button>
+          </form>
+        )}
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -117,7 +210,18 @@ export function EmailAuthForm({ mode, onSuccess }: EmailAuthFormProps) {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor={`${mode}-password`}>{t('auth.password')}</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor={`${mode}-password`}>{t('auth.password')}</Label>
+          {mode === 'signin' && (
+            <button
+              type="button"
+              onClick={() => { setShowForgotPassword(true); setResetEmail(email); }}
+              className="text-xs text-primary hover:text-primary/80 hover:underline transition-colors"
+            >
+              Forgot password?
+            </button>
+          )}
+        </div>
         <PasswordInput
           id={`${mode}-password`}
           value={password}

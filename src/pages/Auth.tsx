@@ -3,10 +3,14 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Loader2, Mail, Phone, X } from 'lucide-react';
+import { Loader2, Mail, Phone, X, Lock } from 'lucide-react';
 import { EmailAuthForm, PhoneAuthForm, SocialAuthButtons } from '@/components/auth';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/auth/PasswordInput';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -16,12 +20,37 @@ const Auth = () => {
   const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
   const redirectTo = searchParams.get('redirect') || '/';
   const defaultTab = searchParams.get('mode') === 'signup' ? 'signup' : 'signin';
+  const isResetMode = searchParams.get('mode') === 'reset';
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [resetting, setResetting] = useState(false);
 
   useEffect(() => {
-    if (user && !authLoading) {
+    if (user && !authLoading && !isResetMode) {
       navigate(redirectTo);
     }
-  }, [user, authLoading, navigate, redirectTo]);
+  }, [user, authLoading, navigate, redirectTo, isResetMode]);
+
+  const handleUpdatePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword.length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+    setResetting(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    setResetting(false);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success('Password updated successfully!');
+      navigate('/');
+    }
+  };
 
   const handleSuccess = () => {
     navigate('/');
@@ -55,66 +84,113 @@ const Auth = () => {
         >
           <X className="h-4 w-4" />
         </Button>
-        <CardHeader className="space-y-1 text-center">
-          <CardTitle className="text-2xl font-bold">{t('auth.welcome')}</CardTitle>
-          <CardDescription>{t('auth.signInDesc')}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Auth Method Toggle */}
-          <div className="flex items-center justify-center gap-2 p-1 bg-muted rounded-lg">
-            <button
-              type="button"
-              onClick={() => setAuthMethod('email')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-md text-sm font-medium transition-all ${
-                authMethod === 'email'
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <Mail className="h-4 w-4" />
-              Email
-            </button>
-            <button
-              type="button"
-              onClick={() => setAuthMethod('phone')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-md text-sm font-medium transition-all ${
-                authMethod === 'phone'
-                  ? 'bg-background text-foreground shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <Phone className="h-4 w-4" />
-              Phone
-            </button>
-          </div>
+        {isResetMode ? (
+          <>
+            <CardHeader className="space-y-1 text-center">
+              <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2">
+                <Lock className="h-6 w-6 text-primary" />
+              </div>
+              <CardTitle className="text-2xl font-bold">Set New Password</CardTitle>
+              <CardDescription>Enter your new password below</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleUpdatePassword} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="new-password">New Password</Label>
+                  <PasswordInput
+                    id="new-password"
+                    value={newPassword}
+                    onChange={setNewPassword}
+                    placeholder="Enter new password"
+                    disabled={resetting}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-new-password">Confirm New Password</Label>
+                  <PasswordInput
+                    id="confirm-new-password"
+                    value={confirmNewPassword}
+                    onChange={setConfirmNewPassword}
+                    placeholder="Confirm new password"
+                    disabled={resetting}
+                  />
+                </div>
+                <Button type="submit" className="w-full" disabled={resetting}>
+                  {resetting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Updating...
+                    </>
+                  ) : (
+                    'Update Password'
+                  )}
+                </Button>
+              </form>
+            </CardContent>
+          </>
+        ) : (
+          <>
+            <CardHeader className="space-y-1 text-center">
+              <CardTitle className="text-2xl font-bold">{t('auth.welcome')}</CardTitle>
+              <CardDescription>{t('auth.signInDesc')}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-center gap-2 p-1 bg-muted rounded-lg">
+                <button
+                  type="button"
+                  onClick={() => setAuthMethod('email')}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-md text-sm font-medium transition-all ${
+                    authMethod === 'email'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <Mail className="h-4 w-4" />
+                  Email
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAuthMethod('phone')}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-md text-sm font-medium transition-all ${
+                    authMethod === 'phone'
+                      ? 'bg-background text-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <Phone className="h-4 w-4" />
+                  Phone
+                </button>
+              </div>
 
-          {authMethod === 'email' ? (
-            <Tabs defaultValue={defaultTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="signin">{t('auth.signIn')}</TabsTrigger>
-                <TabsTrigger value="signup">{t('auth.signUp')}</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="signin" className="space-y-4">
-                <EmailAuthForm mode="signin" onSuccess={handleSuccess} />
-                <SocialAuthButtons />
-              </TabsContent>
-              
-              <TabsContent value="signup" className="space-y-4">
-                <EmailAuthForm mode="signup" onSuccess={handleSuccess} />
-                <SocialAuthButtons />
-              </TabsContent>
-            </Tabs>
-          ) : (
-            <div className="space-y-4">
-              <PhoneAuthForm onSuccess={handleSuccess} />
-              <SocialAuthButtons />
-            </div>
-          )}
-        </CardContent>
-        <CardFooter className="flex flex-col space-y-2 text-center text-sm text-muted-foreground">
-          <p>{t('auth.termsAgreement')}</p>
-        </CardFooter>
+              {authMethod === 'email' ? (
+                <Tabs defaultValue={defaultTab} className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="signin">{t('auth.signIn')}</TabsTrigger>
+                    <TabsTrigger value="signup">{t('auth.signUp')}</TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="signin" className="space-y-4">
+                    <EmailAuthForm mode="signin" onSuccess={handleSuccess} />
+                    <SocialAuthButtons />
+                  </TabsContent>
+                  
+                  <TabsContent value="signup" className="space-y-4">
+                    <EmailAuthForm mode="signup" onSuccess={handleSuccess} />
+                    <SocialAuthButtons />
+                  </TabsContent>
+                </Tabs>
+              ) : (
+                <div className="space-y-4">
+                  <PhoneAuthForm onSuccess={handleSuccess} />
+                  <SocialAuthButtons />
+                </div>
+              )}
+            </CardContent>
+            <CardFooter className="flex flex-col space-y-2 text-center text-sm text-muted-foreground">
+              <p>{t('auth.termsAgreement')}</p>
+            </CardFooter>
+          </>
+        )}
       </Card>
     </div>
   );

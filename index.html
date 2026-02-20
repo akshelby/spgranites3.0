@@ -159,12 +159,15 @@
     <script type="module" src="/src/main.tsx"></script>
     <script>
       (function() {
+        var hidden = false;
         function hideSplash() {
+          if (hidden) return;
+          hidden = true;
           var s = document.getElementById('splash-loader');
-          if (s && !s._hiding) {
-            s._hiding = true;
-            s.classList.add('fade-out');
-            setTimeout(function() { s.remove(); }, 700);
+          if (s) {
+            s.style.opacity = '0';
+            s.style.transition = 'opacity 0.5s ease';
+            setTimeout(function() { if (s.parentNode) s.parentNode.removeChild(s); }, 600);
           }
         }
         window.__hideSplash = hideSplash;
