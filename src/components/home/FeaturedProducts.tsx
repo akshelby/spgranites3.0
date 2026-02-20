@@ -144,8 +144,9 @@ export function FeaturedProducts() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '-20px' }}
               transition={{ duration: 0.3, delay: index * 0.03 }}
-              className="group bg-card rounded-2xl overflow-hidden border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300"
+              className="group bg-card rounded-2xl overflow-hidden border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 cursor-pointer"
               data-testid={`card-product-${product.id}`}
+              onClick={() => window.location.href = `/products/${product.slug}`}
             >
               <div className="relative aspect-[4/3] lg:aspect-[3/2] overflow-hidden">
                 <img
@@ -162,7 +163,7 @@ export function FeaturedProducts() {
                 )}
                 {user && (
                   <button
-                    onClick={() => handleWishlistToggle(product.id)}
+                    onClick={(e) => { e.stopPropagation(); handleWishlistToggle(product.id); }}
                     className={cn(
                       'absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 dark:bg-black/60 flex items-center justify-center transition-colors',
                       isInWishlist(product.id) ? 'text-destructive' : 'text-muted-foreground'
@@ -174,11 +175,9 @@ export function FeaturedProducts() {
                 )}
               </div>
               <div className="p-2 sm:p-3 lg:p-4">
-                <Link to={`/products/${product.slug}`}>
-                  <h3 className="text-[11px] sm:text-xs lg:text-sm font-semibold line-clamp-1" data-testid={`text-product-name-${product.id}`}>
-                    {product.name}
-                  </h3>
-                </Link>
+                <h3 className="text-[11px] sm:text-xs lg:text-sm font-semibold line-clamp-1" data-testid={`text-product-name-${product.id}`}>
+                  {product.name}
+                </h3>
                 <div className="flex items-center justify-between gap-1 mt-1 sm:mt-2">
                   <div>
                     <span className="text-xs sm:text-sm lg:text-base font-bold text-foreground" data-testid={`text-price-${product.id}`}>
@@ -193,7 +192,7 @@ export function FeaturedProducts() {
                   <Button
                     size="default"
                     variant="outline"
-                    onClick={() => handleAddToCart(product)}
+                    onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
                     className="hidden lg:inline-flex text-xs"
                     data-testid={`button-add-cart-desktop-${product.id}`}
                   >
@@ -203,7 +202,7 @@ export function FeaturedProducts() {
                   <Button
                     size="icon"
                     variant="outline"
-                    onClick={() => handleAddToCart(product)}
+                    onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
                     className="lg:hidden"
                     data-testid={`button-add-cart-${product.id}`}
                   >

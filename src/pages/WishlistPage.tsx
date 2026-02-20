@@ -104,8 +104,9 @@ export default function WishlistPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.03 }}
-              className="group bg-card rounded-lg overflow-hidden border border-border hover-elevate transition-all"
+              className="group bg-card rounded-lg overflow-hidden border border-border hover-elevate transition-all cursor-pointer"
               data-testid={`card-wishlist-${product.id}`}
+              onClick={() => window.location.href = `/products/${product.slug}`}
             >
               <div className="relative aspect-[4/3] overflow-hidden">
                 <img
@@ -114,7 +115,7 @@ export default function WishlistPage() {
                   className="w-full h-full object-cover"
                 />
                 <button
-                  onClick={() => removeFromWishlist(product.id)}
+                  onClick={(e) => { e.stopPropagation(); removeFromWishlist(product.id); }}
                   className="absolute top-1.5 right-1.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-white/90 flex items-center justify-center text-destructive"
                   data-testid={`button-remove-wishlist-${product.id}`}
                 >
@@ -122,18 +123,16 @@ export default function WishlistPage() {
                 </button>
               </div>
               <div className="p-2 sm:p-2.5">
-                <Link to={`/products/${product.slug}`}>
-                  <h3 className="text-xs sm:text-sm font-medium line-clamp-1">
-                    {product.name}
-                  </h3>
-                </Link>
+                <h3 className="text-xs sm:text-sm font-medium line-clamp-1">
+                  {product.name}
+                </h3>
                 <p className="text-sm font-bold text-primary mt-0.5">
                   {formatPrice(product.price)}
                 </p>
                 <Button
                   className="w-full mt-1.5 text-[10px] sm:text-xs"
                   size="sm"
-                  onClick={() => handleAddToCart(product)}
+                  onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
                   data-testid={`button-add-cart-${product.id}`}
                 >
                   <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />

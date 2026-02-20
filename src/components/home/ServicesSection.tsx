@@ -75,8 +75,9 @@ export function ServicesSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-20px' }}
                 transition={{ duration: 0.3, delay: index * 0.04 }}
-                className="group p-2.5 sm:p-3 lg:p-6 bg-card rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300"
+                className="group p-2.5 sm:p-3 lg:p-6 bg-card rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 cursor-pointer"
                 data-testid={`service-card-${service.id}`}
+                onClick={() => window.location.href = '/services'}
               >
                 <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full bg-primary/10 flex items-center justify-center mb-2 sm:mb-3">
                   <IconComponent className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-primary group-hover:text-black dark:group-hover:text-white transition-colors duration-300" />
