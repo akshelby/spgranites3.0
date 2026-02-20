@@ -117,6 +117,13 @@
 .cta-ribbon-btn-outline:hover {
   background: #e5e5e5;
 }
+.cta-ribbon-btn-red {
+  background: #dc2626;
+  color: #ffffff;
+}
+.cta-ribbon-btn-red:hover {
+  background: #b91c1c;
+}
 .cta-ribbon-btn-dark {
   background: #1a1a1a;
   color: #ffffff;

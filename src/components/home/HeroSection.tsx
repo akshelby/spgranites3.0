@@ -133,7 +133,7 @@ export function HeroSection() {
               transition={{ delay: 0.45 }}
               className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3 justify-center lg:justify-start items-center sm:items-start"
             >
-              <Link to="/products" className="cta-ribbon-btn group w-full sm:w-auto" data-testid="button-browse-products">
+              <Link to="/products" className="cta-ribbon-btn cta-ribbon-btn-red group w-full sm:w-auto" data-testid="button-browse-products">
                 <span className="cta-ribbon-btn-inner">
                   {t('hero.browseProducts')}
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
