@@ -86,10 +86,8 @@ export function Navbar() {
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16 lg:h-20">
           <Link to="/" className="flex items-center gap-2.5 group">
-            <div className="navbar-logo-wrapper">
-              <img src="/images/sp-logo.png" alt="SP Granites" className="navbar-logo w-20 h-20 object-contain dark:hidden" />
-              <img src="/images/sp-logo-dark.png" alt="SP Granites" className="navbar-logo w-20 h-20 object-contain hidden dark:block" />
-            </div>
+            <img src="/images/sp-logo.png" alt="SP Granites" className="w-20 h-20 object-contain transition-transform group-hover:scale-105 dark:hidden" />
+            <img src="/images/sp-logo-dark.png" alt="SP Granites" className="w-20 h-20 object-contain transition-transform group-hover:scale-105 hidden dark:block" />
           </Link>
 
           <div className="hidden lg:flex items-center gap-1.5 overflow-x-auto max-w-[calc(100%-360px)] scrollbar-hide border border-border rounded-xl px-3 py-1.5 bg-muted/40 mr-2">
