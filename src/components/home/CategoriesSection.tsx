@@ -1,6 +1,17 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Bath, UtensilsCrossed, Grid3X3, HeadphonesIcon, MapPin, ClipboardList, PhoneCall, MessageCircleHeart, Send } from 'lucide-react';
+import {
+  ChefHat,
+  Gem,
+  UtensilsCrossed,
+  LayoutGrid,
+  Headphones,
+  Store,
+  Calculator,
+  PhoneCall,
+  MessageCircle,
+  MessageSquareHeart,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { CategoryItem } from './CategoryItem';
 import { BhrundhavanIcon } from './BhrundhavanIcon';
@@ -16,6 +27,7 @@ interface Category {
   iconColor: string;
   bgColor: string;
   borderColor: string;
+  glowColor?: string;
   prominent?: boolean;
   prominentBg?: string;
 }
@@ -24,22 +36,24 @@ const categories: Category[] = [
   {
     id: 'kitchen-slab',
     nameKey: 'categories.kitchenSlab',
-    icon: Sparkles,
+    icon: ChefHat,
     link: '/products?category=kitchen-slab',
     descriptionKey: 'categories.kitchenSlabDesc',
-    iconColor: 'text-red-600',
-    bgColor: 'bg-gradient-to-br from-red-50 to-red-100',
-    borderColor: 'border-red-200',
+    iconColor: 'text-white',
+    bgColor: 'bg-gradient-to-br from-red-500 to-red-700',
+    borderColor: '',
+    glowColor: 'bg-red-500',
   },
   {
     id: 'vanity-top',
     nameKey: 'categories.vanityTop',
-    icon: Bath,
+    icon: Gem,
     link: '/products?category=vanity-top',
     descriptionKey: 'categories.vanityTopDesc',
-    iconColor: 'text-violet-700',
-    bgColor: 'bg-gradient-to-br from-violet-50 to-purple-100',
-    borderColor: 'border-violet-200',
+    iconColor: 'text-white',
+    bgColor: 'bg-gradient-to-br from-violet-500 to-purple-700',
+    borderColor: '',
+    glowColor: 'bg-violet-500',
   },
   {
     id: 'dining-top',
@@ -47,9 +61,10 @@ const categories: Category[] = [
     icon: UtensilsCrossed,
     link: '/products?category=dining-top',
     descriptionKey: 'categories.diningTopDesc',
-    iconColor: 'text-red-600',
-    bgColor: 'bg-gradient-to-br from-red-50 to-rose-100',
-    borderColor: 'border-red-200',
+    iconColor: 'text-white',
+    bgColor: 'bg-gradient-to-br from-red-600 to-rose-800',
+    borderColor: '',
+    glowColor: 'bg-rose-600',
   },
   {
     id: 'bhrundhavan',
@@ -57,49 +72,54 @@ const categories: Category[] = [
     icon: BhrundhavanIcon,
     link: '/products?category=bhrundhavan',
     descriptionKey: 'categories.bhrundhavanDesc',
-    iconColor: 'text-red-700',
-    bgColor: 'bg-gradient-to-br from-zinc-900 to-zinc-800',
-    borderColor: 'border-zinc-700',
+    iconColor: 'text-white',
+    bgColor: 'bg-gradient-to-br from-zinc-800 to-zinc-950',
+    borderColor: '',
+    glowColor: 'bg-zinc-700',
   },
   {
     id: 'tiles-fixing',
     nameKey: 'categories.tilesFixing',
-    icon: Grid3X3,
+    icon: LayoutGrid,
     link: '/services',
     descriptionKey: 'categories.tilesFixingDesc',
-    iconColor: 'text-violet-700',
-    bgColor: 'bg-gradient-to-br from-violet-50 to-indigo-100',
-    borderColor: 'border-violet-200',
+    iconColor: 'text-white',
+    bgColor: 'bg-gradient-to-br from-violet-600 to-indigo-800',
+    borderColor: '',
+    glowColor: 'bg-violet-600',
   },
   {
     id: 'contact-us',
     nameKey: 'categories.contactUs',
-    icon: HeadphonesIcon,
+    icon: Headphones,
     link: '/contact',
     descriptionKey: 'categories.contactUsDesc',
-    iconColor: 'text-red-600',
-    bgColor: 'bg-gradient-to-br from-red-50 to-red-100',
-    borderColor: 'border-red-200',
+    iconColor: 'text-white',
+    bgColor: 'bg-gradient-to-br from-red-500 to-red-700',
+    borderColor: '',
+    glowColor: 'bg-red-500',
   },
   {
     id: 'offline-stores',
     nameKey: 'categories.offlineStores',
-    icon: MapPin,
+    icon: Store,
     link: '/stores',
     descriptionKey: 'categories.offlineStoresDesc',
-    iconColor: 'text-zinc-100',
-    bgColor: 'bg-gradient-to-br from-zinc-800 to-zinc-900',
-    borderColor: 'border-zinc-700',
+    iconColor: 'text-white',
+    bgColor: 'bg-gradient-to-br from-zinc-700 to-zinc-900',
+    borderColor: '',
+    glowColor: 'bg-zinc-700',
   },
   {
     id: 'free-estimation',
     nameKey: 'categories.freeEstimation',
-    icon: ClipboardList,
+    icon: Calculator,
     link: '/estimation',
     descriptionKey: 'categories.freeEstimationDesc',
-    iconColor: 'text-violet-700',
-    bgColor: 'bg-gradient-to-br from-purple-50 to-violet-100',
-    borderColor: 'border-purple-200',
+    iconColor: 'text-white',
+    bgColor: 'bg-gradient-to-br from-purple-500 to-violet-700',
+    borderColor: '',
+    glowColor: 'bg-purple-500',
   },
   {
     id: 'call-us',
@@ -107,33 +127,36 @@ const categories: Category[] = [
     icon: PhoneCall,
     link: 'tel:+919876543210',
     descriptionKey: 'categories.callUsDesc',
-    iconColor: 'text-red-600',
-    bgColor: 'bg-gradient-to-br from-red-50 to-red-100',
-    borderColor: 'border-red-200',
+    iconColor: 'text-white',
+    bgColor: 'bg-gradient-to-br from-red-500 to-red-700',
+    borderColor: '',
+    glowColor: 'bg-red-500',
   },
   {
     id: 'whatsapp',
     nameKey: 'categories.whatsapp',
-    icon: Send,
+    icon: MessageCircle,
     link: 'https://wa.me/919876543210',
     descriptionKey: 'categories.whatsappDesc',
     iconColor: 'text-white',
-    bgColor: 'bg-[#25D366]',
+    bgColor: 'bg-gradient-to-br from-[#25D366] to-[#128C7E]',
     borderColor: 'border-transparent',
+    glowColor: 'bg-[#25D366]',
     prominent: true,
-    prominentBg: 'bg-[#25D366]',
+    prominentBg: 'bg-gradient-to-br from-[#25D366] to-[#128C7E]',
   },
   {
     id: 'chat-support',
     nameKey: 'categories.chatSupport',
-    icon: MessageCircleHeart,
+    icon: MessageSquareHeart,
     link: '#chat',
     descriptionKey: 'categories.chatSupportDesc',
     iconColor: 'text-white',
-    bgColor: 'bg-[#E60000]',
+    bgColor: 'bg-gradient-to-br from-red-500 to-red-700',
     borderColor: 'border-transparent',
+    glowColor: 'bg-red-500',
     prominent: true,
-    prominentBg: 'bg-[#E60000]',
+    prominentBg: 'bg-gradient-to-br from-red-500 to-red-700',
   },
 ];
 
@@ -141,9 +164,7 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-    },
+    transition: { staggerChildren: 0.07 },
   },
 };
 
@@ -178,7 +199,7 @@ export function CategoriesSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-50px' }}
-          className="grid grid-cols-4 sm:flex sm:flex-wrap sm:justify-center gap-3 sm:gap-4 md:gap-5 lg:gap-6 xl:gap-7"
+          className="grid grid-cols-4 sm:flex sm:flex-wrap sm:justify-center gap-4 sm:gap-5 md:gap-6 lg:gap-8"
         >
           {categories.map((category, index) => (
             <CategoryItem
@@ -191,6 +212,7 @@ export function CategoriesSection() {
               iconColor={category.iconColor}
               bgColor={category.bgColor}
               borderColor={category.borderColor}
+              glowColor={category.glowColor}
               prominent={category.prominent}
               prominentBg={category.prominentBg}
               index={index}
