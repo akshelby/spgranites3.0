@@ -112,19 +112,50 @@ export default function ChatPage() {
         const { data, error } = await supabase
           .from('conversations')
           .select('*')
-          .or(`customer_phone.eq.${user.id},customer_name.eq.${user.email}`)
+          .or(`customer_phone.eq.${user.id},customer_name.eq.${user.email},customer_email.eq.${user.email}`)
           .order('last_message_at', { ascending: false, nullsFirst: false });
         if (error) throw error;
-        if (data && data.length > 0) {
-          const entries: ChatHistoryEntry[] = data.map((conv: any) => ({
-            refId: conv.ref_id,
-            conversationId: conv.id,
-            lastMessage: conv.last_message_preview || '',
-            lastMessageAt: conv.last_message_at || conv.created_at,
-            status: conv.status || 'open',
-          }));
-          setDbConversations(entries);
+        const dbEntries: ChatHistoryEntry[] = (data || []).map((conv: any) => ({
+          refId: conv.ref_id,
+          conversationId: conv.id,
+          lastMessage: conv.last_message_preview || '',
+          lastMessageAt: conv.last_message_at || conv.created_at,
+          status: conv.status || 'open',
+        }));
+
+        const localHistory = getHistory();
+        const localRefIds = localHistory
+          .map(h => h.refId)
+          .filter(r => !dbEntries.some(d => d.refId === r));
+
+        if (localRefIds.length > 0) {
+          const { data: localData } = await supabase
+            .from('conversations')
+            .select('*')
+            .in('ref_id', localRefIds)
+            .order('last_message_at', { ascending: false, nullsFirst: false });
+          if (localData) {
+            const localEntries: ChatHistoryEntry[] = localData.map((conv: any) => ({
+              refId: conv.ref_id,
+              conversationId: conv.id,
+              lastMessage: conv.last_message_preview || '',
+              lastMessageAt: conv.last_message_at || conv.created_at,
+              status: conv.status || 'open',
+            }));
+            dbEntries.push(...localEntries);
+
+            for (const conv of localData) {
+              if (!conv.customer_phone && !conv.customer_name) {
+                await supabase.from('conversations').update({
+                  customer_phone: user.id,
+                  customer_name: user.email,
+                } as any).eq('id', conv.id);
+              }
+            }
+          }
         }
+
+        setDbConversations(dbEntries);
       } catch (err) {
         console.error('Error fetching user conversations:', err);
       }
