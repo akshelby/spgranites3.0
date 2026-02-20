@@ -89,7 +89,7 @@ export function Navbar() {
             <img src="/logo-sp.svg" alt="SP Granites" className="w-10 h-10 object-contain transition-transform group-hover:scale-105" />
           </Link>
 
-          <div className="hidden lg:flex items-center gap-1.5 overflow-x-auto max-w-[calc(100%-360px)] scrollbar-hide border-2 border-gray-300 rounded-xl px-3 py-1.5 bg-gray-50/50 mr-2">
+          <div className="hidden lg:flex items-center gap-1.5 overflow-x-auto max-w-[calc(100%-360px)] scrollbar-hide border border-border rounded-xl px-3 py-1.5 bg-muted/40 mr-2">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
