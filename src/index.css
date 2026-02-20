@@ -404,6 +404,30 @@
   animation: scale-in 0.4s ease-out forwards;
 }
 
+/* Navbar Logo Animation */
+.navbar-logo-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.navbar-logo {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.3s ease;
+  animation: navLogoFloat 3s ease-in-out infinite;
+}
+.navbar-logo-wrapper:hover .navbar-logo {
+  transform: scale(1.12) rotate(3deg);
+  filter: drop-shadow(0 0 12px rgba(220, 38, 38, 0.5));
+}
+.navbar-logo-wrapper:active .navbar-logo {
+  transform: scale(0.95);
+}
+@keyframes navLogoFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
 /* GPU-accelerated image rendering */
 img {
   content-visibility: auto;
