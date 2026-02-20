@@ -46,31 +46,31 @@ export function CategoryItem({
           transition: { duration: 2.4, repeat: Infinity, repeatType: 'reverse' as const, ease: 'easeInOut' },
         } : {})}
       >
-        {/* Comet arc ring — spins around the icon with gap */}
+        {/* Comet arc ring — orbits far from the icon */}
         <div
           className="comet-ring"
           style={{
-            width: 'calc(100% + 18px)',
-            height: 'calc(100% + 18px)',
-            top: '-9px',
-            left: '-9px',
+            width: 'calc(100% + 28px)',
+            height: 'calc(100% + 28px)',
+            top: '-14px',
+            left: '-14px',
           }}
         />
 
-        {/* Mask: covers the center leaving only a thin arc ring */}
+        {/* Mask: bg-background circle that hides everything except the thin outer arc */}
         <div
-          className="absolute rounded-full"
+          className="absolute rounded-full bg-background"
           style={{
-            width: 'calc(100% + 12px)',
-            height: 'calc(100% + 12px)',
-            top: '-6px',
-            left: '-6px',
-            boxShadow: '0 0 0 2.5px var(--background, #fff) inset',
+            width: 'calc(100% + 20px)',
+            height: 'calc(100% + 20px)',
+            top: '-10px',
+            left: '-10px',
+            zIndex: 1,
           }}
         />
 
         {/* Soft red glow behind */}
-        <div className="absolute inset-0 rounded-full blur-md opacity-30 scale-90 bg-red-500 transition-all duration-300 group-hover:opacity-55 group-hover:scale-100" />
+        <div className="absolute inset-0 rounded-full blur-md opacity-30 scale-90 bg-red-500 transition-all duration-300 group-hover:opacity-55 group-hover:scale-100" style={{ zIndex: 2 }} />
 
         {/* Icon circle */}
         <div
@@ -80,6 +80,7 @@ export function CategoryItem({
             'shadow-lg transition-shadow duration-300 group-hover:shadow-xl',
             bg
           )}
+          style={{ zIndex: 3 }}
         >
           {/* Inner highlight arc */}
           <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/25 to-transparent pointer-events-none" />
