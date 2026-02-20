@@ -221,7 +221,8 @@ export default function AdminChat() {
     const matchesSearch =
       conv.ref_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       conv.customer_phone?.includes(searchQuery) ||
-      conv.customer_name?.toLowerCase().includes(searchQuery.toLowerCase());
+      conv.customer_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      conv.customer_email?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'all' || conv.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -315,7 +316,7 @@ export default function AdminChat() {
                       key={conv.id}
                       onClick={() => selectConversation(conv)}
                       className={cn(
-                        "w-full p-3 text-left hover:bg-muted/50 transition-colors border-b border-border/50",
+                        "w-full p-3 text-left hover:bg-muted/50 transition-colors border-b border-border/50 relative",
                         selectedConversation?.id === conv.id && "bg-muted"
                       )}
                     >
@@ -341,13 +342,23 @@ export default function AdminChat() {
                           {conv.customer_name && (
                             <p className="text-sm font-medium text-foreground truncate">{conv.customer_name}</p>
                           )}
+                          {(conv.customer_email || conv.customer_phone) && (
+                            <div className="flex items-center gap-2 mt-0.5">
+                              {conv.customer_email && (
+                                <span className="text-[11px] text-muted-foreground flex items-center gap-0.5 truncate">
+                                  <Mail className="w-2.5 h-2.5 shrink-0" />
+                                  {conv.customer_email}
+                                </span>
+                              )}
+                              {conv.customer_phone && (
+                                <span className="text-[11px] text-muted-foreground flex items-center gap-0.5">
+                                  <Phone className="w-2.5 h-2.5 shrink-0" />
+                                  {conv.customer_phone}
+                                </span>
+                              )}
+                            </div>
+                          )}
                           <div className="flex items-center gap-2 mt-0.5">
-                            {conv.customer_phone && (
-                              <span className="text-[11px] text-muted-foreground flex items-center gap-0.5">
-                                <Phone className="w-2.5 h-2.5" />
-                                {conv.customer_phone}
-                              </span>
-                            )}
                             <Badge
                               variant={conv.status === 'open' ? 'default' : 'secondary'}
                               className={cn(
@@ -366,6 +377,9 @@ export default function AdminChat() {
                             </p>
                           )}
                         </div>
+                        <span className="absolute bottom-2 right-2 font-mono text-[10px] text-muted-foreground/60">
+                          {conv.ref_id}
+                        </span>
                       </div>
                     </button>
                   ))}
@@ -418,6 +432,12 @@ export default function AdminChat() {
                           <span className="flex items-center gap-1">
                             <User className="w-3 h-3" />
                             {selectedConversation.customer_name}
+                          </span>
+                        )}
+                        {selectedConversation.customer_email && (
+                          <span className="flex items-center gap-1">
+                            <Mail className="w-3 h-3" />
+                            {selectedConversation.customer_email}
                           </span>
                         )}
                         {selectedConversation.customer_phone && (

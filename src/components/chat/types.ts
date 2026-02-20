@@ -18,6 +18,7 @@ export interface Conversation {
   ref_id: string;
   customer_phone: string | null;
   customer_name: string | null;
+  customer_email: string | null;
   status: 'open' | 'closed';
   created_at: string;
   updated_at: string;

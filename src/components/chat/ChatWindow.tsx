@@ -110,7 +110,7 @@ export function ChatWindow({
     const newRefId = generateRefId();
     
     try {
-      const { data, error } = await supabase.from('conversations').insert({ ref_id: newRefId }).select().single();
+      const { data, error } = await supabase.from('conversations').insert({ ref_id: newRefId, customer_email: user?.email || null, customer_name: (user as any)?.user_metadata?.full_name || null }).select().single();
       if (error) throw error;
       onSetSession(newRefId, data.id);
       setShowStartScreen(false);
