@@ -158,16 +158,18 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      function hideSplash() {
-        var s = document.getElementById('splash-loader');
-        if (s) {
-          s.classList.add('fade-out');
-          setTimeout(function() { s.remove(); }, 700);
+      (function() {
+        function hideSplash() {
+          var s = document.getElementById('splash-loader');
+          if (s && !s._hiding) {
+            s._hiding = true;
+            s.classList.add('fade-out');
+            setTimeout(function() { s.remove(); }, 700);
+          }
         }
-      }
-      window.addEventListener('DOMContentLoaded', function() {
-        setTimeout(hideSplash, 2200);
-      });
+        window.__hideSplash = hideSplash;
+        setTimeout(hideSplash, 2500);
+      })();
     </script>
   </body>
 </html>
