@@ -28,11 +28,15 @@ export function CategoryItem({
   prominent,
   prominentBg,
   glowColor,
+  index,
   onClick,
 }: CategoryItemProps) {
   const isExternal = link.startsWith('tel:') || link.startsWith('http') || link.startsWith('mailto:');
 
   const bg = prominent ? prominentBg : bgColor;
+
+  // Spread starting angles evenly so no two icons look the same
+  const animDelay = `-${((index * 0.47) % 2).toFixed(2)}s`;
 
   const content = (
     <div className="flex flex-col items-center gap-2.5 sm:gap-3">
@@ -54,6 +58,7 @@ export function CategoryItem({
             height: 'calc(100% + 28px)',
             top: '-14px',
             left: '-14px',
+            animationDelay: animDelay,
           }}
         />
 
