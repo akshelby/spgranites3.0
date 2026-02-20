@@ -53,12 +53,12 @@ export function CategoryItem({
         <div
           className="absolute rounded-full"
           style={{
-            width: 'calc(100% + 12px)',
-            height: 'calc(100% + 12px)',
-            top: '-6px',
-            left: '-6px',
-            border: `2px solid ${ringColor}`,
-            opacity: 0.5,
+            width: 'calc(100% + 14px)',
+            height: 'calc(100% + 14px)',
+            top: '-7px',
+            left: '-7px',
+            border: `2.5px solid ${ringColor}`,
+            opacity: 0.85,
             zIndex: 0,
           }}
         />
