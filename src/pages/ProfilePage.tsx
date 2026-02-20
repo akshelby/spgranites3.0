@@ -108,12 +108,22 @@ export default function ProfilePage() {
     }
   }, [user, authLoading]);
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (loading) setLoading(false);
+    }, 5000);
+    return () => clearTimeout(timeout);
+  }, [loading]);
+
   const fetchData = async () => {
     try {
       const [profileRes, addressRes] = await Promise.all([
         supabase.from('profiles').select('*').eq('user_id', user!.id).maybeSingle(),
         supabase.from('addresses').select('*').eq('user_id', user!.id),
       ]);
+
+      if (profileRes.error) console.error('Profile fetch error:', profileRes.error);
+      if (addressRes.error) console.error('Address fetch error:', addressRes.error);
 
       if (profileRes.data) {
         setProfile(profileRes.data as Profile);
@@ -126,7 +136,9 @@ export default function ProfilePage() {
         });
       }
       if (addressRes.data) setAddresses(addressRes.data as Address[]);
-    } catch {}
+    } catch (err) {
+      console.error('Profile fetchData error:', err);
+    }
     setLoading(false);
   };
 

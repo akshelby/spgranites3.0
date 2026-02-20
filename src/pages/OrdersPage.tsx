@@ -28,15 +28,30 @@ export default function OrdersPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (user) fetchOrders();
+    if (user) {
+      fetchOrders();
+    } else {
+      setLoading(false);
+    }
   }, [user]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (loading) setLoading(false);
+    }, 5000);
+    return () => clearTimeout(timeout);
+  }, [loading]);
 
   const fetchOrders = async () => {
     try {
       const { data, error } = await supabase.from('orders').select('*').eq('user_id', user!.id).order('created_at', { ascending: false });
-      if (error) throw error;
+      if (error) {
+        console.error('Orders fetch error:', error);
+      }
       if (data) setOrders(data as unknown as Order[]);
-    } catch {}
+    } catch (err) {
+      console.error('Orders fetchOrders error:', err);
+    }
     setLoading(false);
   };
 

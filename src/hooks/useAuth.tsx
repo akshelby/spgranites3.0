@@ -88,15 +88,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, 3000);
 
     supabase.auth.getSession().then(async ({ data: { session: s } }) => {
-      clearTimeout(sessionTimeout);
       setSession(s);
       const mapped = mapUser(s?.user ?? null);
       setUser(mapped);
-      if (mapped) {
-        const r = await fetchRole(mapped.id, mapped.email);
-        setRole(r);
-      }
       setLoading(false);
+      clearTimeout(sessionTimeout);
+      if (mapped) {
+        try {
+          const r = await fetchRole(mapped.id, mapped.email);
+          setRole(r);
+        } catch (err) {
+          console.error('Error fetching role:', err);
+          setRole('user');
+        }
+      }
     }).catch(() => {
       clearTimeout(sessionTimeout);
       setLoading(false);
@@ -106,13 +111,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(s);
       const mapped = mapUser(s?.user ?? null);
       setUser(mapped);
+      setLoading(false);
       if (mapped) {
-        const r = await fetchRole(mapped.id, mapped.email);
-        setRole(r);
+        try {
+          const r = await fetchRole(mapped.id, mapped.email);
+          setRole(r);
+        } catch (err) {
+          console.error('Error fetching role:', err);
+          setRole('user');
+        }
       } else {
         setRole(null);
       }
-      setLoading(false);
     });
 
     return () => subscription.unsubscribe();
