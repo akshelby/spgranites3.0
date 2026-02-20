@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { MainLayout } from '@/components/layout';
+import { SPLoader } from '@/components/ui/SPLoader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -243,10 +244,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <MainLayout>
-        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-8">
-          <div className="h-8 w-48 bg-muted animate-pulse rounded mb-8" />
-          <div className="h-96 bg-muted animate-pulse rounded-xl" />
-        </div>
+        <SPLoader size="lg" text="Loading profile..." fullPage />
       </MainLayout>
     );
   }

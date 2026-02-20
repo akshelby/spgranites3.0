@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Download, FileText } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
+import { SPLoader } from '@/components/ui/SPLoader';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { Catalog } from '@/types/database';
@@ -63,11 +64,7 @@ export default function CatalogsPage() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-44 sm:h-56 bg-muted animate-pulse rounded-lg" />
-            ))}
-          </div>
+          <SPLoader size="md" text="Loading catalogs..." fullPage />
         ) : catalogs.length === 0 ? (
           <div className="text-center py-12">
             <FileText className="h-10 w-10 mx-auto text-muted-foreground mb-3" />

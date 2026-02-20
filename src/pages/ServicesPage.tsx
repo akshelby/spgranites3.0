@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MainLayout } from '@/components/layout';
+import { SPLoader } from '@/components/ui/SPLoader';
 import { supabase } from '@/integrations/supabase/client';
 import { Service } from '@/types/database';
 import { useTranslation } from 'react-i18next';
@@ -54,11 +55,7 @@ export default function ServicesPage() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-36 sm:h-44 bg-muted animate-pulse rounded-lg" />
-            ))}
-          </div>
+          <SPLoader size="lg" text="Loading services..." fullPage />
         ) : services.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-sm text-muted-foreground">{t('services.noServices')}</p>

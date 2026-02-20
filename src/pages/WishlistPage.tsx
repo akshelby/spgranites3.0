@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Heart, ShoppingCart, Trash2 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
+import { SPLoader } from '@/components/ui/SPLoader';
 import { Button } from '@/components/ui/button';
 import { useWishlist } from '@/contexts/WishlistContext';
 import { useCart } from '@/contexts/CartContext';
@@ -65,14 +66,7 @@ export default function WishlistPage() {
   if (loading) {
     return (
       <MainLayout>
-        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
-          <h1 className="text-xl sm:text-2xl font-display font-bold mb-3 sm:mb-5">{t('wishlist.title')}</h1>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-48 bg-muted animate-pulse rounded-lg" />
-            ))}
-          </div>
-        </div>
+        <SPLoader size="lg" text="Loading wishlist..." fullPage />
       </MainLayout>
     );
   }

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Package, ChevronRight, Clock } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
+import { SPLoader } from '@/components/ui/SPLoader';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
@@ -50,14 +51,7 @@ export default function OrdersPage() {
   if (loading) {
     return (
       <MainLayout>
-        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
-          <h1 className="text-xl sm:text-2xl font-display font-bold mb-3 sm:mb-5">{t('orders.title')}</h1>
-          <div className="space-y-2">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-16 sm:h-20 bg-muted animate-pulse rounded-lg" />
-            ))}
-          </div>
-        </div>
+        <SPLoader size="lg" text="Loading orders..." fullPage />
       </MainLayout>
     );
   }

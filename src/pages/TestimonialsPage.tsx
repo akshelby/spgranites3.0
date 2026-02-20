@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Star, Quote, Pencil, Trash2 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
+import { SPLoader } from '@/components/ui/SPLoader';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { Testimonial, CustomerReview } from '@/types/database';
@@ -127,11 +128,7 @@ export default function TestimonialsPage() {
         </motion.div>
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-32 sm:h-40 bg-muted animate-pulse rounded-lg" />
-            ))}
-          </div>
+          <SPLoader size="lg" text="Loading reviews..." fullPage />
         ) : (
           <>
             {testimonials.length > 0 && (

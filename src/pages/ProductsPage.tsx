@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Filter, Grid, List, ShoppingCart, Heart, Search } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
+import { SPLoader } from '@/components/ui/SPLoader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -169,11 +170,7 @@ export default function ProductsPage() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="bg-muted animate-pulse rounded-lg h-48 sm:h-56" />
-            ))}
-          </div>
+          <SPLoader size="lg" text="Loading products..." fullPage />
         ) : filteredProducts.length === 0 ? (
           <div className="text-center py-12">
             <h3 className="text-base font-semibold mb-1">{t('products.noProducts')}</h3>

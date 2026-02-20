@@ -404,6 +404,46 @@
   animation: scale-in 0.4s ease-out forwards;
 }
 
+/* SP Branded Loader */
+.sp-loader-container {
+  position: relative;
+}
+.sp-ring {
+  position: absolute;
+  border-radius: 50%;
+  border-style: solid;
+  border-color: transparent;
+}
+.sp-ring-1 {
+  inset: -4px;
+  border-top-color: #dc2626;
+  animation: spRingSpin 1.2s linear infinite;
+}
+.sp-ring-2 {
+  inset: -12px;
+  border-right-color: rgba(220, 38, 38, 0.4);
+  animation: spRingSpin 1.8s linear infinite reverse;
+}
+.sp-ring-3 {
+  inset: -20px;
+  border-bottom-color: rgba(220, 38, 38, 0.15);
+  animation: spRingSpin 2.5s linear infinite;
+}
+.sp-loader-logo {
+  position: relative;
+  z-index: 2;
+  object-fit: contain;
+  animation: spLogoBreathe 2.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(220, 38, 38, 0.3));
+}
+@keyframes spRingSpin {
+  to { transform: rotate(360deg); }
+}
+@keyframes spLogoBreathe {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(220,38,38,0.2)); }
+  50% { transform: scale(1.05); filter: drop-shadow(0 0 20px rgba(220,38,38,0.5)); }
+}
+
 /* GPU-accelerated image rendering */
 img {
   content-visibility: auto;

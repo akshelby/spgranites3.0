@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Heart, Minus, Plus, ChevronLeft, Star, Check, Send } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
+import { SPLoader } from '@/components/ui/SPLoader';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
@@ -133,19 +134,7 @@ export default function ProductDetailPage() {
   if (loading) {
     return (
       <MainLayout>
-        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
-          <div className="animate-pulse">
-            <div className="h-6 w-32 bg-muted rounded mb-4" />
-            <div className="grid md:grid-cols-2 gap-4 sm:gap-8">
-              <div className="aspect-square bg-muted rounded-lg" />
-              <div className="space-y-3">
-                <div className="h-8 bg-muted rounded w-3/4" />
-                <div className="h-5 bg-muted rounded w-1/4" />
-                <div className="h-16 bg-muted rounded" />
-              </div>
-            </div>
-          </div>
-        </div>
+        <SPLoader size="lg" text="Loading product..." fullPage />
       </MainLayout>
     );
   }

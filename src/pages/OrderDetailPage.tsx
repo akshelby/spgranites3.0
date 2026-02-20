@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronLeft, Package, MapPin, CreditCard, Check, Download } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
+import { SPLoader } from '@/components/ui/SPLoader';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -166,13 +167,7 @@ export default function OrderDetailPage() {
   if (loading) {
     return (
       <MainLayout>
-        <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
-          <div className="h-5 w-32 bg-muted animate-pulse rounded mb-3" />
-          <div className="space-y-3">
-            <div className="h-20 bg-muted animate-pulse rounded-lg" />
-            <div className="h-40 bg-muted animate-pulse rounded-lg" />
-          </div>
-        </div>
+        <SPLoader size="lg" text="Loading order details..." fullPage />
       </MainLayout>
     );
   }
