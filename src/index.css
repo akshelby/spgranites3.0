@@ -110,11 +110,12 @@
   justify-content: center;
 }
 .cta-ribbon-btn-outline {
-  background: rgba(255, 255, 255, 0.12);
+  background: #ffffff;
+  color: #1a1a1a;
   border: none;
 }
 .cta-ribbon-btn-outline:hover {
-  background: rgba(255, 255, 255, 0.25);
+  background: #e5e5e5;
 }
 .cta-ribbon-btn-dark {
   background: #1a1a1a;
