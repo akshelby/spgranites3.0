@@ -222,18 +222,24 @@ export default function AdminEstimations() {
     fetchEstimations();
   }, []);
 
-  const fetchEstimations = async () => {
+  const fetchEstimations = async (retry = 0): Promise<void> => {
     setLoading(true);
     try {
       const { data, error } = await supabase
         .from('estimation_enquiries')
         .select('*')
         .order('created_at', { ascending: false });
-      if (error) throw error;
+      if (error) {
+        if (retry < 2) {
+          await new Promise(r => setTimeout(r, 1000));
+          return fetchEstimations(retry + 1);
+        }
+        throw error;
+      }
       setEstimations(data || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching estimations:', error);
-      toast({ title: 'Error loading estimations', variant: 'destructive' });
+      toast({ title: 'Error loading estimations', description: error?.message || 'Please try refreshing the page.', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -458,7 +464,7 @@ export default function AdminEstimations() {
             ))}
           </SelectContent>
         </Select>
-        <Button variant="outline" size="icon" onClick={fetchEstimations}>
+        <Button variant="outline" size="icon" onClick={() => fetchEstimations()}>
           <RefreshCw className={cn('h-4 w-4', loading && 'animate-spin')} />
         </Button>
       </div>
