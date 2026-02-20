@@ -85,7 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const sessionTimeout = setTimeout(() => {
       setLoading(false);
-    }, 5000);
+    }, 3000);
 
     supabase.auth.getSession().then(async ({ data: { session: s } }) => {
       clearTimeout(sessionTimeout);

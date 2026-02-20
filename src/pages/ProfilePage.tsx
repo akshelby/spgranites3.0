@@ -59,7 +59,7 @@ type AddressFormData = z.infer<typeof addressSchema>;
 
 export default function ProfilePage() {
   const { t } = useTranslation();
-  const { user, signOut } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [addresses, setAddresses] = useState<Address[]>([]);
   const [loading, setLoading] = useState(true);
@@ -101,8 +101,12 @@ export default function ProfilePage() {
   });
 
   useEffect(() => {
-    if (user) fetchData();
-  }, [user]);
+    if (user) {
+      fetchData();
+    } else if (!authLoading) {
+      setLoading(false);
+    }
+  }, [user, authLoading]);
 
   const fetchData = async () => {
     try {
@@ -241,10 +245,25 @@ export default function ProfilePage() {
     }
   };
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <MainLayout>
         <SPLoader size="lg" text="Loading profile..." fullPage />
+      </MainLayout>
+    );
+  }
+
+  if (!user) {
+    return (
+      <MainLayout>
+        <div className="container mx-auto px-4 py-16 text-center">
+          <User className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+          <h1 className="text-xl font-bold mb-2">{t('profile.loginRequired', 'Please log in')}</h1>
+          <p className="text-sm text-muted-foreground mb-4">{t('profile.loginRequiredDesc', 'You need to be logged in to view your profile.')}</p>
+          <Button asChild>
+            <a href="/auth">{t('nav.login', 'Log In')}</a>
+          </Button>
+        </div>
       </MainLayout>
     );
   }
