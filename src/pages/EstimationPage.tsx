@@ -71,7 +71,7 @@ export default function EstimationPage() {
                   <feature.icon className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 </div>
                 <h3 className="text-[10px] sm:text-xs font-semibold mb-0.5">{feature.title}</h3>
-                <p className="text-[9px] sm:text-xs text-muted-foreground leading-tight">{feature.description}</p>
+                <p className="text-[11px] sm:text-xs text-muted-foreground leading-tight">{feature.description}</p>
               </CardContent>
             </Card>
           ))}

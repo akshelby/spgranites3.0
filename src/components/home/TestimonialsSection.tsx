@@ -107,7 +107,7 @@ export function TestimonialsSection() {
                 <div className="min-w-0">
                   <h4 className="text-[10px] sm:text-xs lg:text-sm font-semibold truncate">{testimonial.customer_name}</h4>
                   {testimonial.company && (
-                    <p className="text-[8px] sm:text-[10px] lg:text-xs text-muted-foreground truncate">
+                    <p className="text-[10px] sm:text-[10px] lg:text-xs text-muted-foreground truncate">
                       {testimonial.designation && `${testimonial.designation}, `}
                       {testimonial.company}
                     </p>

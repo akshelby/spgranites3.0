@@ -351,7 +351,7 @@ export default function AdminChat() {
                             <Badge
                               variant={conv.status === 'open' ? 'default' : 'secondary'}
                               className={cn(
-                                "text-[9px] h-4 px-1.5",
+                                "text-[11px] h-4 px-1.5",
                                 conv.status === 'open'
                                   ? "bg-orange-100 text-orange-700 hover:bg-orange-100"
                                   : "bg-green-100 text-green-700 hover:bg-green-100"

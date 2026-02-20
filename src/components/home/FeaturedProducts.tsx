@@ -185,7 +185,7 @@ export function FeaturedProducts() {
                       {formatPrice(product.price)}
                     </span>
                     {product.compare_price && product.compare_price > product.price && (
-                      <span className="text-[9px] sm:text-[11px] lg:text-xs text-muted-foreground line-through ml-1">
+                      <span className="text-[11px] sm:text-[11px] lg:text-xs text-muted-foreground line-through ml-1">
                         {formatPrice(product.compare_price)}
                       </span>
                     )}

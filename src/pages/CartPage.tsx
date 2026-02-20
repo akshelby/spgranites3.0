@@ -302,7 +302,7 @@ export default function CartPage() {
                           </span>
                         )}
                         {discount > 0 && (
-                          <Badge variant="secondary" className="text-[9px] sm:text-[10px] px-1.5 py-0">
+                          <Badge variant="secondary" className="text-[11px] sm:text-[10px] px-1.5 py-0">
                             {discount}% {t('common.off')}
                           </Badge>
                         )}
@@ -432,7 +432,7 @@ export default function CartPage() {
                                   {address.label || address.address_type || t('cart.home')}
                                 </span>
                                 {address.is_default && (
-                                  <span className="text-[9px] bg-primary/10 text-primary px-1 py-0.5 rounded font-medium">
+                                  <span className="text-[11px] bg-primary/10 text-primary px-1 py-0.5 rounded font-medium">
                                     {t('cart.default')}
                                   </span>
                                 )}

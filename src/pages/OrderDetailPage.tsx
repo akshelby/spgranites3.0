@@ -250,7 +250,7 @@ export default function OrderDetailPage() {
                         <span className="text-[10px] sm:text-xs">{index + 1}</span>
                       )}
                     </div>
-                    <span className="text-[9px] sm:text-xs mt-1 capitalize hidden sm:block">
+                    <span className="text-[11px] sm:text-xs mt-1 capitalize hidden sm:block">
                       {status}
                     </span>
                   </div>

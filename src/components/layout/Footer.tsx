@@ -41,7 +41,7 @@ export function Footer() {
               </div>
               <div className="flex flex-col">
                 <h3 className="brand-name-white text-lg sm:text-xl leading-none">SP Granites</h3>
-                <span className="brand-tagline text-[8px] sm:text-[9px] text-gray-400/70 mt-1">Premium Stone Works</span>
+                <span className="brand-tagline text-[10px] sm:text-[11px] text-gray-400/70 mt-1">Premium Stone Works</span>
                 <span className="brand-divider-white" />
               </div>
             </div>

@@ -215,7 +215,7 @@ export default function ProductsPage() {
                     loading="lazy"
                   />
                   {product.compare_price && product.compare_price > product.price && (
-                    <span className="absolute top-1 left-1 sm:top-1.5 sm:left-1.5 px-1 py-0.5 bg-destructive text-destructive-foreground text-[9px] sm:text-[10px] font-semibold rounded" data-testid={`badge-discount-${product.id}`}>
+                    <span className="absolute top-1 left-1 sm:top-1.5 sm:left-1.5 px-1 py-0.5 bg-destructive text-destructive-foreground text-[11px] sm:text-[10px] font-semibold rounded" data-testid={`badge-discount-${product.id}`}>
                       {Math.round((1 - product.price / product.compare_price) * 100)}% {t('common.off')}
                     </span>
                   )}

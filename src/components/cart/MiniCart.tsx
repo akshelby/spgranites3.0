@@ -113,7 +113,7 @@ export function MiniCart() {
                           </span>
                         )}
                         {discount > 0 && (
-                          <Badge variant="secondary" className="text-[9px] px-1 py-0">
+                          <Badge variant="secondary" className="text-[11px] px-1 py-0">
                             {discount}% {t('common.off')}
                           </Badge>
                         )}

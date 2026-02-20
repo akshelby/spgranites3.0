@@ -205,7 +205,7 @@ export function AIChatPanel({ isOpen, onClose }: AIChatPanelProps) {
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               </Button>
             </div>
-            <p className="text-[9px] text-muted-foreground text-center mt-1.5">Powered by AI - responses may not always be accurate</p>
+            <p className="text-[11px] text-muted-foreground text-center mt-1.5">Powered by AI - responses may not always be accurate</p>
           </div>
         </motion.div>
       )}
