@@ -7,7 +7,7 @@ const STORAGE_KEY = 'sp_category_style';
 export function useCategoryStyle() {
   const [style, setStyle] = useState<CategoryStyle>(() => {
     try {
-      return (localStorage.getItem(STORAGE_KEY) as CategoryStyle) || 'circle';
+      return (localStorage.getItem(STORAGE_KEY) as CategoryStyle) || 'pill';
     } catch {
       return 'circle';
     }
