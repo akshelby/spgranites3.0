@@ -1,22 +1,23 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import {
-  ChefHat,
-  Gem,
-  UtensilsCrossed,
-  LayoutGrid,
-  Headphones,
-  Store,
-  Calculator,
-  PhoneCall,
-  MessageCircle,
-  MessageSquareHeart,
-} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { CategoryItem } from './CategoryItem';
 import { BhrundhavanIcon } from './BhrundhavanIcon';
 import { ContactNumbersDialog } from './ContactNumbersDialog';
+import {
+  KitchenSlabIcon,
+  VanityTopIcon,
+  DiningTopIcon,
+  TilesFixingIcon,
+  ContactIcon,
+  OfflineStoreIcon,
+  EstimationIcon,
+  CallIcon,
+  WhatsAppIcon,
+  ChatSupportIcon,
+} from './CustomCategoryIcons';
 import { ElementType } from 'react';
+
 
 interface Category {
   id: string;
@@ -39,7 +40,7 @@ const categories: Category[] = [
   {
     id: 'kitchen-slab',
     nameKey: 'categories.kitchenSlab',
-    icon: ChefHat,
+    icon: KitchenSlabIcon,
     link: '/products?category=kitchen-slab',
     descriptionKey: 'categories.kitchenSlabDesc',
     iconColor: 'text-white',
@@ -50,7 +51,7 @@ const categories: Category[] = [
   {
     id: 'vanity-top',
     nameKey: 'categories.vanityTop',
-    icon: Gem,
+    icon: VanityTopIcon,
     link: '/products?category=vanity-top',
     descriptionKey: 'categories.vanityTopDesc',
     iconColor: 'text-white',
@@ -61,7 +62,7 @@ const categories: Category[] = [
   {
     id: 'dining-top',
     nameKey: 'categories.diningTop',
-    icon: UtensilsCrossed,
+    icon: DiningTopIcon,
     link: '/products?category=dining-top',
     descriptionKey: 'categories.diningTopDesc',
     iconColor: 'text-white',
@@ -83,7 +84,7 @@ const categories: Category[] = [
   {
     id: 'tiles-fixing',
     nameKey: 'categories.tilesFixing',
-    icon: LayoutGrid,
+    icon: TilesFixingIcon,
     link: '/services',
     descriptionKey: 'categories.tilesFixingDesc',
     iconColor: 'text-white',
@@ -94,7 +95,7 @@ const categories: Category[] = [
   {
     id: 'contact-us',
     nameKey: 'categories.contactUs',
-    icon: Headphones,
+    icon: ContactIcon,
     link: '/contact',
     descriptionKey: 'categories.contactUsDesc',
     iconColor: 'text-white',
@@ -105,7 +106,7 @@ const categories: Category[] = [
   {
     id: 'offline-stores',
     nameKey: 'categories.offlineStores',
-    icon: Store,
+    icon: OfflineStoreIcon,
     link: '/stores',
     descriptionKey: 'categories.offlineStoresDesc',
     iconColor: 'text-white',
@@ -116,7 +117,7 @@ const categories: Category[] = [
   {
     id: 'free-estimation',
     nameKey: 'categories.freeEstimation',
-    icon: Calculator,
+    icon: EstimationIcon,
     link: '/estimation',
     descriptionKey: 'categories.freeEstimationDesc',
     iconColor: 'text-white',
@@ -127,7 +128,7 @@ const categories: Category[] = [
   {
     id: 'call-us',
     nameKey: 'categories.callUs',
-    icon: PhoneCall,
+    icon: CallIcon,
     link: 'tel:+919876543210',
     descriptionKey: 'categories.callUsDesc',
     iconColor: 'text-white',
@@ -138,7 +139,7 @@ const categories: Category[] = [
   {
     id: 'whatsapp',
     nameKey: 'categories.whatsapp',
-    icon: MessageCircle,
+    icon: WhatsAppIcon,
     link: 'https://wa.me/919876543210',
     descriptionKey: 'categories.whatsappDesc',
     iconColor: 'text-white',
@@ -151,15 +152,15 @@ const categories: Category[] = [
   {
     id: 'chat-support',
     nameKey: 'categories.chatSupport',
-    icon: MessageSquareHeart,
+    icon: ChatSupportIcon,
     link: '#chat',
     descriptionKey: 'categories.chatSupportDesc',
     iconColor: 'text-white',
-    bgColor: 'bg-gradient-to-br from-red-500 to-red-700',
+    bgColor: RED,
     borderColor: 'border-transparent',
-    glowColor: 'bg-red-500',
+    glowColor: RED_GLOW,
     prominent: true,
-    prominentBg: 'bg-gradient-to-br from-red-500 to-red-700',
+    prominentBg: RED,
   },
 ];
 
