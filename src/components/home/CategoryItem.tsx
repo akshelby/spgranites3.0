@@ -50,23 +50,22 @@ export function CategoryItem({
         <div
           className="comet-ring"
           style={{
-            width: 'calc(100% + 10px)',
-            height: 'calc(100% + 10px)',
-            top: '-5px',
-            left: '-5px',
+            width: 'calc(100% + 6px)',
+            height: 'calc(100% + 6px)',
+            top: '-3px',
+            left: '-3px',
           }}
         />
 
-        {/* Mask: covers the center so only the outer ring arc is visible */}
+        {/* Mask: covers the center leaving only a thin arc ring */}
         <div
           className="absolute rounded-full"
           style={{
-            width: 'calc(100% + 2px)',
-            height: 'calc(100% + 2px)',
-            top: '-1px',
-            left: '-1px',
-            background: 'transparent',
-            boxShadow: '0 0 0 3px var(--background, #fff) inset',
+            width: 'calc(100% + 1px)',
+            height: 'calc(100% + 1px)',
+            top: '-0.5px',
+            left: '-0.5px',
+            boxShadow: '0 0 0 2.5px var(--background, #fff) inset',
           }}
         />
 
