@@ -103,7 +103,7 @@ export function Navbar() {
                 className={cn(
                   'px-4 py-2.5 text-base font-medium rounded-lg transition-colors whitespace-nowrap shrink-0 border-2',
                   location.pathname === link.href
-                    ? 'text-white bg-primary border-red-700 shadow-sm'
+                    ? 'text-white bg-primary border-red-900 shadow-sm'
                     : 'text-muted-foreground hover:text-foreground hover:bg-accent border-transparent'
                 )}
                 data-testid={`nav-${link.href.replace('/', '') || 'home'}`}
@@ -243,7 +243,7 @@ export function Navbar() {
                   className={cn(
                     'block px-4 py-3 rounded-lg text-sm font-medium transition-colors border-2',
                     location.pathname === link.href
-                      ? 'text-white bg-primary border-red-700 shadow-sm'
+                      ? 'text-white bg-primary border-red-900 shadow-sm'
                       : 'text-muted-foreground hover:text-foreground hover:bg-accent border-transparent'
                   )}
                 >
