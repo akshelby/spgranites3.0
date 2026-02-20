@@ -137,10 +137,27 @@
 
 /* ===== Category icon circles ===== */
 /* No background on regular icons; prominent ones keep their coloured bg via Tailwind classes */
-/* background is set via inline style on non-prominent icons (soft white) */
-.category-icon-prominent {
-  /* prominent icons keep their Tailwind gradient bg */
+/* ===== Category icon push-buttons ===== */
+/* Dark mode: use dark surface bg and dark-appropriate shadows */
+.dark .category-icon-circle:not(.category-icon-prominent) {
+  background: hsl(var(--card)) !important;
+  box-shadow:
+    0 6px 18px rgba(0,0,0,0.55),
+    0 2px 6px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.07),
+    inset 0 -1px 0 rgba(0,0,0,0.3) !important;
 }
+.dark .category-icon-circle:not(.category-icon-prominent):active {
+  box-shadow:
+    0 1px 3px rgba(0,0,0,0.5),
+    inset 3px 4px 10px rgba(0,0,0,0.5),
+    inset -1px -2px 5px rgba(255,255,255,0.04) !important;
+}
+/* prominent icons keep their own bg in both modes */
+.category-icon-prominent {
+  /* gradient applied via Tailwind class */
+}
+
 
 
 

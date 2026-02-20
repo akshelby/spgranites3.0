@@ -97,9 +97,9 @@ export function CategoryItem({
           }}
           whileTap={{ boxShadow: pressedShadow } as never}
         >
-          {/* Inner top highlight */}
+          {/* Inner top highlight — light mode only */}
           {!prominent && (
-            <div className="absolute inset-0 rounded-full pointer-events-none"
+            <div className="absolute inset-0 rounded-full pointer-events-none dark:hidden"
               style={{ background: 'linear-gradient(160deg, rgba(255,255,255,0.9) 0%, transparent 55%)' }} />
           )}
           <Icon
