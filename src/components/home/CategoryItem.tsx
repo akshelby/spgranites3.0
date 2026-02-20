@@ -46,25 +46,32 @@ export function CategoryItem({
           transition: { duration: 2.4, repeat: Infinity, repeatType: 'reverse' as const, ease: 'easeInOut' },
         } : {})}
       >
-        {/* Orbiting dot ring wrapper — same size as icon + padding */}
+        {/* Comet arc ring — spins around the icon */}
         <div
-          className="orbit-ring absolute"
+          className="comet-ring"
           style={{
-            width: 'calc(100% + 12px)',
-            height: 'calc(100% + 12px)',
-            top: '-6px',
-            left: '-6px',
+            width: 'calc(100% + 10px)',
+            height: 'calc(100% + 10px)',
+            top: '-5px',
+            left: '-5px',
           }}
-        >
-          {/* The red glowing dot, fixed at the top of the rotating wrapper */}
-          <span
-            className="absolute left-1/2 -translate-x-1/2 -top-1 w-2.5 h-2.5 rounded-full bg-red-500"
-            style={{ boxShadow: '0 0 8px 3px rgba(239,68,68,0.85)' }}
-          />
-        </div>
+        />
+
+        {/* Mask: covers the center so only the outer ring arc is visible */}
+        <div
+          className="absolute rounded-full"
+          style={{
+            width: 'calc(100% + 2px)',
+            height: 'calc(100% + 2px)',
+            top: '-1px',
+            left: '-1px',
+            background: 'transparent',
+            boxShadow: '0 0 0 3px var(--background, #fff) inset',
+          }}
+        />
 
         {/* Soft red glow behind */}
-        <div className="absolute inset-0 rounded-full blur-md opacity-40 scale-90 bg-red-500 transition-all duration-300 group-hover:opacity-65 group-hover:scale-100" />
+        <div className="absolute inset-0 rounded-full blur-md opacity-30 scale-90 bg-red-500 transition-all duration-300 group-hover:opacity-55 group-hover:scale-100" />
 
         {/* Icon circle */}
         <div
