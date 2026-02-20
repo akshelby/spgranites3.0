@@ -46,13 +46,11 @@ export function CategoryItem({
           transition: { duration: 2.4, repeat: Infinity, repeatType: 'reverse' as const, ease: 'easeInOut' },
         } : {})}
       >
-        {/* Glow shadow ring */}
-        <div
-          className={cn(
-            'absolute inset-0 rounded-full blur-md opacity-40 scale-90 transition-all duration-300 group-hover:opacity-70 group-hover:scale-100',
-            glowColor || bg
-          )}
-        />
+        {/* Glowing red ring */}
+        <div className="absolute -inset-[3px] rounded-full bg-transparent ring-2 ring-red-500 shadow-[0_0_10px_2px_rgba(239,68,68,0.6)] transition-all duration-300 group-hover:shadow-[0_0_18px_4px_rgba(239,68,68,0.85)] group-hover:ring-red-400" />
+
+        {/* Soft red glow behind */}
+        <div className="absolute inset-0 rounded-full blur-md opacity-50 scale-95 bg-red-500 transition-all duration-300 group-hover:opacity-80 group-hover:scale-110" />
 
         {/* Icon circle */}
         <div
