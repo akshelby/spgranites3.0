@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { PasswordInput } from './PasswordInput';
 import { toast } from 'sonner';
-import { Loader2, Mail, ArrowLeft } from 'lucide-react';
+import { Loader2, Mail, ArrowLeft, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
 
@@ -39,6 +39,7 @@ export function EmailAuthForm({ mode, onSuccess }: EmailAuthFormProps) {
   const [resetEmail, setResetEmail] = useState('');
   const [resetSent, setResetSent] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirmPassword?: string }>({});
+  const [formError, setFormError] = useState<string | null>(null);
 
   const validateForm = () => {
     try {
@@ -84,6 +85,7 @@ export function EmailAuthForm({ mode, onSuccess }: EmailAuthFormProps) {
     if (!validateForm()) return;
 
     setLoading(true);
+    setFormError(null);
     
     try {
       if (mode === 'signup') {
@@ -92,9 +94,9 @@ export function EmailAuthForm({ mode, onSuccess }: EmailAuthFormProps) {
 
         if (error) {
           if (error.message.includes('User already registered')) {
-            toast.error('An account with this email already exists');
+            setFormError('An account with this email already exists. Try signing in instead.');
           } else {
-            toast.error(error.message);
+            setFormError(error.message);
           }
         } else {
           toast.success('Account created! Please check your email to verify your account.');
@@ -105,11 +107,11 @@ export function EmailAuthForm({ mode, onSuccess }: EmailAuthFormProps) {
 
         if (error) {
           if (error.message.includes('Invalid login credentials')) {
-            toast.error('Invalid email or password');
+            setFormError('Invalid email or password. Please check your credentials and try again.');
           } else if (error.message.includes('Email not confirmed')) {
-            toast.error('Please verify your email before signing in');
+            setFormError('Please verify your email before signing in. Check your inbox for a verification link.');
           } else {
-            toast.error(error.message);
+            setFormError(error.message);
           }
         } else {
           toast.success('Signed in successfully!');
@@ -118,7 +120,7 @@ export function EmailAuthForm({ mode, onSuccess }: EmailAuthFormProps) {
       }
     } catch (err: any) {
       setLoading(false);
-      toast.error(err?.message || 'Something went wrong. Please try again.');
+      setFormError(err?.message || 'Something went wrong. Please try again.');
     }
   };
 
@@ -192,17 +194,24 @@ export function EmailAuthForm({ mode, onSuccess }: EmailAuthFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {formError && (
+        <div className="flex items-start gap-3 p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-destructive">
+          <AlertCircle className="h-5 w-5 mt-0.5 shrink-0" />
+          <p className="text-sm font-medium">{formError}</p>
+        </div>
+      )}
+
       <div className="space-y-2">
         <Label htmlFor={`${mode}-email`}>{t('auth.email')}</Label>
         <div className="relative">
-          <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Mail className={`absolute left-3 top-3 h-4 w-4 ${formError ? 'text-destructive/60' : 'text-muted-foreground'}`} />
           <Input
             id={`${mode}-email`}
             type="email"
             placeholder="you@example.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="pl-10"
+            onChange={(e) => { setEmail(e.target.value); setFormError(null); }}
+            className={`pl-10 ${formError ? 'border-destructive/50 focus-visible:ring-destructive/30' : ''}`}
             disabled={loading}
           />
         </div>
@@ -225,7 +234,7 @@ export function EmailAuthForm({ mode, onSuccess }: EmailAuthFormProps) {
         <PasswordInput
           id={`${mode}-password`}
           value={password}
-          onChange={setPassword}
+          onChange={(val) => { setPassword(val); setFormError(null); }}
           disabled={loading}
           error={errors.password}
         />
