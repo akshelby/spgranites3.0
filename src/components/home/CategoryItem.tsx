@@ -28,7 +28,6 @@ export function CategoryItem({
   bgColor,
   prominent,
   prominentBg,
-  glowColor,
   arcColor,
   index,
   onClick,
@@ -36,11 +35,7 @@ export function CategoryItem({
   const isExternal = link.startsWith('tel:') || link.startsWith('http') || link.startsWith('mailto:');
 
   const bg = prominent ? prominentBg : bgColor;
-  const animDelay = `-${((index * 0.47) % 2).toFixed(2)}s`;
-
-  // Build the conic-gradient using the chosen arc color
-  const r = arcColor || '#ef4444';
-  const cometGradient = `conic-gradient(from 0deg, transparent 0%, transparent 70%, ${r}33 80%, ${r}d9 92%, ${r} 97%, ${r} 100%)`;
+  const ringColor = arcColor || '#ef4444';
 
   const content = (
     <div className="flex flex-col items-center gap-2.5 sm:gap-3">
@@ -54,37 +49,21 @@ export function CategoryItem({
           transition: { duration: 2.4, repeat: Infinity, repeatType: 'reverse' as const, ease: 'easeInOut' },
         } : {})}
       >
-        {/* Comet arc ring — orbits far from the icon */}
+        {/* Static circle ring */}
         <div
-          className="comet-ring"
+          className="absolute rounded-full"
           style={{
-            width: 'calc(100% + 28px)',
-            height: 'calc(100% + 28px)',
-            top: '-14px',
-            left: '-14px',
-            animationDelay: animDelay,
-            background: cometGradient,
+            width: 'calc(100% + 12px)',
+            height: 'calc(100% + 12px)',
+            top: '-6px',
+            left: '-6px',
+            border: `2px solid ${ringColor}`,
+            opacity: 0.5,
+            zIndex: 0,
           }}
         />
 
-        {/* Mask: bg-background circle that hides everything except the thin outer arc */}
-        <div
-          className="absolute rounded-full bg-background"
-          style={{
-            width: 'calc(100% + 20px)',
-            height: 'calc(100% + 20px)',
-            top: '-10px',
-            left: '-10px',
-            zIndex: 1,
-          }}
-        />
-
-        {/*
-          Icon circle:
-          - Light mode: no background fill, icon is black (text-foreground)
-          - Dark mode: coloured gradient bg, icon is white/foreground
-          - Prominent (WhatsApp/Chat): always coloured bg
-        */}
+        {/* Icon circle */}
         <div
           className={cn(
             'category-icon-circle',

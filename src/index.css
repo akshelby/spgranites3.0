@@ -135,31 +135,14 @@
 }
 /* ===== End CTA Ribbon Buttons ===== */
 
-/* ===== Comet arc ring animation ===== */
-/* Light mode: no background on regular icon circles (prominent ones keep their bg) */
+/* ===== Category icon circles ===== */
+/* No background on regular icons; prominent ones keep their coloured bg via Tailwind classes */
 .category-icon-circle:not(.category-icon-prominent) {
   background: transparent !important;
   box-shadow: none !important;
 }
 
-@keyframes comet-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-.comet-ring {
-  animation: comet-spin 2s linear infinite;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0%,
-    transparent 70%,
-    rgba(239, 68, 68, 0.2) 80%,
-    rgba(239, 68, 68, 0.85) 92%,
-    #ff2020 97%,
-    #ff4444 100%
-  );
-  border-radius: 50%;
-  position: absolute;
-}
+
 
 @layer base {
   :root {
