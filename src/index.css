@@ -258,6 +258,10 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
+  p {
+    font-size: 1.2em;
+  }
+
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 8px;

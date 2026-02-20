@@ -263,7 +263,7 @@ export function Navbar() {
                       onClick={() => changeLanguage(lang.code)}
                       data-testid={`button-mobile-lang-${lang.code}`}
                     >
-                      {lang.flag}
+                      {lang.short}
                     </Button>
                   ))}
                 </div>
