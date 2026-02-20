@@ -46,11 +46,25 @@ export function CategoryItem({
           transition: { duration: 2.4, repeat: Infinity, repeatType: 'reverse' as const, ease: 'easeInOut' },
         } : {})}
       >
-        {/* Glowing red ring */}
-        <div className="absolute -inset-[3px] rounded-full bg-transparent ring-2 ring-red-500 shadow-[0_0_10px_2px_rgba(239,68,68,0.6)] transition-all duration-300 group-hover:shadow-[0_0_18px_4px_rgba(239,68,68,0.85)] group-hover:ring-red-400" />
+        {/* Orbiting dot ring wrapper — same size as icon + padding */}
+        <div
+          className="orbit-ring absolute"
+          style={{
+            width: 'calc(100% + 12px)',
+            height: 'calc(100% + 12px)',
+            top: '-6px',
+            left: '-6px',
+          }}
+        >
+          {/* The red glowing dot, fixed at the top of the rotating wrapper */}
+          <span
+            className="absolute left-1/2 -translate-x-1/2 -top-1 w-2.5 h-2.5 rounded-full bg-red-500"
+            style={{ boxShadow: '0 0 8px 3px rgba(239,68,68,0.85)' }}
+          />
+        </div>
 
         {/* Soft red glow behind */}
-        <div className="absolute inset-0 rounded-full blur-md opacity-50 scale-95 bg-red-500 transition-all duration-300 group-hover:opacity-80 group-hover:scale-110" />
+        <div className="absolute inset-0 rounded-full blur-md opacity-40 scale-90 bg-red-500 transition-all duration-300 group-hover:opacity-65 group-hover:scale-100" />
 
         {/* Icon circle */}
         <div

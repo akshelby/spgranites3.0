@@ -135,6 +135,15 @@
 }
 /* ===== End CTA Ribbon Buttons ===== */
 
+/* ===== Orbiting dot animation ===== */
+@keyframes orbit {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.orbit-ring {
+  animation: orbit 2.8s linear infinite;
+}
+
 @layer base {
   :root {
     /* Light Theme - Premium Soft UI */
