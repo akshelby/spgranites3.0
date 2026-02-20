@@ -40,7 +40,7 @@ export function Footer() {
               <img src="/images/sp-logo-dark.png" alt="SP Granites" className="w-10 h-10 sm:w-12 sm:h-12 object-contain hidden dark:block" />
               <div className="flex flex-col">
                 <h3 className="brand-name-white text-lg sm:text-xl leading-none">SP Granites</h3>
-                <span className="brand-tagline text-[10px] sm:text-[11px] text-gray-400/70 mt-1">Premium Stone Works</span>
+                <span className="brand-tagline text-xs sm:text-sm text-red-400 font-medium tracking-widest uppercase mt-1">Premium Stone Works</span>
                 <span className="brand-divider-white" />
               </div>
             </div>
