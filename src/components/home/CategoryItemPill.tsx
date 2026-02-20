@@ -78,7 +78,7 @@ export function CategoryItemPill({
         <div className="relative z-10 flex items-center gap-2 pl-1" style={{ transform: 'skewX(8deg)' }}>
           <Icon
             className={cn(
-              'w-4 h-4 sm:w-5 sm:h-5 shrink-0 transition-colors duration-200',
+              'w-6 h-6 sm:w-7 sm:h-7 shrink-0 transition-colors duration-200',
               prominent
                 ? 'text-white'
                 : 'text-foreground group-hover/pill:text-white'
