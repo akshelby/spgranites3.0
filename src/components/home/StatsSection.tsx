@@ -54,10 +54,10 @@ export function StatsSection() {
           {stats.map((stat, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 8 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
+              viewport={{ once: true, margin: '-20px' }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
               className="text-center"
               data-testid={`stat-${index}`}
             >

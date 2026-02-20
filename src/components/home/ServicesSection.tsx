@@ -71,10 +71,10 @@ export function ServicesSection() {
             return (
               <motion.div
                 key={service.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.08 }}
+                viewport={{ once: true, margin: '-20px' }}
+                transition={{ duration: 0.3, delay: index * 0.04 }}
                 className="group p-2.5 sm:p-3 lg:p-6 bg-card rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300"
                 data-testid={`service-card-${service.id}`}
               >

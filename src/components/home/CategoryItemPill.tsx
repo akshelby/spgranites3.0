@@ -105,10 +105,10 @@ export function CategoryItemPill({
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -16, scale: 0.92 }}
+      initial={{ opacity: 0, x: -8, scale: 0.96 }}
       whileInView={{ opacity: 1, x: 0, scale: 1 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1], delay: index * 0.04 }}
+      viewport={{ once: true, margin: '-20px' }}
+      transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1], delay: index * 0.03 }}
     >
       {onClick ? (
         <button type="button" onClick={onClick} className={wrapperClass} data-testid={testId}>

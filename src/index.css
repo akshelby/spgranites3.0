@@ -279,9 +279,15 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    overflow-x: hidden;
   }
 
   p {
@@ -396,6 +402,16 @@
 
 .animate-scale-in {
   animation: scale-in 0.4s ease-out forwards;
+}
+
+/* GPU-accelerated image rendering */
+img {
+  content-visibility: auto;
+}
+
+/* Smooth section transitions */
+section {
+  contain: layout style;
 }
 
 /* Hide scrollbar but keep scrollable */

@@ -1,6 +1,5 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { FloatingActionButton } from './FloatingActionButton';
@@ -29,15 +28,9 @@ export function MainLayout({ children, hideFooter = false }: MainLayoutProps) {
           <TabBar />
         </div>
       </div>
-      <motion.main
-        key={pathname}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="flex-1"
-      >
+      <main className="flex-1">
         {children}
-      </motion.main>
+      </main>
       {!hideFooter && <Footer />}
       <AIChatPanel isOpen={isAIChatOpen} onClose={() => setIsAIChatOpen(false)} />
       <FloatingActionButton isAIChatOpen={isAIChatOpen} onToggle={() => setIsAIChatOpen(prev => !prev)} />

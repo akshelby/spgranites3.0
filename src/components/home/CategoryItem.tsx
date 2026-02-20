@@ -130,10 +130,10 @@ export function CategoryItem({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 24, scale: 0.85 }}
+      initial={{ opacity: 0, y: 10, scale: 0.95 }}
       whileInView={{ opacity: 1, y: 0, scale: 1 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      viewport={{ once: true, margin: '-20px' }}
+      transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
     >
       {onClick ? (
         <button type="button" onClick={onClick} className={wrapperClass} data-testid={testId}>

@@ -172,7 +172,7 @@ const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.07 },
+    transition: { staggerChildren: 0.04 },
   },
 };
 
@@ -217,7 +217,6 @@ export function CategoriesSection() {
         >
           {categories.map((category, index) => {
             const commonProps = {
-              key: category.id,
               id: category.id,
               name: t(category.nameKey),
               icon: category.icon,
@@ -234,11 +233,13 @@ export function CategoriesSection() {
 
             return isPill ? (
               <CategoryItemPill
+                key={category.id}
                 {...commonProps}
                 prominentBg={category.prominentBg}
               />
             ) : (
               <CategoryItem
+                key={category.id}
                 {...commonProps}
                 iconColor={category.iconColor}
                 bgColor={category.bgColor}
