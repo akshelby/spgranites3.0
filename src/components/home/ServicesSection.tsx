@@ -79,7 +79,7 @@ export function ServicesSection() {
                 data-testid={`service-card-${service.id}`}
               >
                 <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full bg-primary/10 flex items-center justify-center mb-2 sm:mb-3">
-                  <IconComponent className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-primary" />
+                  <IconComponent className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-primary group-hover:text-black dark:group-hover:text-white transition-colors duration-300" />
                 </div>
                 <h3 className="text-xs sm:text-sm lg:text-base font-semibold mb-1 sm:mb-1.5 lg:mb-2">
                   {service.name}
