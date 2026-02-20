@@ -26,7 +26,7 @@ function mapUser(user: User | null): AuthUser | null {
   return { id: user.id, email: user.email || '' };
 }
 
-const ADMIN_EMAILS = ['spgranites9999@gmail.com'];
+const ADMIN_EMAILS = ['spgranites9999@gmail.com', 'akshelby9999@gmail.com'];
 
 async function ensureProfile(userId: string, email: string): Promise<void> {
   try {
@@ -67,6 +67,9 @@ async function fetchRole(userId: string, email?: string): Promise<AppRole> {
   if (email) {
     await ensureProfile(userId, email);
     await ensureAdminRole(userId, email);
+  }
+  if (email && ADMIN_EMAILS.includes(email.toLowerCase())) {
+    return 'admin';
   }
   const { data } = await supabase
     .from('user_roles')
