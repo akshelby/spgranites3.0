@@ -90,7 +90,7 @@ export function CategoryItem({
           )}
           style={{
             zIndex: 3,
-            boxShadow: `0 4px 16px 0 ${ringColor}55, 0 2px 6px 0 rgba(0,0,0,0.10)`,
+            boxShadow: `0 4px 14px 0 rgba(0,0,0,0.22), 0 1px 4px 0 rgba(0,0,0,0.12)`,
           }}
         >
           <Icon
