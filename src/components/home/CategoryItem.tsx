@@ -79,24 +79,25 @@ export function CategoryItem({
           }}
         />
 
-        {/* Soft red glow behind */}
-        <div className="absolute inset-0 rounded-full blur-md opacity-30 scale-90 bg-red-500 transition-all duration-300 group-hover:opacity-55 group-hover:scale-100" style={{ zIndex: 2 }} />
+        {/* Soft red glow behind — hidden in dark mode */}
+        <div className="absolute inset-0 rounded-full blur-md opacity-30 scale-90 bg-red-500 transition-all duration-300 group-hover:opacity-55 group-hover:scale-100 dark:hidden" style={{ zIndex: 2 }} />
 
-        {/* Icon circle */}
+        {/* Icon circle — transparent background in dark mode */}
         <div
           className={cn(
             'relative w-14 h-14 sm:w-16 sm:h-16 md:w-[72px] md:h-[72px]',
             'rounded-full flex items-center justify-center',
-            'shadow-lg transition-shadow duration-300 group-hover:shadow-xl',
+            'shadow-lg transition-all duration-300 group-hover:shadow-xl',
+            'dark:bg-transparent dark:shadow-none',
             bg
           )}
           style={{ zIndex: 3 }}
         >
-          {/* Inner highlight arc */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/25 to-transparent pointer-events-none" />
+          {/* Inner highlight arc — hidden in dark mode */}
+          <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/25 to-transparent pointer-events-none dark:hidden" />
 
           <Icon
-            className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white relative z-10 drop-shadow"
+            className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-white dark:text-foreground relative z-10 drop-shadow"
             strokeWidth={1.75}
           />
         </div>
