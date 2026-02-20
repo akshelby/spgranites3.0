@@ -33,7 +33,7 @@ export function CategoryItemPill({
 
   const pillContent = (
     <motion.div
-      className="relative"
+      className="relative w-full"
       transition={{ duration: 0.15 }}
     >
       <motion.div
@@ -97,7 +97,7 @@ export function CategoryItemPill({
     </motion.div>
   );
 
-  const wrapperClass = 'group focus:outline-none';
+  const wrapperClass = 'group focus:outline-none w-full block';
   const testId = `pill-category-${name.toLowerCase().replace(/\s+/g, '-')}`;
 
   return (
