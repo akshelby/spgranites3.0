@@ -24,6 +24,14 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     return <Navigate to="/auth" replace />;
   }
 
+  if (requiredRole && role === null) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   if (requiredRole) {
     const roleHierarchy = { admin: 3, moderator: 2, user: 1 };
     const userLevel = role ? roleHierarchy[role] : 0;
