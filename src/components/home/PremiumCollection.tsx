@@ -138,14 +138,14 @@ export function PremiumCollection() {
       const rawAngle = (i * perCard + rotationRef.current) % 360;
       const normalized = ((rawAngle % 360) + 360) % 360;
       const dist = normalized > 180 ? 360 - normalized : normalized;
-      const t = Math.min(dist / 180, 1);
-      const opacity = 1 - t * 0.7;
-      const scale = 1 - t * 0.15;
-      const blur = dist > 100 ? (dist - 100) * 0.04 : 0;
-      el.style.opacity = `${opacity}`;
-      el.style.transform = `rotateY(${i * perCard}deg) translateZ(${radiusRef.current}px) scale(${scale})`;
-      el.style.filter = blur > 0 ? `blur(${blur}px)` : 'none';
-      el.style.zIndex = `${Math.round((1 - t) * 100)}`;
+      if (dist > 120) {
+        el.style.opacity = '0.35';
+      } else if (dist > 90) {
+        const t = (dist - 90) / 30;
+        el.style.opacity = `${1 - t * 0.65}`;
+      } else {
+        el.style.opacity = '1';
+      }
     }
   }, []);
 
@@ -155,7 +155,7 @@ export function PremiumCollection() {
       const dt = now - lastTime;
       lastTime = now;
       if (autoRotateRef.current && !isDraggingRef.current && products.length > 0) {
-        rotationRef.current -= 0.3 * (dt / 16);
+        rotationRef.current -= 0.6 * (dt / 16);
         applyRotation();
       }
       animFrameRef.current = requestAnimationFrame(tick);
@@ -176,11 +176,11 @@ export function PremiumCollection() {
   const startMomentum = useCallback(() => {
     stopMomentum();
     let v = velocityRef.current;
-    const friction = 0.97;
+    const friction = 0.95;
     const tick = () => {
       v *= friction;
-      if (Math.abs(v) < 0.02) {
-        setTimeout(() => { autoRotateRef.current = true; }, 3000);
+      if (Math.abs(v) < 0.05) {
+        setTimeout(() => { autoRotateRef.current = true; }, 2000);
         return;
       }
       rotationRef.current += v;
@@ -315,15 +315,16 @@ export function PremiumCollection() {
                     top: `${-cardH / 2}px`,
                     transformStyle: 'preserve-3d',
                     transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
-                    transition: 'filter 0.2s ease-out',
+
+
                   }}
                 >
                   <Link
                     to={`/products/${product.slug || product.id}`}
                     className={cn(
-                      'block w-full h-full rounded-xl overflow-hidden shadow-2xl',
+                      'block w-full h-full rounded-xl overflow-hidden shadow-xl',
                     )}
-                    style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transition: 'box-shadow 0.3s ease' }}
+                    style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
                     onClick={(e) => { if (isDraggingRef.current) e.preventDefault(); }}
                     data-testid={`collection-card-${product.id}`}
                   >
