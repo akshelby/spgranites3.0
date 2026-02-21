@@ -14,7 +14,7 @@ import {
   IndianRupee,
   Star,
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, subDays, startOfDay } from 'date-fns';
 
 interface DashboardStats {
   totalProducts: number;
@@ -25,6 +25,7 @@ interface DashboardStats {
   totalVisitors: number;
   pendingOrders: number;
   avgRating: number;
+  growthPercent: number;
 }
 
 interface RecentOrder {
@@ -54,6 +55,7 @@ export default function AdminDashboard() {
     totalVisitors: 0,
     pendingOrders: 0,
     avgRating: 0,
+    growthPercent: 0,
   });
   const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
   const [recentEnquiries, setRecentEnquiries] = useState<RecentEnquiry[]>([]);
@@ -65,16 +67,20 @@ export default function AdminDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const [productsRes, ordersRes, enquiriesRes, testimonialsRes] = await Promise.all([
+      const [productsRes, ordersRes, enquiriesRes, testimonialsRes, visitorsRes, usersRes] = await Promise.all([
         supabase.from('products').select('id', { count: 'exact', head: true }),
         supabase.from('orders').select('id, total_amount, status', { count: 'exact' }),
         supabase.from('enquiries' as any).select('id', { count: 'exact', head: true }),
         supabase.from('testimonials').select('rating'),
+        (supabase.from as any)('site_visitors').select('id', { count: 'exact', head: true }),
+        supabase.from('profiles').select('id', { count: 'exact', head: true }),
       ]);
 
       const totalProducts = productsRes.count || 0;
       const totalOrders = ordersRes.count || 0;
       const totalEnquiries = enquiriesRes.count || 0;
+      const totalVisitors = visitorsRes.count || 0;
+      const totalUsers = usersRes.count || 0;
 
       const orderRows = ordersRes.data || [];
       const totalRevenue = orderRows.reduce((sum: number, o: any) => sum + (Number(o.total_amount) || 0), 0);
@@ -85,15 +91,36 @@ export default function AdminDashboard() {
         ? Math.round((testimonialRows.reduce((sum: number, t: any) => sum + (t.rating || 0), 0) / testimonialRows.length) * 10) / 10
         : 0;
 
+      const now = new Date();
+      const thisWeekStart = startOfDay(subDays(now, 7)).toISOString();
+      const lastWeekStart = startOfDay(subDays(now, 14)).toISOString();
+
+      const [thisWeekRes, lastWeekRes] = await Promise.all([
+        (supabase.from as any)('site_visitors')
+          .select('id', { count: 'exact', head: true })
+          .gte('visited_at', thisWeekStart),
+        (supabase.from as any)('site_visitors')
+          .select('id', { count: 'exact', head: true })
+          .gte('visited_at', lastWeekStart)
+          .lt('visited_at', thisWeekStart),
+      ]);
+
+      const thisWeekCount = thisWeekRes.count || 0;
+      const lastWeekCount = lastWeekRes.count || 0;
+      const growthPercent = lastWeekCount > 0
+        ? Math.round(((thisWeekCount - lastWeekCount) / lastWeekCount) * 100)
+        : thisWeekCount > 0 ? 100 : 0;
+
       setStats({
         totalProducts,
         totalOrders,
-        totalUsers: 0,
+        totalUsers,
         totalEnquiries,
         totalRevenue,
-        totalVisitors: 0,
+        totalVisitors,
         pendingOrders,
         avgRating,
+        growthPercent,
       });
 
       const { data: recentOrdersData } = await supabase
@@ -226,10 +253,10 @@ export default function AdminDashboard() {
         />
         <StatsCard
           title="Growth"
-          value="12%"
+          value={`${stats.growthPercent >= 0 ? '+' : ''}${stats.growthPercent}%`}
           icon={<TrendingUp className="h-6 w-6" />}
-          trend={{ value: 12, isPositive: true }}
-          description="vs last month"
+          trend={{ value: Math.abs(stats.growthPercent), isPositive: stats.growthPercent >= 0 }}
+          description="vs last week"
         />
       </div>
 

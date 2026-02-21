@@ -8,6 +8,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import { TabProvider } from "@/contexts/TabContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { VisitorTracker } from "@/components/VisitorTracker";
 import '@/i18n';
 
 // Pages
@@ -69,6 +70,7 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <TabProvider>
+              <VisitorTracker />
               <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<HomePage />} />
