@@ -219,10 +219,14 @@ export default function AdminCarousel() {
         <div className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg bg-muted">
             {card.image_url ? (
-              <img src={card.image_url} alt="" className="h-full w-full object-cover" />
-            ) : (
-              <Image className="h-5 w-5 text-muted-foreground" />
-            )}
+              <img
+                src={card.image_url}
+                alt=""
+                className="h-full w-full object-cover"
+                onError={(e) => { const el = e.target as HTMLImageElement; el.style.display = 'none'; }}
+              />
+            ) : null}
+            {!card.image_url && <Image className="h-5 w-5 text-muted-foreground" />}
           </div>
           <p className="font-medium">{card.title}</p>
         </div>

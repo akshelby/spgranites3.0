@@ -162,10 +162,14 @@ export default function AdminBanners() {
         <div className="flex items-center gap-3">
           <div className="flex h-16 w-24 items-center justify-center overflow-hidden rounded-lg bg-muted">
             {banner.image_url ? (
-              <img src={banner.image_url} alt="" className="h-full w-full object-cover" />
-            ) : (
-              <Image className="h-6 w-6 text-muted-foreground" />
-            )}
+              <img
+                src={banner.image_url}
+                alt=""
+                className="h-full w-full object-cover"
+                onError={(e) => { const el = e.target as HTMLImageElement; el.style.display = 'none'; }}
+              />
+            ) : null}
+            {!banner.image_url && <Image className="h-6 w-6 text-muted-foreground" />}
           </div>
           <div>
             <p className="font-medium">{banner.title || 'Untitled'}</p>
