@@ -97,27 +97,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const sessionTimeout = setTimeout(() => {
+    const safetyTimeout = setTimeout(() => {
+      setRole((prev) => prev ?? 'user');
       setLoading(false);
-    }, 3000);
+    }, 5000);
 
     supabase.auth.getSession().then(async ({ data: { session: s } }) => {
       setSession(s);
       const mapped = mapUser(s?.user ?? null);
       setUser(mapped);
-      clearTimeout(sessionTimeout);
       if (mapped) {
         try {
-          const r = await fetchRole(mapped.id, mapped.email);
+          const roleTimeout = new Promise<AppRole>((_, reject) =>
+            setTimeout(() => reject(new Error('Role fetch timeout')), 4000)
+          );
+          const r = await Promise.race([fetchRole(mapped.id, mapped.email), roleTimeout]);
           setRole(r);
         } catch (err) {
           console.error('Error fetching role:', err);
           setRole('user');
         }
       }
+      clearTimeout(safetyTimeout);
       setLoading(false);
     }).catch(() => {
-      clearTimeout(sessionTimeout);
+      clearTimeout(safetyTimeout);
       setLoading(false);
     });
 
