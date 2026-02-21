@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2, Home } from 'lucide-react';
@@ -11,14 +11,6 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
   const { user, role, loading } = useAuth();
-  const [roleTimeout, setRoleTimeout] = useState(false);
-
-  useEffect(() => {
-    if (!loading && user && role === null && !roleTimeout) {
-      const t = setTimeout(() => setRoleTimeout(true), 3000);
-      return () => clearTimeout(t);
-    }
-  }, [loading, user, role, roleTimeout]);
 
   if (loading) {
     return (
@@ -32,17 +24,10 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     return <Navigate to="/auth" replace />;
   }
 
-  if (requiredRole && role === null && !roleTimeout) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
   if (requiredRole) {
+    const effectiveRole = role || 'user';
     const roleHierarchy = { admin: 3, moderator: 2, user: 1 };
-    const userLevel = role ? roleHierarchy[role] : 0;
+    const userLevel = roleHierarchy[effectiveRole] || 0;
     const requiredLevel = roleHierarchy[requiredRole];
 
     if (userLevel < requiredLevel) {

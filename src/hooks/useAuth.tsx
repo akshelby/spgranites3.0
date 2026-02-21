@@ -29,63 +29,78 @@ function mapUser(user: User | null): AuthUser | null {
 
 const ADMIN_EMAILS = ['akshelby9999@gmail.com', 'srajith9999@gmail.com'];
 
-async function ensureProfile(userId: string, email: string): Promise<void> {
-  try {
-    const { data } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('user_id', userId)
-      .maybeSingle();
-    if (!data) {
-      await (supabase.from('profiles') as any).insert({
-        user_id: userId,
-        email: email,
-        display_name: email.split('@')[0],
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      });
-    }
-  } catch (err) {
-    console.error('Error ensuring profile:', err);
-  }
+function isAdminEmail(email?: string): boolean {
+  return !!email && ADMIN_EMAILS.includes(email.toLowerCase());
 }
 
-async function ensureAdminRole(userId: string, email: string): Promise<void> {
-  if (!ADMIN_EMAILS.includes(email.toLowerCase())) return;
-  const { data } = await supabase
-    .from('user_roles')
-    .select('role')
-    .eq('user_id', userId)
-    .maybeSingle();
-  if (!data) {
-    await (supabase.from('user_roles') as any).insert({ user_id: userId, role: 'admin' });
-  } else if (data.role !== 'admin') {
-    await (supabase.from('user_roles') as any).update({ role: 'admin' }).eq('user_id', userId);
-  }
-}
-
-async function fetchRole(userId: string, email?: string): Promise<AppRole> {
-  if (email && ADMIN_EMAILS.includes(email.toLowerCase())) {
+function ensureProfile(userId: string, email: string): void {
+  (async () => {
     try {
-      await ensureProfile(userId, email);
-      await ensureAdminRole(userId, email);
-    } catch (err) {
-      console.error('Error in admin setup (non-blocking):', err);
-    }
+      const { data } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('user_id', userId)
+        .maybeSingle();
+      if (!data) {
+        await (supabase.from('profiles') as any).insert({
+          user_id: userId,
+          email: email,
+          display_name: email.split('@')[0],
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        });
+      }
+    } catch {}
+  })();
+}
+
+function ensureAdminRole(userId: string, email: string): void {
+  if (!isAdminEmail(email)) return;
+  (async () => {
+    try {
+      const { data } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .maybeSingle();
+      if (!data) {
+        await (supabase.from('user_roles') as any)
+          .insert({ user_id: userId, role: 'admin' });
+      } else if (data.role !== 'admin') {
+        await (supabase.from('user_roles') as any)
+          .update({ role: 'admin' })
+          .eq('user_id', userId);
+      }
+    } catch {}
+  })();
+}
+
+function withTimeout<T>(promise: PromiseLike<T> | Promise<T>, ms: number, fallback: T): Promise<T> {
+  return Promise.race([
+    Promise.resolve(promise),
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms)),
+  ]);
+}
+
+async function resolveRole(userId: string, email?: string): Promise<AppRole> {
+  if (isAdminEmail(email)) {
+    ensureProfile(userId, email!);
+    ensureAdminRole(userId, email!);
     return 'admin';
   }
+  if (email) {
+    ensureProfile(userId, email);
+  }
   try {
-    if (email) {
-      await ensureProfile(userId, email);
-    }
-    const { data } = await supabase
+    const query = supabase
       .from('user_roles')
       .select('role')
       .eq('user_id', userId)
-      .maybeSingle();
+      .maybeSingle()
+      .then((res) => res);
+    const { data } = await withTimeout(query, 3000, { data: null, error: null } as any);
     return (data?.role as AppRole) || 'user';
-  } catch (err) {
-    console.error('Error fetching role:', err);
+  } catch {
     return 'user';
   }
 }
@@ -97,52 +112,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const safetyTimeout = setTimeout(() => {
-      setRole((prev) => prev ?? 'user');
-      setLoading(false);
-    }, 5000);
+    let mounted = true;
 
-    supabase.auth.getSession().then(async ({ data: { session: s } }) => {
-      setSession(s);
-      const mapped = mapUser(s?.user ?? null);
-      setUser(mapped);
-      if (mapped) {
-        try {
-          const roleTimeout = new Promise<AppRole>((_, reject) =>
-            setTimeout(() => reject(new Error('Role fetch timeout')), 4000)
-          );
-          const r = await Promise.race([fetchRole(mapped.id, mapped.email), roleTimeout]);
-          setRole(r);
-        } catch (err) {
-          console.error('Error fetching role:', err);
-          setRole('user');
+    const safetyTimeout = setTimeout(() => {
+      if (mounted) {
+        setRole((prev) => prev ?? 'user');
+        setLoading(false);
+      }
+    }, 4000);
+
+    async function init() {
+      try {
+        const { data: { session: s } } = await withTimeout(
+          supabase.auth.getSession(),
+          3000,
+          { data: { session: null } } as any
+        );
+        if (!mounted) return;
+        setSession(s);
+        const mapped = mapUser(s?.user ?? null);
+        setUser(mapped);
+        if (mapped) {
+          const r = await resolveRole(mapped.id, mapped.email);
+          if (mounted) setRole(r);
+        }
+      } catch {
+      } finally {
+        if (mounted) {
+          clearTimeout(safetyTimeout);
+          setLoading(false);
         }
       }
-      clearTimeout(safetyTimeout);
-      setLoading(false);
-    }).catch(() => {
-      clearTimeout(safetyTimeout);
-      setLoading(false);
-    });
+    }
+
+    init();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, s) => {
+      if (!mounted) return;
       setSession(s);
       const mapped = mapUser(s?.user ?? null);
       setUser(mapped);
       if (mapped) {
-        try {
-          const r = await fetchRole(mapped.id, mapped.email);
-          setRole(r);
-        } catch (err) {
-          console.error('Error fetching role:', err);
-          setRole('user');
-        }
+        const r = await resolveRole(mapped.id, mapped.email);
+        if (mounted) setRole(r);
       } else {
         setRole(null);
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      clearTimeout(safetyTimeout);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signUp = async (email: string, password: string) => {
