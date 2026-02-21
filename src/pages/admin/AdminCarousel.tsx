@@ -13,9 +13,10 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
+import { Slider } from '@/components/ui/slider';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Pencil, Trash2, Image, Settings } from 'lucide-react';
+import { Plus, Pencil, Trash2, Image, Settings, RotateCw } from 'lucide-react';
 
 interface CarouselCard {
   id: string;
@@ -49,6 +50,34 @@ export default function AdminCarousel() {
     display_order: 0,
     is_active: true,
   });
+
+  const [collectionSpeed, setCollectionSpeed] = useState(() => {
+    const saved = localStorage.getItem('spg_collection_speed');
+    return saved ? parseFloat(saved) : 0.6;
+  });
+
+  const speedLabels: Record<string, string> = {
+    '0.2': 'Very Slow',
+    '0.4': 'Slow',
+    '0.6': 'Normal',
+    '0.8': 'Fast',
+    '1': 'Very Fast',
+    '1.5': 'Ultra Fast',
+  };
+
+  const getSpeedLabel = (val: number) => {
+    const closest = Object.keys(speedLabels).reduce((prev, curr) =>
+      Math.abs(parseFloat(curr) - val) < Math.abs(parseFloat(prev) - val) ? curr : prev
+    );
+    return speedLabels[closest] || `${val.toFixed(1)}x`;
+  };
+
+  const handleSpeedChange = (value: number[]) => {
+    const speed = value[0];
+    setCollectionSpeed(speed);
+    localStorage.setItem('spg_collection_speed', speed.toString());
+    window.dispatchEvent(new CustomEvent('spg_collection_speed_change', { detail: speed }));
+  };
 
   const [settingsData, setSettingsData] = useState({
     auto_rotate: true,
@@ -378,6 +407,40 @@ export default function AdminCarousel() {
         loading={loading}
         emptyMessage="No carousel cards yet"
       />
+
+      <Card className="mt-6">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <RotateCw className="h-5 w-5" />
+            Premium Collection Rotation Speed
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Label className="text-sm text-muted-foreground">
+              Controls how fast the product cards rotate on the homepage
+            </Label>
+            <Badge variant="outline" className="text-sm font-semibold">
+              {getSpeedLabel(collectionSpeed)}
+            </Badge>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-xs text-muted-foreground whitespace-nowrap">Slow</span>
+            <Slider
+              value={[collectionSpeed]}
+              onValueChange={handleSpeedChange}
+              min={0.1}
+              max={1.5}
+              step={0.1}
+              className="flex-1"
+            />
+            <span className="text-xs text-muted-foreground whitespace-nowrap">Fast</span>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Current speed: {collectionSpeed.toFixed(1)}x — Changes apply instantly on the homepage.
+          </p>
+        </CardContent>
+      </Card>
     </AdminLayout>
   );
 }

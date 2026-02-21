@@ -82,6 +82,7 @@ export function PremiumCollection() {
   const momentumFrameRef = useRef<number | null>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const radiusRef = useRef(0);
+  const speedRef = useRef(parseFloat(localStorage.getItem('spg_collection_speed') || '0.6'));
 
   const [isMobile, setIsMobile] = useState(false);
 
@@ -125,6 +126,14 @@ export function PremiumCollection() {
     return () => window.removeEventListener('resize', check);
   }, []);
 
+  useEffect(() => {
+    const handler = (e: Event) => {
+      speedRef.current = (e as CustomEvent).detail;
+    };
+    window.addEventListener('spg_collection_speed_change', handler);
+    return () => window.removeEventListener('spg_collection_speed_change', handler);
+  }, []);
+
   const applyRotation = useCallback(() => {
     if (!spinnerRef.current) return;
     spinnerRef.current.style.transform = `translateX(-50%) translateY(-50%) rotateY(${rotationRef.current}deg)`;
@@ -155,7 +164,7 @@ export function PremiumCollection() {
       const dt = now - lastTime;
       lastTime = now;
       if (autoRotateRef.current && !isDraggingRef.current && products.length > 0) {
-        rotationRef.current -= 0.6 * (dt / 16);
+        rotationRef.current -= speedRef.current * (dt / 16);
         applyRotation();
       }
       animFrameRef.current = requestAnimationFrame(tick);
