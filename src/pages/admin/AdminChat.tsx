@@ -330,8 +330,8 @@ export default function AdminChat() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2">
-                            <span className="font-mono font-bold text-xs text-primary">
-                              {conv.ref_id}
+                            <span className="text-sm font-semibold text-foreground truncate">
+                              {conv.customer_name || conv.customer_email || conv.ref_id}
                             </span>
                             <span className="text-[10px] text-muted-foreground whitespace-nowrap">
                               {conv.last_message_at
@@ -339,25 +339,15 @@ export default function AdminChat() {
                                 : "—"}
                             </span>
                           </div>
-                          {conv.customer_name && (
-                            <p className="text-sm font-medium text-foreground truncate">{conv.customer_name}</p>
-                          )}
-                          {(conv.customer_email || conv.customer_phone) && (
-                            <div className="flex items-center gap-2 mt-0.5">
-                              {conv.customer_email && (
-                                <span className="text-[11px] text-muted-foreground flex items-center gap-0.5 truncate">
-                                  <Mail className="w-2.5 h-2.5 shrink-0" />
-                                  {conv.customer_email}
-                                </span>
-                              )}
-                              {conv.customer_phone && (
-                                <span className="text-[11px] text-muted-foreground flex items-center gap-0.5">
-                                  <Phone className="w-2.5 h-2.5 shrink-0" />
-                                  {conv.customer_phone}
-                                </span>
-                              )}
-                            </div>
-                          )}
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="font-mono text-[10px] text-primary/70">{conv.ref_id}</span>
+                            {conv.customer_email && conv.customer_name && conv.customer_name !== conv.customer_email && (
+                              <span className="text-[10px] text-muted-foreground flex items-center gap-0.5 truncate">
+                                <Mail className="w-2.5 h-2.5 shrink-0" />
+                                {conv.customer_email}
+                              </span>
+                            )}
+                          </div>
                           <div className="flex items-center gap-2 mt-0.5">
                             <Badge
                               variant={conv.status === 'open' ? 'default' : 'secondary'}
@@ -414,7 +404,9 @@ export default function AdminChat() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h2 className="font-bold text-sm">{selectedConversation.ref_id}</h2>
+                        <h2 className="font-bold text-sm">
+                          {selectedConversation.customer_name || selectedConversation.customer_email || selectedConversation.ref_id}
+                        </h2>
                         <Badge
                           variant="outline"
                           className={cn(
@@ -428,22 +420,11 @@ export default function AdminChat() {
                         </Badge>
                       </div>
                       <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                        {selectedConversation.customer_name && (
-                          <span className="flex items-center gap-1">
-                            <User className="w-3 h-3" />
-                            {selectedConversation.customer_name}
-                          </span>
-                        )}
-                        {selectedConversation.customer_email && (
+                        <span className="font-mono text-[10px]">{selectedConversation.ref_id}</span>
+                        {selectedConversation.customer_email && selectedConversation.customer_name !== selectedConversation.customer_email && (
                           <span className="flex items-center gap-1">
                             <Mail className="w-3 h-3" />
                             {selectedConversation.customer_email}
-                          </span>
-                        )}
-                        {selectedConversation.customer_phone && (
-                          <span className="flex items-center gap-1">
-                            <Phone className="w-3 h-3" />
-                            {selectedConversation.customer_phone}
                           </span>
                         )}
                         <span className="flex items-center gap-1">

@@ -110,7 +110,12 @@ export function ChatWindow({
     const newRefId = generateRefId();
     
     try {
-      const { data, error } = await supabase.from('conversations').insert({ ref_id: newRefId, customer_email: user?.email || null, customer_name: (user as any)?.user_metadata?.full_name || null }).select().single();
+      let customerName: string | null = null;
+      if (user) {
+        const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', (user as any).id).maybeSingle();
+        customerName = profile?.full_name || user.email || null;
+      }
+      const { data, error } = await supabase.from('conversations').insert({ ref_id: newRefId, customer_email: user?.email || null, customer_name: customerName }).select().single();
       if (error) throw error;
       onSetSession(newRefId, data.id);
       setShowStartScreen(false);

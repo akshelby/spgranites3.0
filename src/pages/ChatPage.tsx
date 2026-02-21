@@ -144,11 +144,14 @@ export default function ChatPage() {
             }));
             dbEntries.push(...localEntries);
 
+            const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle();
+            const displayName = profile?.full_name || user.email;
             for (const conv of localData) {
               if (!conv.customer_phone && !conv.customer_name) {
                 await supabase.from('conversations').update({
                   customer_phone: user.id,
-                  customer_name: user.email,
+                  customer_name: displayName,
+                  customer_email: user.email,
                 } as any).eq('id', conv.id);
               }
             }
@@ -245,7 +248,9 @@ export default function ChatPage() {
       const insertData: any = { ref_id: newRefId };
       if (user) {
         insertData.customer_phone = user.id;
-        insertData.customer_name = user.email;
+        insertData.customer_email = user.email;
+        const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', user.id).maybeSingle();
+        insertData.customer_name = profile?.full_name || user.email;
       }
       const { data, error } = await supabase.from('conversations').insert(insertData).select().single();
       if (error) throw error;
