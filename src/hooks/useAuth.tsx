@@ -164,17 +164,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    try {
-      setUser(null);
-      setSession(null);
-      setRole(null);
-      await supabase.auth.signOut();
-    } catch (err) {
-      console.error('Sign out error:', err);
-    }
+    setUser(null);
+    setSession(null);
+    setRole(null);
     Object.keys(localStorage).forEach((key) => {
       if (key.startsWith('sb-')) localStorage.removeItem(key);
     });
+    try {
+      await supabase.auth.signOut({ scope: 'global' });
+    } catch (err) {
+      console.error('Sign out error:', err);
+    }
     window.location.href = '/auth';
   };
 
