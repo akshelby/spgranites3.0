@@ -49,6 +49,15 @@ export default function AdminServices() {
 
   useEffect(() => {
     fetchServices();
+    const timeout = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) {
+          toast({ title: 'Loading timeout', description: 'Data is taking too long to load. Please try refreshing.', variant: 'destructive' });
+        }
+        return false;
+      });
+    }, 15000);
+    return () => clearTimeout(timeout);
   }, []);
 
   const fetchServices = async () => {
@@ -61,6 +70,7 @@ export default function AdminServices() {
       setServices((data as any) || []);
     } catch (error) {
       console.error('Error fetching services:', error);
+      toast({ title: 'Error', description: 'Failed to load services.', variant: 'destructive' });
     } finally {
       setLoading(false);
     }

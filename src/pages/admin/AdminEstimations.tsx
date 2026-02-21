@@ -220,6 +220,15 @@ export default function AdminEstimations() {
 
   useEffect(() => {
     fetchEstimations();
+    const timeout = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) {
+          toast({ title: 'Loading timeout', description: 'Data is taking too long to load. Please try refreshing.', variant: 'destructive' });
+        }
+        return false;
+      });
+    }, 15000);
+    return () => clearTimeout(timeout);
   }, []);
 
   const fetchEstimations = async (retry = 0): Promise<void> => {

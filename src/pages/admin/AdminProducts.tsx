@@ -197,7 +197,16 @@ export default function AdminProducts() {
       header: 'Product',
       render: (product: Product) => (
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-muted" />
+          {product.images && product.images.length > 0 ? (
+            <img
+              src={product.images[0]}
+              alt={product.name}
+              className="h-10 w-10 rounded-lg object-cover"
+              onError={(e) => { const el = e.target as HTMLImageElement; el.onerror = null; el.src = ''; el.className = 'h-10 w-10 rounded-lg bg-muted'; }}
+            />
+          ) : (
+            <div className="h-10 w-10 rounded-lg bg-muted" />
+          )}
           <div>
             <p className="font-medium">{product.name}</p>
             <p className="text-sm text-muted-foreground">{product.slug}</p>

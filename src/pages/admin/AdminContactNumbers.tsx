@@ -30,6 +30,15 @@ export default function AdminContactNumbers() {
 
   useEffect(() => {
     fetchNumbers();
+    const timeout = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) {
+          toast({ title: 'Loading timeout', description: 'Data is taking too long to load. Please try refreshing.', variant: 'destructive' });
+        }
+        return false;
+      });
+    }, 15000);
+    return () => clearTimeout(timeout);
   }, []);
 
   const fetchNumbers = async () => {
@@ -42,6 +51,7 @@ export default function AdminContactNumbers() {
       setNumbers(data || []);
     } catch (error) {
       console.error('Error fetching contact numbers:', error);
+      toast({ title: 'Error', description: 'Failed to load contact numbers.', variant: 'destructive' });
     }
     setLoading(false);
   };

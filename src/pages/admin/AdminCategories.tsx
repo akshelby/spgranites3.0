@@ -43,6 +43,15 @@ export default function AdminCategories() {
 
   useEffect(() => {
     fetchCategories();
+    const timeout = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) {
+          toast({ title: 'Loading timeout', description: 'Data is taking too long to load. Please try refreshing.', variant: 'destructive' });
+        }
+        return false;
+      });
+    }, 15000);
+    return () => clearTimeout(timeout);
   }, []);
 
   const fetchCategories = async () => {
@@ -53,8 +62,9 @@ export default function AdminCategories() {
         .order('created_at', { ascending: false });
       if (error) throw error;
       setCategories((data as any) || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching categories:', error);
+      toast({ title: 'Error loading data', description: error?.message || 'Please try refreshing the page.', variant: 'destructive' });
     } finally {
       setLoading(false);
     }

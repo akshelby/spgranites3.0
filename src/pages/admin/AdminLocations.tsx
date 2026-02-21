@@ -48,6 +48,15 @@ export default function AdminLocations() {
 
   useEffect(() => {
     fetchLocations();
+    const timeout = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) {
+          toast({ title: 'Loading timeout', description: 'Data is taking too long to load. Please try refreshing.', variant: 'destructive' });
+        }
+        return false;
+      });
+    }, 15000);
+    return () => clearTimeout(timeout);
   }, []);
 
   const fetchLocations = async () => {
@@ -60,6 +69,7 @@ export default function AdminLocations() {
       setLocations(data || []);
     } catch (error) {
       console.error('Error fetching locations:', error);
+      toast({ title: 'Error', description: 'Failed to load locations.', variant: 'destructive' });
     } finally {
       setLoading(false);
     }

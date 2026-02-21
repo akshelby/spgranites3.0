@@ -38,6 +38,15 @@ export default function AdminReviews() {
 
   useEffect(() => {
     fetchReviews();
+    const timeout = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) {
+          toast({ title: 'Loading timeout', description: 'Data is taking too long to load. Please try refreshing.', variant: 'destructive' });
+        }
+        return false;
+      });
+    }, 15000);
+    return () => clearTimeout(timeout);
   }, []);
 
   const fetchReviews = async () => {
@@ -50,6 +59,7 @@ export default function AdminReviews() {
       setReviews((data || []) as Review[]);
     } catch (error) {
       console.error('Error fetching reviews:', error);
+      toast({ title: 'Error', description: 'Failed to load reviews.', variant: 'destructive' });
     } finally {
       setLoading(false);
     }

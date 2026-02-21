@@ -36,6 +36,15 @@ export default function AdminUsers() {
 
   useEffect(() => {
     fetchUsers();
+    const timeout = setTimeout(() => {
+      setLoading((prev) => {
+        if (prev) {
+          toast({ title: 'Loading timeout', description: 'Data is taking too long to load. Please try refreshing.', variant: 'destructive' });
+        }
+        return false;
+      });
+    }, 15000);
+    return () => clearTimeout(timeout);
   }, []);
 
   const fetchUsers = async () => {
@@ -60,6 +69,7 @@ export default function AdminUsers() {
       setUsers(usersWithRoles);
     } catch (error) {
       console.error('Error fetching users:', error);
+      toast({ title: 'Error', description: 'Failed to load users.', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
