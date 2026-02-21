@@ -105,7 +105,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(s);
       const mapped = mapUser(s?.user ?? null);
       setUser(mapped);
-      setLoading(false);
       clearTimeout(sessionTimeout);
       if (mapped) {
         try {
@@ -116,6 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setRole('user');
         }
       }
+      setLoading(false);
     }).catch(() => {
       clearTimeout(sessionTimeout);
       setLoading(false);
@@ -125,7 +125,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(s);
       const mapped = mapUser(s?.user ?? null);
       setUser(mapped);
-      setLoading(false);
       if (mapped) {
         try {
           const r = await fetchRole(mapped.id, mapped.email);
