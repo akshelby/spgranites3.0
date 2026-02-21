@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Loader2 } from 'lucide-react';
 
@@ -23,7 +23,6 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     return <Navigate to="/auth" replace />;
   }
 
-  // Role hierarchy: admin > moderator > user
   if (requiredRole) {
     const roleHierarchy = { admin: 3, moderator: 2, user: 1 };
     const userLevel = role ? roleHierarchy[role] : 0;
@@ -33,6 +32,18 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
       return (
         <div className="flex min-h-screen items-center justify-center bg-background">
           <div className="text-center">
+            <Link to="/">
+              <img
+                src="/images/sp-logo.png"
+                alt="SP Granites"
+                className="mx-auto mb-6 h-16 w-auto block dark:hidden"
+              />
+              <img
+                src="/images/sp-logo-dark.png"
+                alt="SP Granites"
+                className="mx-auto mb-6 h-16 w-auto hidden dark:block"
+              />
+            </Link>
             <h1 className="mb-4 text-2xl font-bold text-destructive">Access Denied</h1>
             <p className="text-muted-foreground">You don't have permission to view this page.</p>
           </div>
