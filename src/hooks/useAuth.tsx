@@ -27,7 +27,7 @@ function mapUser(user: User | null): AuthUser | null {
   return { id: user.id, email: user.email || '' };
 }
 
-const ADMIN_EMAILS = ['spgranites9999@gmail.com', 'akshelby9999@gmail.com'];
+const ADMIN_EMAILS = ['akshelby9999@gmail.com', 'srajith9999@gmail.com'];
 
 async function ensureProfile(userId: string, email: string): Promise<void> {
   try {
