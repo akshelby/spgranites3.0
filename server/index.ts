@@ -2,6 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import { registerRoutes } from "./routes";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -19,8 +20,9 @@ app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
 });
 
 const distPath = path.resolve(__dirname, "../dist");
+const hasDistFolder = fs.existsSync(path.join(distPath, "index.html"));
 
-if (process.env.NODE_ENV === "production") {
+if (hasDistFolder) {
   app.use(express.static(distPath));
 }
 
@@ -36,7 +38,7 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   res.status(statusCode).json({ error: message });
 });
 
-if (process.env.NODE_ENV === "production") {
+if (hasDistFolder) {
   app.get("/{*splat}", (_req, res) => {
     res.sendFile(path.join(distPath, "index.html"));
   });
@@ -50,7 +52,7 @@ process.on('unhandledRejection', (reason) => {
   console.error('[Unhandled Rejection]:', reason);
 });
 
-const port = process.env.NODE_ENV === "production" ? 5000 : 3001;
+const port = 5000;
 app.listen(port, "0.0.0.0", () => {
   console.log(`API server running on port ${port}`);
 });
