@@ -26,6 +26,33 @@ const Auth = () => {
   const [resetting, setResetting] = useState(false);
 
   useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const params = new URLSearchParams(hash.replace('#', '?'));
+      const errorParam = params.get('error');
+      const errorDescription = params.get('error_description');
+      if (errorParam) {
+        const friendlyMessages: Record<string, string> = {
+          'access_denied': 'Sign-in was cancelled. You can try again whenever you\'re ready.',
+          'server_error': 'Something went wrong on our end. Please try again in a moment.',
+          'temporarily_unavailable': 'The sign-in service is temporarily unavailable. Please try again shortly.',
+          'invalid_request': 'There was a problem with the sign-in request. Please try again.',
+        };
+        const msg = friendlyMessages[errorParam] || errorDescription?.replace(/\+/g, ' ') || 'Sign-in failed. Please try again.';
+        toast.error(msg);
+        window.history.replaceState(null, '', '/auth');
+      }
+    }
+
+    const errorInQuery = searchParams.get('error');
+    const errorDesc = searchParams.get('error_description');
+    if (errorInQuery) {
+      const msg = errorDesc?.replace(/\+/g, ' ') || 'Sign-in failed. Please try again.';
+      toast.error(msg);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
     if (user && !authLoading && !isResetMode) {
       navigate(redirectTo);
     }

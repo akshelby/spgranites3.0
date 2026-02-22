@@ -1,26 +1,42 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 
 export function SocialAuthButtons() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleGoogleSignIn = async () => {
     setLoading(true);
+    setErrorMsg(null);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth`,
+          queryParams: {
+            prompt: 'select_account',
+          },
         },
       });
       if (error) throw error;
+      if (!data?.url) {
+        throw new Error('Could not get Google sign-in URL. Please try again.');
+      }
     } catch (err: any) {
-      toast.error(err?.message || 'Failed to sign in with Google');
+      const message = err?.message || 'Failed to sign in with Google. Please try again.';
+      if (message.includes('provider is not enabled') || message.includes('Provider not found')) {
+        setErrorMsg('Google sign-in is not enabled. Please contact support.');
+      } else if (message.includes('network') || message.includes('fetch')) {
+        setErrorMsg('Network error. Please check your internet connection and try again.');
+      } else {
+        setErrorMsg(message);
+      }
+      toast.error(errorMsg || message);
       setLoading(false);
     }
   };
@@ -67,6 +83,22 @@ export function SocialAuthButtons() {
         )}
         {t('auth.continueWithGoogle')}
       </Button>
+
+      {errorMsg && (
+        <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-sm text-destructive">
+          <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+          <div>
+            <p>{errorMsg}</p>
+            <button
+              type="button"
+              onClick={() => { setErrorMsg(null); handleGoogleSignIn(); }}
+              className="mt-1 text-xs underline hover:no-underline font-medium"
+            >
+              Try again
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
