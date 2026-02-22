@@ -158,6 +158,18 @@ const Auth = () => {
         ) : (
           <>
             <CardHeader className="space-y-1 text-center">
+              <div className="flex justify-center mb-3">
+                <img
+                  src="/images/sp-logo.png"
+                  alt="SP Granites"
+                  className="h-16 w-auto block dark:hidden"
+                />
+                <img
+                  src="/images/sp-logo-dark.png"
+                  alt="SP Granites"
+                  className="h-16 w-auto hidden dark:block"
+                />
+              </div>
               <CardTitle className="text-2xl font-bold">{t('auth.welcome')}</CardTitle>
               <CardDescription>{t('auth.signInDesc')}</CardDescription>
             </CardHeader>
