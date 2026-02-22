@@ -170,12 +170,14 @@
           var s = document.getElementById('splash-loader');
           if (s) {
             s.style.opacity = '0';
+            s.style.pointerEvents = 'none';
             s.style.transition = 'opacity 0.5s ease';
-            setTimeout(function() { if (s.parentNode) s.parentNode.removeChild(s); }, 600);
+            setTimeout(function() { if (s && s.parentNode) s.parentNode.removeChild(s); }, 600);
           }
         }
         window.__hideSplash = hideSplash;
-        setTimeout(hideSplash, 2500);
+        setTimeout(hideSplash, 2000);
+        window.addEventListener('load', function() { setTimeout(hideSplash, 500); });
       })();
     </script>
   </body>
