@@ -76,13 +76,15 @@ function SidebarContent({ collapsed, onItemClick }: { collapsed: boolean; onItem
       <div className="flex h-16 items-center border-b px-4">
         {!collapsed && (
           <Link to="/admin" className="flex items-center gap-2">
-            <img src="/images/sp-logo-dark.png" alt="SP Granites" className="h-9 w-9 object-contain" />
+            <img src="/images/sp-logo.png" alt="SP Granites" className="h-9 w-9 object-contain dark:hidden" />
+            <img src="/images/sp-logo-dark.png" alt="SP Granites" className="h-9 w-9 object-contain hidden dark:block" />
             <span className="brand-name text-lg">SP Granites</span>
           </Link>
         )}
         {collapsed && (
           <Link to="/admin" className="mx-auto block">
-            <img src="/images/sp-logo-dark.png" alt="SP Granites" className="h-9 w-9 object-contain" />
+            <img src="/images/sp-logo.png" alt="SP Granites" className="h-9 w-9 object-contain dark:hidden" />
+            <img src="/images/sp-logo-dark.png" alt="SP Granites" className="h-9 w-9 object-contain hidden dark:block" />
           </Link>
         )}
       </div>
