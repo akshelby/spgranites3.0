@@ -34,8 +34,6 @@ import PaymentPage from "./pages/PaymentPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 import TermsOfServicePage from "./pages/TermsOfServicePage";
 import NotFound from "./pages/NotFound";
-import GridFitLogin from "./pages/GridFitLogin";
-
 // Admin Pages
 import {
   AdminDashboard,
@@ -138,9 +136,6 @@ const App = () => (
                 <Route path="/admin/crm" element={<ProtectedRoute requiredRole="admin"><AdminCRMOverview /></ProtectedRoute>} />
                 <Route path="/admin/crm/customers" element={<ProtectedRoute requiredRole="admin"><AdminCustomers /></ProtectedRoute>} />
                 <Route path="/admin/crm/leads" element={<ProtectedRoute requiredRole="admin"><AdminLeads /></ProtectedRoute>} />
-
-                {/* GridFit standalone */}
-                <Route path="/gridfit" element={<GridFitLogin onLogin={(data: any) => console.log('GridFit login:', data)} />} />
 
                 {/* Catch-all */}
                 <Route path="*" element={<NotFound />} />
