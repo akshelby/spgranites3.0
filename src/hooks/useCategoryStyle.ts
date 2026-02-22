@@ -1,26 +1,26 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
 export type CategoryStyle = 'circle' | 'pill';
 
 const STORAGE_KEY = 'sp_category_style';
 
-function getStoredStyle(): CategoryStyle {
-  try {
-    return (localStorage.getItem(STORAGE_KEY) as CategoryStyle) || 'pill';
-  } catch {
-    return 'pill';
-  }
-}
-
 export function useCategoryStyle() {
-  const [style, setStyle] = useState<CategoryStyle>(getStoredStyle);
+  const [style, setStyle] = useState<CategoryStyle>(() => {
+    try {
+      return (localStorage.getItem(STORAGE_KEY) as CategoryStyle) || 'pill';
+    } catch {
+      return 'circle';
+    }
+  });
 
-  const updateStyle = useCallback((newStyle: CategoryStyle) => {
+  const updateStyle = (newStyle: CategoryStyle) => {
     setStyle(newStyle);
     try {
       localStorage.setItem(STORAGE_KEY, newStyle);
+      // Notify other tabs/components
+      window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY, newValue: newStyle }));
     } catch {}
-  }, []);
+  };
 
   useEffect(() => {
     const handler = (e: StorageEvent) => {
@@ -30,15 +30,6 @@ export function useCategoryStyle() {
     };
     window.addEventListener('storage', handler);
     return () => window.removeEventListener('storage', handler);
-  }, []);
-
-  useEffect(() => {
-    const handleFocus = () => {
-      const current = getStoredStyle();
-      setStyle(current);
-    };
-    window.addEventListener('focus', handleFocus);
-    return () => window.removeEventListener('focus', handleFocus);
   }, []);
 
   return { style, updateStyle };
