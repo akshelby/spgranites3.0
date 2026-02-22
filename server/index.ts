@@ -18,6 +18,12 @@ app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
   next(err);
 });
 
+const distPath = path.resolve(__dirname, "../dist");
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(distPath));
+}
+
 registerRoutes(app);
 
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
@@ -31,8 +37,6 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 if (process.env.NODE_ENV === "production") {
-  const distPath = path.resolve(__dirname, "../dist");
-  app.use(express.static(distPath));
   app.get("/{*splat}", (_req, res) => {
     res.sendFile(path.join(distPath, "index.html"));
   });
