@@ -17,9 +17,9 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline hover:scale-100",
       },
       size: {
-        default: "h-11 px-8 py-2",
-        sm: "h-9 px-6 text-xs",
-        lg: "h-13 px-10 text-base",
+        default: "h-11 px-10 py-2",
+        sm: "h-9 px-8 text-xs",
+        lg: "h-13 px-12 text-base",
         icon: "h-10 w-10",
       },
     },
@@ -36,7 +36,7 @@ export interface ButtonProps
   asChild?: boolean;
 }
 
-const angularClip = "polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%)";
+const angularClip = "polygon(8% 0%, 100% 0%, 92% 100%, 0% 100%)";
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, children, style, ...props }, ref) => {
