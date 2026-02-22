@@ -78,8 +78,9 @@ export default function AdminProducts() {
         .order('created_at', { ascending: false });
       if (error) throw error;
       setProducts((data as any) || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching products:', error);
+      toast({ title: 'Failed to load products', description: error?.message || 'Please try again', variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -93,8 +94,9 @@ export default function AdminProducts() {
         .order('name', { ascending: true });
       if (error) throw error;
       setCategories((data as any) || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching categories:', error);
+      toast({ title: 'Failed to load categories', description: error?.message || 'Please try again', variant: 'destructive' });
     }
   };
 

@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
+import { PageErrorFallback } from '@/components/ErrorBoundary';
 
 interface ProductReview {
   id: string;
@@ -31,6 +32,7 @@ export default function ProductDetailPage() {
   const { slug } = useParams();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
@@ -50,6 +52,7 @@ export default function ProductDetailPage() {
 
   const fetchProduct = async () => {
     setLoading(true);
+    setError(null);
     try {
       const { data: productData, error: productError } = await supabase.from('products').select('*').eq('slug', slug).single();
       if (productError) throw productError;
@@ -64,7 +67,11 @@ export default function ProductDetailPage() {
         setProduct(fullProduct);
         setReviews((reviewsData || []) as ProductReview[]);
       }
-    } catch {}
+    } catch (err: any) {
+      console.error('Failed to load product:', err);
+      setError('Failed to load product details. Please try again.');
+      toast.error('Failed to load product');
+    }
     setLoading(false);
   };
 
@@ -135,6 +142,16 @@ export default function ProductDetailPage() {
     return (
       <MainLayout>
         <SPLoader size="lg" text="Loading product..." fullPage />
+      </MainLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <MainLayout>
+        <div className="container mx-auto px-4 py-6">
+          <PageErrorFallback error={error} resetError={fetchProduct} />
+        </div>
       </MainLayout>
     );
   }

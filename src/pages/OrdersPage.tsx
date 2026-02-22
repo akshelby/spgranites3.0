@@ -11,6 +11,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Order } from '@/types/database';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
+import { PageErrorFallback } from '@/components/ErrorBoundary';
+import { toast } from 'sonner';
 
 const statusColors: Record<string, string> = {
   pending: 'bg-warning text-warning-foreground',
@@ -26,6 +28,7 @@ export default function OrdersPage() {
   const { user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -43,14 +46,17 @@ export default function OrdersPage() {
   }, [loading]);
 
   const fetchOrders = async () => {
+    setError(null);
     try {
-      const { data, error } = await supabase.from('orders').select('*').eq('user_id', user!.id).order('created_at', { ascending: false });
-      if (error) {
-        console.error('Orders fetch error:', error);
+      const { data, error: fetchError } = await supabase.from('orders').select('*').eq('user_id', user!.id).order('created_at', { ascending: false });
+      if (fetchError) {
+        throw fetchError;
       }
       if (data) setOrders(data as unknown as Order[]);
     } catch (err) {
-      console.error('Orders fetchOrders error:', err);
+      console.error('Orders fetch error:', err);
+      setError('Failed to load your orders. Please try again.');
+      toast.error('Failed to load orders');
     }
     setLoading(false);
   };
@@ -67,6 +73,16 @@ export default function OrdersPage() {
     return (
       <MainLayout>
         <SPLoader size="lg" text="Loading orders..." fullPage />
+      </MainLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <MainLayout>
+        <div className="container mx-auto px-4 py-6">
+          <PageErrorFallback error={error} resetError={fetchOrders} />
+        </div>
       </MainLayout>
     );
   }

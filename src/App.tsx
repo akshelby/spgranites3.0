@@ -9,6 +9,7 @@ import { WishlistProvider } from "@/contexts/WishlistContext";
 import { TabProvider } from "@/contexts/TabContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { VisitorTracker } from "@/components/VisitorTracker";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import '@/i18n';
 
 // Pages
@@ -58,9 +59,27 @@ import {
   AdminLeads,
 } from "./pages/admin";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: (failureCount, error) => {
+        if (error instanceof Error && (error.message.includes('401') || error.message.includes('403') || error.message.includes('404'))) {
+          return false;
+        }
+        return failureCount < 2;
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 10000),
+      staleTime: 30000,
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      retry: false,
+    },
+  },
+});
 
 const App = () => (
+  <ErrorBoundary>
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
@@ -129,6 +148,7 @@ const App = () => (
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

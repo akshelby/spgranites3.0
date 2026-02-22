@@ -97,6 +97,17 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+- **2026-02-22**: Added comprehensive error handling across the entire application
+  - Created `ErrorBoundary` component wrapping the entire app to catch rendering crashes with user-friendly fallback UI
+  - Added `PageErrorFallback`, `InlineError`, and `EmptyState` reusable error display components
+  - Created `errorHandler.ts` utility with `AppError` class, user-friendly message mapping, retry logic with exponential backoff, network/auth error detection
+  - Enhanced `api.ts` with 15-second request timeouts via AbortController, automatic logout on 401, offline detection
+  - Server: global error middleware, uncaught exception/rejection handlers, JSON parse error handling, request validation on auth/enquiry/estimation routes
+  - Auth middleware wrapped in try-catch to prevent crashes, session expired event listener added
+  - QueryClient configured with smart retry (skip retries for 401/403/404, max 2 retries with exponential backoff)
+  - Key pages (ProductsPage, OrdersPage, ProductDetailPage) now show error states with retry buttons instead of blank screens
+  - Admin pages show toast notifications on data fetch failures instead of silent console errors
+  - Auth hook improved with better error messages for sign up/in/reset, token refresh logging
 - **2026-02-19**: Migrated product images from external URLs to local storage
   - All product images now served from `public/images/products/` instead of Unsplash URLs
   - Database `products.images` column updated with local paths (e.g., `/images/products/black-granite.jpg`)

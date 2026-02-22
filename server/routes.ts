@@ -56,13 +56,20 @@ function requireAdmin(req: Request, res: Response, next: NextFunction) {
 
 export function registerRoutes(app: Express) {
   app.use(async (req: Request, _res: Response, next: NextFunction) => {
-    const token = req.headers.authorization?.replace("Bearer ", "");
-    const user = await getUserFromToken(token);
-    (req as any).user = user;
-    if (user) {
-      (req as any).userRole = await getUserRole(user.id);
+    try {
+      const token = req.headers.authorization?.replace("Bearer ", "");
+      const user = await getUserFromToken(token);
+      (req as any).user = user;
+      if (user) {
+        (req as any).userRole = await getUserRole(user.id);
+      }
+      next();
+    } catch (error) {
+      console.error('[Auth Middleware] Error:', error);
+      (req as any).user = null;
+      (req as any).userRole = null;
+      next();
     }
-    next();
   });
 
   // ===== AUTH ROUTES =====
@@ -111,18 +118,28 @@ export function registerRoutes(app: Express) {
   });
 
   app.post("/api/auth/signout", async (req: Request, res: Response) => {
-    const token = req.headers.authorization?.replace("Bearer ", "");
-    if (token) {
-      await db.delete(schema.sessions).where(eq(schema.sessions.token, token));
+    try {
+      const token = req.headers.authorization?.replace("Bearer ", "");
+      if (token) {
+        await db.delete(schema.sessions).where(eq(schema.sessions.token, token));
+      }
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error('[Signout Error]:', error.message);
+      res.json({ success: true });
     }
-    res.json({ success: true });
   });
 
   app.get("/api/auth/me", async (req: Request, res: Response) => {
-    const user = (req as any).user;
-    if (!user) return res.json({ user: null });
-    const role = await getUserRole(user.id);
-    res.json({ user: { id: user.id, email: user.email }, role });
+    try {
+      const user = (req as any).user;
+      if (!user) return res.json({ user: null });
+      const role = await getUserRole(user.id);
+      res.json({ user: { id: user.id, email: user.email }, role });
+    } catch (error: any) {
+      console.error('[Auth Check Error]:', error.message);
+      res.json({ user: null });
+    }
   });
 
   // ===== PRODUCTS =====
@@ -273,20 +290,34 @@ export function registerRoutes(app: Express) {
   // ===== ENQUIRIES =====
   app.post("/api/enquiries", async (req: Request, res: Response) => {
     try {
+      const { name, email, message } = req.body;
+      if (!name || !email || !message) {
+        return res.status(400).json({ error: "Name, email, and message are required" });
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: "Please provide a valid email address" });
+      }
       const [enquiry] = await db.insert(schema.enquiries).values(req.body).returning();
       res.json(enquiry);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error('[Enquiry Error]:', error.message);
+      res.status(500).json({ error: "Failed to submit enquiry. Please try again." });
     }
   });
 
   // ===== ESTIMATION ENQUIRIES =====
   app.post("/api/estimation-enquiries", async (req: Request, res: Response) => {
     try {
+      const { name, phone } = req.body;
+      if (!name || !phone) {
+        return res.status(400).json({ error: "Name and phone number are required" });
+      }
       const [enquiry] = await db.insert(schema.estimationEnquiries).values(req.body).returning();
       res.json(enquiry);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error('[Estimation Enquiry Error]:', error.message);
+      res.status(500).json({ error: "Failed to submit estimation request. Please try again." });
     }
   });
 

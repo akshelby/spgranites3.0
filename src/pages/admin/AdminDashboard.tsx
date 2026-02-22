@@ -15,6 +15,7 @@ import {
   Star,
 } from 'lucide-react';
 import { format, subDays, startOfDay } from 'date-fns';
+import { toast } from 'sonner';
 
 interface DashboardStats {
   totalProducts: number;
@@ -136,8 +137,9 @@ export default function AdminDashboard() {
         .order('created_at', { ascending: false })
         .limit(5);
       setRecentEnquiries((recentEnquiriesData as any) || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching dashboard data:', error);
+      toast.error('Failed to load dashboard data. Please refresh the page.');
     } finally {
       setLoading(false);
     }

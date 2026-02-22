@@ -1,6 +1,7 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Session, User } from '@supabase/supabase-js';
+import { toast } from 'sonner';
 
 type AppRole = 'admin' | 'moderator' | 'user';
 
@@ -147,8 +148,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     init();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, s) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, s) => {
       if (!mounted) return;
+
+      if (event === 'TOKEN_REFRESHED') {
+        console.log('[Auth] Token refreshed successfully');
+      }
+
+      if (event === 'SIGNED_OUT') {
+        setSession(null);
+        setUser(null);
+        setRole(null);
+        return;
+      }
+
       setSession(s);
       const mapped = mapUser(s?.user ?? null);
       setUser(mapped);
@@ -160,32 +173,69 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
+    const handleSessionExpired = () => {
+      if (mounted) {
+        toast.error('Your session has expired. Please sign in again.');
+        setUser(null);
+        setSession(null);
+        setRole(null);
+      }
+    };
+
+    window.addEventListener('auth:session-expired', handleSessionExpired);
+
     return () => {
       mounted = false;
       clearTimeout(safetyTimeout);
       subscription.unsubscribe();
+      window.removeEventListener('auth:session-expired', handleSessionExpired);
     };
   }, []);
 
   const signUp = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({ email, password });
-    if (error) return { error: new Error(error.message) };
-    return { error: null };
+    try {
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) {
+        const msg = error.message.includes('already registered')
+          ? 'An account with this email already exists. Try signing in instead.'
+          : error.message;
+        return { error: new Error(msg) };
+      }
+      return { error: null };
+    } catch (err: any) {
+      console.error('[Auth] Sign up error:', err);
+      return { error: new Error('Unable to create account. Please check your connection and try again.') };
+    }
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return { error: new Error(error.message) };
-    return { error: null };
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        const msg = error.message.includes('Invalid login')
+          ? 'Invalid email or password. Please try again.'
+          : error.message;
+        return { error: new Error(msg) };
+      }
+      return { error: null };
+    } catch (err: any) {
+      console.error('[Auth] Sign in error:', err);
+      return { error: new Error('Unable to sign in. Please check your connection and try again.') };
+    }
   };
 
   const resetPassword = async (email: string) => {
-    const redirectUrl = `${window.location.origin}/auth?mode=reset`;
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: redirectUrl,
-    });
-    if (error) return { error: new Error(error.message) };
-    return { error: null };
+    try {
+      const redirectUrl = `${window.location.origin}/auth?mode=reset`;
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+      });
+      if (error) return { error: new Error(error.message) };
+      return { error: null };
+    } catch (err: any) {
+      console.error('[Auth] Password reset error:', err);
+      return { error: new Error('Unable to send reset email. Please try again later.') };
+    }
   };
 
   const signOut = async () => {

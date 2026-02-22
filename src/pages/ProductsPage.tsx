@@ -20,6 +20,8 @@ import { useWishlist } from '@/contexts/WishlistContext';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { PageErrorFallback } from '@/components/ErrorBoundary';
+import { toast } from 'sonner';
 
 export default function ProductsPage() {
   const { t } = useTranslation();
@@ -27,6 +29,7 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<ProductCategory[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   
@@ -45,11 +48,14 @@ export default function ProductsPage() {
       const { data, error } = await supabase.from('product_categories').select('*').eq('is_active', true);
       if (error) throw error;
       if (data) setCategories(data);
-    } catch {}
+    } catch (err) {
+      console.error('Failed to load categories:', err);
+    }
   };
 
   const fetchProducts = async () => {
     setLoading(true);
+    setError(null);
     try {
       let query = supabase.from('products').select('*').eq('is_active', true).order('created_at', { ascending: false });
       if (categorySlug) {
@@ -58,10 +64,14 @@ export default function ProductsPage() {
           query = query.eq('category_id', catData.id);
         }
       }
-      const { data, error } = await query;
-      if (error) throw error;
+      const { data, error: fetchError } = await query;
+      if (fetchError) throw fetchError;
       if (data) setProducts(data as Product[]);
-    } catch {}
+    } catch (err) {
+      console.error('Failed to load products:', err);
+      setError('Failed to load products. Please try again.');
+      toast.error('Failed to load products');
+    }
     setLoading(false);
   };
 
@@ -171,6 +181,8 @@ export default function ProductsPage() {
 
         {loading ? (
           <SPLoader size="lg" text="Loading products..." fullPage />
+        ) : error ? (
+          <PageErrorFallback error={error} resetError={fetchProducts} />
         ) : filteredProducts.length === 0 ? (
           <div className="text-center py-12">
             <h3 className="text-base font-semibold mb-1">{t('products.noProducts')}</h3>
