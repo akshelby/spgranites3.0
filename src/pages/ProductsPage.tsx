@@ -251,12 +251,12 @@ export default function ProductsPage() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="w-full mt-1.5 text-[10px] sm:text-xs"
+                    className="w-full mt-1.5 text-[10px] sm:text-xs px-6"
                     onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
                     data-testid={`button-add-cart-${product.id}`}
                   >
-                    <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1" />
-                    {t('products.addToCart')}
+                    <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 flex-shrink-0" />
+                    <span className="truncate">{t('products.addToCart')}</span>
                   </Button>
                 </div>
               </motion.div>
