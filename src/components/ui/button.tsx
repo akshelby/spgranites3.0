@@ -17,8 +17,8 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline hover:scale-100",
       },
       size: {
-        default: "h-11 px-7 py-2",
-        sm: "h-9 px-5 text-xs",
+        default: "h-11 px-8 py-2",
+        sm: "h-9 px-6 text-xs",
         lg: "h-13 px-10 text-base",
         icon: "h-10 w-10",
       },
@@ -36,18 +36,23 @@ export interface ButtonProps
   asChild?: boolean;
 }
 
+const angularClip = "polygon(10% 0%, 100% 0%, 90% 100%, 0% 100%)";
+
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, children, style, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
-    const isAngular = variant !== 'ghost' && variant !== 'link';
-    const skewStyle = isAngular ? { ...style, transform: `skewX(-12deg) ${style?.transform || ''}`.trim() } : style;
+    const isAngular = variant !== 'ghost' && variant !== 'link' && size !== 'icon';
+    const finalStyle = isAngular
+      ? { ...style, clipPath: angularClip }
+      : style;
     return (
-      <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} style={skewStyle} {...props}>
-        {isAngular ? (
-          <span style={{ transform: 'skewX(12deg)' }} className="inline-flex items-center gap-2 whitespace-nowrap">
-            {children}
-          </span>
-        ) : children}
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        style={finalStyle}
+        {...props}
+      >
+        {children}
       </Comp>
     );
   },
