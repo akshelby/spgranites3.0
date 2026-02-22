@@ -25,7 +25,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { User, MapPin, Lock, Plus, Trash2, Edit, Home, Building2, MapPinned, Star, Check } from 'lucide-react';
+import { User, MapPin, Lock, Plus, Trash2, Edit, Home, Building2, MapPinned, Star, Check, Mail, Phone } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Profile, Address } from '@/types/database';
@@ -310,6 +310,23 @@ export default function ProfilePage() {
                 <CardDescription className="text-xs sm:text-sm">{t('profile.personalInfoDesc')}</CardDescription>
               </CardHeader>
               <CardContent>
+                {user && (user.email || (user as any).phone) && (
+                  <div className="mb-5 p-3 rounded-lg bg-muted/50 border border-border/60">
+                    <p className="text-xs text-muted-foreground mb-1.5 font-medium uppercase tracking-wide">Signed in as</p>
+                    {user.email && (
+                      <p className="text-sm font-medium flex items-center gap-2">
+                        <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+                        {user.email}
+                      </p>
+                    )}
+                    {(user as any).phone && (
+                      <p className="text-sm font-medium flex items-center gap-2 mt-1">
+                        <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                        {(user as any).phone}
+                      </p>
+                    )}
+                  </div>
+                )}
                 <Form {...profileForm}>
                   <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4 sm:space-y-6">
                     <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
