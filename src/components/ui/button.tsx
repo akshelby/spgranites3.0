@@ -9,10 +9,10 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md skew-x-12",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm hover:shadow-md skew-x-12",
-        outline: "border-2 border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-sm skew-x-12",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm skew-x-12",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm hover:shadow-md",
+        outline: "border-2 border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-sm",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline hover:scale-100",
       },
@@ -37,12 +37,17 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, children, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, children, style, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
-    const needsUnskew = variant !== 'ghost' && variant !== 'link';
+    const isAngular = variant !== 'ghost' && variant !== 'link';
+    const skewStyle = isAngular ? { ...style, transform: `skewX(-12deg) ${style?.transform || ''}`.trim() } : style;
     return (
-      <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props}>
-        {needsUnskew ? <span className="-skew-x-12 inline-flex items-center gap-2">{children}</span> : children}
+      <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} style={skewStyle} {...props}>
+        {isAngular ? (
+          <span style={{ transform: 'skewX(12deg)' }} className="inline-flex items-center gap-2 whitespace-nowrap">
+            {children}
+          </span>
+        ) : children}
       </Comp>
     );
   },
