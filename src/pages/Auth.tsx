@@ -157,23 +157,23 @@ const Auth = () => {
           </>
         ) : (
           <>
-            <CardHeader className="space-y-1 text-center">
-              <div className="flex justify-center mb-3">
+            <CardHeader className="space-y-1 text-center pb-3">
+              <div className="flex justify-center mb-2">
                 <img
                   src="/images/sp-logo.png"
                   alt="SP Granites"
-                  className="h-16 w-auto block dark:hidden"
+                  className="h-14 w-auto block dark:hidden"
                 />
                 <img
                   src="/images/sp-logo-dark.png"
                   alt="SP Granites"
-                  className="h-16 w-auto hidden dark:block"
+                  className="h-14 w-auto hidden dark:block"
                 />
               </div>
               <CardTitle className="text-2xl font-bold">{t('auth.welcome')}</CardTitle>
               <CardDescription>{t('auth.signInDesc')}</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3">
               <div className="flex items-center justify-center gap-2 p-1 bg-muted rounded-lg">
                 <button
                   type="button"

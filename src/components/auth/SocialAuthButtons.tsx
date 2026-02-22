@@ -55,7 +55,7 @@ export function SocialAuthButtons() {
       <Button
         type="button"
         variant="outline"
-        className="w-full"
+        className="w-full bg-black text-white border-black hover:bg-black/90 hover:text-white font-semibold tracking-wide"
         onClick={handleGoogleSignIn}
         disabled={loading}
       >
