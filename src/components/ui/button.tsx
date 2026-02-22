@@ -5,21 +5,21 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-semibold uppercase tracking-wide ring-offset-background transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:scale-[1.03] active:scale-[0.98]",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-bold uppercase tracking-wider ring-offset-background transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:scale-[1.03] active:scale-[0.98]",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md skew-x-[-6deg] [&>*]:skew-x-[6deg]",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm hover:shadow-md skew-x-[-6deg] [&>*]:skew-x-[6deg]",
-        outline: "border-2 border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-sm skew-x-[-6deg] [&>*]:skew-x-[6deg]",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm skew-x-[-6deg] [&>*]:skew-x-[6deg]",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md -skew-x-12",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-sm hover:shadow-md -skew-x-12",
+        outline: "border-2 border-input bg-background hover:bg-accent hover:text-accent-foreground shadow-sm -skew-x-12",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm -skew-x-12",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline hover:scale-100",
       },
       size: {
-        default: "h-10 px-6 py-2",
-        sm: "h-9 px-4 text-xs",
-        lg: "h-12 px-8 text-base",
+        default: "h-11 px-7 py-2",
+        sm: "h-9 px-5 text-xs",
+        lg: "h-13 px-10 text-base",
         icon: "h-10 w-10",
       },
     },
@@ -37,9 +37,15 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  ({ className, variant, size, asChild = false, children, ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
-    return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />;
+    const isSkewed = variant !== 'ghost' && variant !== 'link' && variant !== undefined || variant === undefined;
+    const needsUnskew = variant !== 'ghost' && variant !== 'link';
+    return (
+      <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props}>
+        {needsUnskew ? <span className="skew-x-12 inline-flex items-center gap-2">{children}</span> : children}
+      </Comp>
+    );
   },
 );
 Button.displayName = "Button";
