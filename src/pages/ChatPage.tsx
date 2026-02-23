@@ -229,7 +229,7 @@ export default function ChatPage() {
       const insertData: any = { ref_id: newRefId };
       if (user) {
         insertData.customer_phone = user.id;
-        insertData.customer_email = user.email;
+        insertData.customer_name = user.email;
       }
       const data = await api.post('/api/conversations', insertData);
       setSession(newRefId, data.id);
