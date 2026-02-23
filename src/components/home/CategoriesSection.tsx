@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { CategoryItem } from './CategoryItem';
 import { CategoryItemPill } from './CategoryItemPill';
 import { BhrundhavanIcon } from './BhrundhavanIcon';
@@ -178,11 +179,12 @@ const containerVariants = {
 
 export function CategoriesSection() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const { style } = useCategoryStyle();
 
   const openChatWidget = () => {
-    window.dispatchEvent(new CustomEvent('open-chat-widget'));
+    navigate('/chat');
   };
 
   const isPill = style === 'pill';
