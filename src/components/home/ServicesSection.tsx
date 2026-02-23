@@ -26,7 +26,7 @@ export function ServicesSection() {
   const fetchServices = async () => {
     try {
       const data = await api.get('/api/services');
-      if (data && data.length > 0) {
+      if (Array.isArray(data) && data.length > 0) {
         setServices(data as Service[]);
       } else {
         setServices([

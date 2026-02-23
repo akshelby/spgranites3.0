@@ -22,7 +22,7 @@ export function TestimonialsSection() {
   const fetchTestimonials = async () => {
     try {
       const data = await api.get('/api/testimonials');
-      if (data && data.length > 0) {
+      if (Array.isArray(data) && data.length > 0) {
         setTestimonials(data as Testimonial[]);
       } else {
         setTestimonials([

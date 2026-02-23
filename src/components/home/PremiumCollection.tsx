@@ -56,7 +56,7 @@ export function PremiumCollection() {
       try {
         const data = await api.get('/api/products');
         if (cancelled) return;
-        const allProducts = (data || []).filter((p: any) => p.is_active);
+        const allProducts = (Array.isArray(data) ? data : []).filter((p: any) => p.is_active);
         if (allProducts.length >= 6) {
           const withLocalImages = allProducts.map((p: any) => {
             const slug = p.name?.toLowerCase().replace(/\s+/g, '-') || '';

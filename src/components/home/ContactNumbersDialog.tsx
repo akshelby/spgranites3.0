@@ -34,7 +34,7 @@ export function ContactNumbersDialog({ open, onOpenChange }: ContactNumbersDialo
     setError(false);
     try {
       const data = await api.get('/api/contact-numbers');
-      if (data) {
+      if (Array.isArray(data)) {
         setNumbers(data as ContactNumber[]);
       }
     } catch {
