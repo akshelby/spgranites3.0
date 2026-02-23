@@ -1,1 +1,1 @@
-{"version":2,"languages":{"nodejs-npm":{"specfileHash":"f53e31f7326bec14580c41f8b948d5cf","lockfileHash":"73045c50a904a49dbc8acbd15b14d44b"}}}
+{"version":2,"languages":{"nodejs-npm":{"specfileHash":"f53e31f7326bec14580c41f8b948d5cf","lockfileHash":"73045c50a904a49dbc8acbd15b14d44b","guessedImports":["drizzle-kit","typescript-eslint","lovable-tagger","vite","tailwindcss-animate","eslint-plugin-react-hooks","eslint-plugin-react-refresh","globals","@vitejs/plugin-react-swc","tailwindcss","@eslint/js","vitest"],"guessedImportsHash":"dfa0bf5c247d2541f43ac9ab3bc2bfd4"}}}
