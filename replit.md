@@ -2,7 +2,7 @@
 
 ## Overview
 
-SP Granites is a full-stack e-commerce web application for a granite, marble, and stone products business. It includes a customer-facing storefront with product browsing, cart/wishlist, order management, estimation requests, and live chat support, alongside a comprehensive admin dashboard for managing products, orders, users, content, and analytics. The app uses a React frontend with Supabase as the backend (authentication, database, storage).
+SP Granites is a full-stack e-commerce web application for a granite, marble, and stone products business. It includes a customer-facing storefront with product browsing, cart/wishlist, order management, estimation requests, and live chat support, alongside a comprehensive admin dashboard for managing products, orders, users, content, and analytics. The app uses a React frontend with a Node.js/Express server that communicates with Supabase (authentication, database) using the service role key for secure server-side access.
 
 ## User Preferences
 
@@ -21,17 +21,22 @@ Preferred communication style: Simple, everyday language.
 - **Forms**: React Hook Form with Zod schema validation
 - **Component Library**: shadcn/ui (configured via components.json). Components live in `src/components/ui/`. Path alias `@/` maps to `src/`
 
-### Backend (Supabase)
+### Backend (Express + Supabase)
 
-- **Database**: Supabase PostgreSQL
-- **Authentication**: Supabase Auth with email/password login
+- **Server**: Node.js/Express server at `server/index.ts` on port 3001
+- **Database**: Supabase PostgreSQL (accessed via `@supabase/supabase-js` with service role key)
+- **Authentication**: Supabase Auth (server-side) with email/password login
 - **Authorization**: Role-based access control via `user_roles` table (admin, moderator, user)
-- **Client**: Supabase JS client at `src/integrations/supabase/client.ts`
-- **Types**: Auto-generated Supabase types at `src/integrations/supabase/types.ts`
-- **Note**: Some tables use `as any` casts for tables not yet in generated types (e.g., contact_numbers)
+- **Supabase Client**: Server-side admin client at `server/supabase.ts` using `SUPABASE_SERVICE_ROLE_KEY` to bypass RLS
+- **API Pattern**: All frontend requests go through `/api/*` endpoints on the Express server, which then queries Supabase
+- **Admin Emails**: `akshelby9999@gmail.com`, `srajith9999@gmail.com` are auto-assigned admin role on signup
 
 ### Application Structure
 
+- `server/` — Express server
+  - `index.ts` — Server entry point, serves API and static files
+  - `routes.ts` — All API route handlers (auth, CRUD, admin, CRM, AI chat)
+  - `supabase.ts` — Supabase admin client configuration
 - `src/pages/` — Route-level page components (HomePage, ProductsPage, Auth, admin pages, etc.)
 - `src/components/` — Reusable components organized by feature:
   - `admin/` — Admin layout, data tables, stats cards, page headers
@@ -43,9 +48,9 @@ Preferred communication style: Simple, everyday language.
   - `layout/` — Main layout wrapper, navbar, footer, floating action buttons
   - `visualizer/` — Interactive stone customizer with SVG room scenes
   - `ui/` — shadcn/ui primitives
-- `src/contexts/` — Cart (localStorage-persisted) and Wishlist (API-synced via Supabase) contexts
-- `src/hooks/` — Auth hook (Supabase auth state), mobile detection, toast management
-- `src/integrations/supabase/` — Supabase client configuration and types
+- `src/contexts/` — Cart (localStorage-persisted) and Wishlist (API-synced via server) contexts
+- `src/hooks/` — Auth hook (server-based auth state), mobile detection, toast management
+- `src/lib/api.ts` — API client helper for making authenticated requests to the server
 - `src/types/database.ts` — TypeScript interfaces for all database entities
 - `src/i18n/` — Internationalization config and locale files (en.json, hi.json, kn.json)
 
@@ -65,11 +70,11 @@ Preferred communication style: Simple, everyday language.
 - `banners` — Homepage banners
 - `hero_carousel_cards`, `hero_carousel_settings` — Homepage carousel
 - `store_locations` — Store locations
-- `contact_numbers` — Contact phone numbers
 - `enquiries` — Contact form submissions
 - `estimation_enquiries` — Estimation requests
 - `conversations`, `messages` — Chat system
 - `site_visitors` — Analytics
+- **Not yet created in Supabase**: `contact_numbers`, `leads`, `crm_notes`, `crm_followups` (routes handle gracefully with empty data)
 
 ### Key Features
 
@@ -83,68 +88,39 @@ Preferred communication style: Simple, everyday language.
 8. **Admin Dashboard** — Full CRUD for all entities
 9. **About Us Page** — Company story, mission, vision, stats, and values
 10. **Stone Visualizer** — Interactive tool for customizing stone selections
+11. **AI Assistant** — OpenAI-powered customer support chatbot with streaming responses
+12. **CRM System** — Lead management, notes, follow-ups (requires table creation in Supabase)
 
 ### Dev Server Configuration
 
-- Frontend: Vite on port **5000** with HMR
-- No backend server needed (all data via Supabase client)
+- Frontend: Vite on port **5000** with HMR, proxies `/api` to backend
+- Backend: Express on port **3001**
+- Production: Backend serves built frontend from `dist/` on port 5000
 - `npm run dev` starts Vite dev server
 
 ### Environment Variables
 
-- `VITE_SUPABASE_URL` — Supabase project URL (public, with hardcoded fallback in client.ts)
-- `VITE_SUPABASE_ANON_KEY` — Supabase anon/publishable key (public, with hardcoded fallback in client.ts)
+- `SUPABASE_URL` — Supabase project URL (server-side, stored in Replit Secrets)
+- `SUPABASE_SERVICE_ROLE_KEY` — Supabase service role key (server-side, stored in Replit Secrets)
+- `AI_INTEGRATIONS_OPENAI_API_KEY` — OpenAI API key (via Replit AI Integrations)
+- `AI_INTEGRATIONS_OPENAI_BASE_URL` — OpenAI base URL (via Replit AI Integrations)
 
 ## Recent Changes
 
+- **2026-02-23**: Migrated server to use Supabase as database backend
+  - Server now uses `@supabase/supabase-js` with service role key instead of Drizzle ORM + Replit PostgreSQL
+  - Authentication uses Supabase Auth (server-side) — signup creates Supabase Auth user, signin returns Supabase JWT
+  - All CRUD operations use Supabase client (`supabase.from('table').select/insert/update/delete`)
+  - Created `server/supabase.ts` for admin client configuration
+  - Missing tables (contact_numbers, leads, crm_notes, crm_followups) handled gracefully with empty data
+  - Frontend unchanged — still uses server API endpoints via `src/lib/api.ts`
+  - Admin emails auto-assigned admin role on signup
 - **2026-02-22**: Added comprehensive error handling across the entire application
-  - Created `ErrorBoundary` component wrapping the entire app to catch rendering crashes with user-friendly fallback UI
-  - Added `PageErrorFallback`, `InlineError`, and `EmptyState` reusable error display components
-  - Created `errorHandler.ts` utility with `AppError` class, user-friendly message mapping, retry logic with exponential backoff, network/auth error detection
-  - Enhanced `api.ts` with 15-second request timeouts via AbortController, automatic logout on 401, offline detection
-  - Server: global error middleware, uncaught exception/rejection handlers, JSON parse error handling, request validation on auth/enquiry/estimation routes
-  - Auth middleware wrapped in try-catch to prevent crashes, session expired event listener added
-  - QueryClient configured with smart retry (skip retries for 401/403/404, max 2 retries with exponential backoff)
-  - Key pages (ProductsPage, OrdersPage, ProductDetailPage) now show error states with retry buttons instead of blank screens
-  - Admin pages show toast notifications on data fetch failures instead of silent console errors
-  - Auth hook improved with better error messages for sign up/in/reset, token refresh logging
 - **2026-02-19**: Migrated product images from external URLs to local storage
-  - All product images now served from `public/images/products/` instead of Unsplash URLs
-  - Database `products.images` column updated with local paths (e.g., `/images/products/black-granite.jpg`)
-  - Local imports in PremiumCollection and FeaturedProducts components remain as primary fallback
-  - Brown granite and Blue Pearl use `.png` format; others use `.jpg`
 - **2026-02-19**: Added CRM (Customer Relationship Management) system
-  - Three new database tables: `leads`, `crm_notes`, `crm_followups`
-  - CRM Overview page (`/admin/crm`) with pipeline stats, recent leads, and upcoming follow-ups
-  - Customers page (`/admin/crm/customers`) with search, order totals, and detail drawer with notes/follow-ups/timeline
-  - Leads page (`/admin/crm/leads`) with status pipeline filters, CRUD, quick status update, mobile FAB
-  - Notes system: add notes to any customer or lead
-  - Follow-ups system: schedule follow-ups with channel (call/WhatsApp/email/visit), mark done/skip
-  - Activity Timeline: unified view of orders, notes, and follow-ups per customer/lead
-  - Mobile-first design with Sheet drawers, floating action buttons, responsive card layouts
-  - Components in `src/components/admin/crm/`: NoteForm, NotesList, FollowupForm, FollowupList, ActivityTimeline, LeadForm, CRMDetailPanel
 - **2026-02-18**: Added AI Assistant feature
-  - Integrated OpenAI (via Replit AI Integrations) for customer support AI chatbot
-  - Added `/api/ai-chat` endpoint with streaming SSE responses, rate limiting, input validation
-  - Created AIChatPanel component with suggested prompts, streaming text display
-  - Floating action button now toggles AI chat panel (replaces old chat widget)
-  - AI assistant is trained on SP Granites context (products, services, stone care tips)
-  - Uses gpt-5-nano model for fast, cost-effective responses
-  - Vite proxy configured to forward `/api` requests to backend on port 3001
 - **2026-02-16**: Added missing sections and finished incomplete items
-  - Added CTA (Call to Action) section to homepage
-  - Created Privacy Policy page (`/privacy`) and Terms of Service page (`/terms`)
-  - Added "About Us" link to navbar navigation
-  - Made floating action button functional (opens chat widget)
-  - Soft UI styling: softer shadows, rounded corners, improved typography, section spacing
 - **2026-02-14**: Migrated back to Supabase from Express + Drizzle ORM backend
-  - Restored Supabase Auth for authentication (email/password)
-  - Replaced all Express API calls with direct Supabase client queries
-  - Removed Express server dependency
-  - Added smart fallbacks in client.ts to handle env var misconfiguration
-  - Phone OTP auth and Google OAuth marked as "coming soon"
-  - Chat system uses 3-second polling for updates
-  - Auth redirects via query params (?redirect=/chat, ?mode=signup)
 
 ## Scripts
 

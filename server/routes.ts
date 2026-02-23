@@ -274,7 +274,10 @@ export function registerRoutes(app: Express) {
   app.get("/api/contact-numbers", async (_req: Request, res: Response) => {
     try {
       const { data, error } = await supabase.from('contact_numbers').select('*').eq('is_active', true).order('display_order', { ascending: true });
-      if (error) throw error;
+      if (error) {
+        if (error.code === 'PGRST205') return res.json([]);
+        throw error;
+      }
       res.json(data);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -1034,7 +1037,10 @@ export function registerRoutes(app: Express) {
   app.get("/api/admin/contact-numbers", requireAuth, requireAdmin, async (_req: Request, res: Response) => {
     try {
       const { data, error } = await supabase.from('contact_numbers').select('*').order('display_order', { ascending: true });
-      if (error) throw error;
+      if (error) {
+        if (error.code === 'PGRST205') return res.json([]);
+        throw error;
+      }
       res.json(data);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -1159,7 +1165,10 @@ export function registerRoutes(app: Express) {
   app.get("/api/admin/leads", requireAuth, requireAdmin, async (_req: Request, res: Response) => {
     try {
       const { data, error } = await supabase.from('leads').select('*').order('created_at', { ascending: false });
-      if (error) throw error;
+      if (error) {
+        if (error.code === 'PGRST205') return res.json([]);
+        throw error;
+      }
       res.json(data);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -1207,7 +1216,10 @@ export function registerRoutes(app: Express) {
         query = query.eq('user_id', user_id as string);
       }
       const { data, error } = await query.order('created_at', { ascending: false });
-      if (error) throw error;
+      if (error) {
+        if (error.code === 'PGRST205') return res.json([]);
+        throw error;
+      }
       res.json(data);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -1245,7 +1257,10 @@ export function registerRoutes(app: Express) {
         query = query.eq('user_id', user_id as string);
       }
       const { data, error } = await query.order('due_at', { ascending: false });
-      if (error) throw error;
+      if (error) {
+        if (error.code === 'PGRST205') return res.json([]);
+        throw error;
+      }
       res.json(data);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
@@ -1286,10 +1301,11 @@ export function registerRoutes(app: Express) {
   app.get("/api/admin/crm/overview", requireAuth, requireAdmin, async (_req: Request, res: Response) => {
     try {
       const { data: allLeads, error: leadsError } = await supabase.from('leads').select('*').order('created_at', { ascending: false });
-      if (leadsError) throw leadsError;
       const { data: upcomingFollowups, error: followupsError } = await supabase.from('crm_followups').select('*').eq('status', 'pending').order('due_at', { ascending: true }).limit(10);
-      if (followupsError) throw followupsError;
-      res.json({ leads: allLeads, upcomingFollowups });
+      res.json({
+        leads: leadsError?.code === 'PGRST205' ? [] : (allLeads || []),
+        upcomingFollowups: followupsError?.code === 'PGRST205' ? [] : (upcomingFollowups || []),
+      });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
