@@ -46,7 +46,7 @@ export function PremiumCollection() {
   const momentumFrameRef = useRef<number | null>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const radiusRef = useRef(0);
-  const speedRef = useRef(parseFloat(localStorage.getItem('spg_collection_speed') || '0.1'));
+  const speedRef = useRef(parseFloat(localStorage.getItem('spg_collection_speed') || '0.2'));
 
   const [isMobile, setIsMobile] = useState(false);
 

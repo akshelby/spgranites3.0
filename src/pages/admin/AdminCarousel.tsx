@@ -53,7 +53,7 @@ export default function AdminCarousel() {
 
   const [collectionSpeed, setCollectionSpeed] = useState(() => {
     const saved = localStorage.getItem('spg_collection_speed');
-    return saved ? parseFloat(saved) : 0.1;
+    return saved ? parseFloat(saved) : 0.2;
   });
 
   const speedLabels: Record<string, string> = {
