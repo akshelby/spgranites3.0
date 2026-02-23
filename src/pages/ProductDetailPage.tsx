@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { PageErrorFallback } from '@/components/ErrorBoundary';
+import { resolveProductImage, defaultProductImage } from '@/lib/productImages';
 
 interface ProductReview {
   id: string;
@@ -112,7 +113,7 @@ export default function ProductDetailPage() {
       name: product.name,
       price: product.price,
       quantity,
-      image: product.images?.[0] || '/placeholder.svg',
+      image: resolveProductImage(product),
       description: product.short_description || product.description || undefined,
       category: product.category?.name || undefined,
       comparePrice: product.compare_price || undefined,
@@ -161,7 +162,13 @@ export default function ProductDetailPage() {
     );
   }
 
-  const images = product.images?.length ? product.images : ['/placeholder.svg'];
+  const resolvedMainImage = resolveProductImage(product);
+  const images = product.images?.length
+    ? product.images.map(img => {
+        if (img.includes('unsplash') || img === '/placeholder.svg') return resolvedMainImage;
+        return img;
+      })
+    : [resolvedMainImage];
 
   return (
     <MainLayout>
@@ -457,7 +464,7 @@ export default function ProductDetailPage() {
                 >
                   <div className="aspect-[4/3] overflow-hidden">
                     <img
-                      src={rp.images?.[0] || '/placeholder.svg'}
+                      src={resolveProductImage(rp)}
                       alt={rp.name}
                       className="w-full h-full object-cover"
                     />

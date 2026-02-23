@@ -57,7 +57,7 @@ export function HeroSection() {
       if (data && data.length > 0) {
         const mappedCards = data.map((card: any) => ({
           ...card,
-          image_url: card.image_url === '/placeholder.svg' 
+          image_url: (card.image_url === '/placeholder.svg' || card.image_url?.includes('unsplash'))
             ? (fallbackImages[card.title] || blackGraniteImg)
             : card.image_url
         }));

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { api } from '@/lib/api';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { productImageMap, resolveProductImage, defaultProductImage } from '@/lib/productImages';
 
 interface CollectionProduct {
   id: string;
@@ -13,57 +14,20 @@ interface CollectionProduct {
   is_active: boolean;
 }
 
-import blackGraniteImg from '@/assets/products/black-granite.jpg';
-import absoluteBlackImg from '@/assets/products/absolute-black-granite.png';
-import brownGraniteImg from '@/assets/products/brown-granite.png';
-import greenGraniteImg from '@/assets/products/green-granite.jpg';
-import bluePearlImg from '@/assets/products/blue-pearl.png';
-import redGraniteImg from '@/assets/products/red-granite.jpg';
-import greyGraniteImg from '@/assets/products/grey-granite.jpg';
-import kashmirWhiteImg from '@/assets/products/kashmir-white-granite.png';
-import steelGreyImg from '@/assets/products/steel-grey-granite.png';
-import imperialRedImg from '@/assets/products/imperial-red-granite.png';
-import greenGalaxyImg from '@/assets/products/green-galaxy-granite.png';
-import brownPearlImg from '@/assets/products/brown-pearl-granite.png';
-import blueGalaxyImg from '@/assets/products/blue-galaxy-granite.png';
-import forestGreenImg from '@/assets/products/forest-green-granite.png';
-
-const productImages: Record<string, string> = {
-  'black-galaxy-granite': blackGraniteImg,
-  'absolute-black-granite': absoluteBlackImg,
-  'kashmir-white-granite': kashmirWhiteImg,
-  'tan-brown-granite': brownGraniteImg,
-  'blue-pearl-granite': bluePearlImg,
-  'imperial-red-granite': imperialRedImg,
-  'steel-grey-granite': steelGreyImg,
-  'green-galaxy-granite': greenGalaxyImg,
-  'red-granite': redGraniteImg,
-  'brown-pearl-granite': brownPearlImg,
-  'blue-galaxy-granite': blueGalaxyImg,
-  'forest-green-granite': forestGreenImg,
-};
-
 const fallbackProducts: CollectionProduct[] = [
-  { id: 'fb-1', name: 'Black Galaxy Granite', slug: 'black-galaxy-granite', price: 4500, images: [blackGraniteImg], is_active: true },
-  { id: 'fb-2', name: 'Absolute Black Granite', slug: 'absolute-black-granite', price: 3800, images: [absoluteBlackImg], is_active: true },
-  { id: 'fb-3', name: 'Tan Brown Granite', slug: 'tan-brown-granite', price: 2800, images: [brownGraniteImg], is_active: true },
-  { id: 'fb-4', name: 'Blue Pearl Granite', slug: 'blue-pearl-granite', price: 5200, images: [bluePearlImg], is_active: true },
-  { id: 'fb-5', name: 'Green Galaxy Granite', slug: 'green-galaxy-granite', price: 3500, images: [greenGalaxyImg], is_active: true },
-  { id: 'fb-6', name: 'Imperial Red Granite', slug: 'imperial-red-granite', price: 4000, images: [imperialRedImg], is_active: true },
-  { id: 'fb-7', name: 'Kashmir White Granite', slug: 'kashmir-white-granite', price: 3200, images: [kashmirWhiteImg], is_active: true },
-  { id: 'fb-8', name: 'Steel Grey Granite', slug: 'steel-grey-granite', price: 2900, images: [steelGreyImg], is_active: true },
-  { id: 'fb-9', name: 'Red Granite', slug: 'red-granite', price: 3600, images: [redGraniteImg], is_active: true },
-  { id: 'fb-10', name: 'Brown Pearl Granite', slug: 'brown-pearl-granite', price: 3100, images: [brownPearlImg], is_active: true },
-  { id: 'fb-11', name: 'Blue Galaxy Granite', slug: 'blue-galaxy-granite', price: 4800, images: [blueGalaxyImg], is_active: true },
-  { id: 'fb-12', name: 'Forest Green Granite', slug: 'forest-green-granite', price: 3400, images: [forestGreenImg], is_active: true },
+  { id: 'fb-1', name: 'Black Galaxy Granite', slug: 'black-galaxy-granite', price: 4500, images: [productImageMap['black-galaxy-granite'] || defaultProductImage], is_active: true },
+  { id: 'fb-2', name: 'Absolute Black Granite', slug: 'absolute-black-granite', price: 3800, images: [productImageMap['absolute-black-granite'] || defaultProductImage], is_active: true },
+  { id: 'fb-3', name: 'Tan Brown Granite', slug: 'tan-brown-granite', price: 2800, images: [productImageMap['tan-brown-granite'] || defaultProductImage], is_active: true },
+  { id: 'fb-4', name: 'Blue Pearl Granite', slug: 'blue-pearl-granite', price: 5200, images: [productImageMap['blue-pearl-granite'] || defaultProductImage], is_active: true },
+  { id: 'fb-5', name: 'Green Galaxy Granite', slug: 'green-galaxy-granite', price: 3500, images: [productImageMap['green-galaxy-granite'] || defaultProductImage], is_active: true },
+  { id: 'fb-6', name: 'Imperial Red Granite', slug: 'imperial-red-granite', price: 4000, images: [productImageMap['imperial-red-granite'] || defaultProductImage], is_active: true },
+  { id: 'fb-7', name: 'Kashmir White Granite', slug: 'kashmir-white-granite', price: 3200, images: [productImageMap['kashmir-white-granite'] || defaultProductImage], is_active: true },
+  { id: 'fb-8', name: 'Steel Grey Granite', slug: 'steel-grey-granite', price: 2900, images: [productImageMap['steel-grey-granite'] || defaultProductImage], is_active: true },
+  { id: 'fb-9', name: 'Red Granite', slug: 'red-granite', price: 3600, images: [productImageMap['red-granite'] || defaultProductImage], is_active: true },
+  { id: 'fb-10', name: 'Brown Pearl Granite', slug: 'brown-pearl-granite', price: 3100, images: [productImageMap['brown-pearl-granite'] || defaultProductImage], is_active: true },
+  { id: 'fb-11', name: 'Blue Galaxy Granite', slug: 'blue-galaxy-granite', price: 4800, images: [productImageMap['blue-galaxy-granite'] || defaultProductImage], is_active: true },
+  { id: 'fb-12', name: 'Forest Green Granite', slug: 'forest-green-granite', price: 3400, images: [productImageMap['forest-green-granite'] || defaultProductImage], is_active: true },
 ];
-
-function getProductImage(product: CollectionProduct): string {
-  const slug = product.name?.toLowerCase().replace(/\s+/g, '-') || '';
-  if (productImages[slug]) return productImages[slug];
-  if (product.images?.[0] && product.images[0] !== '/placeholder.svg') return product.images[0];
-  return blackGraniteImg;
-}
 
 export function PremiumCollection() {
   const [products, setProducts] = useState<CollectionProduct[]>(fallbackProducts);
@@ -92,15 +56,16 @@ export function PremiumCollection() {
       try {
         const data = await api.get('/api/products');
         if (cancelled) return;
-        const allProducts = data || [];
-        const featured = allProducts.filter((p: any) => p.is_featured && p.is_active);
-        if (featured.length > 0) {
-          setProducts(featured.slice(0, 12));
-          return;
-        }
-        const active = allProducts.filter((p: any) => p.is_active);
-        if (active.length > 0) {
-          setProducts(active.slice(0, 12));
+        const allProducts = (data || []).filter((p: any) => p.is_active);
+        if (allProducts.length >= 6) {
+          const withLocalImages = allProducts.map((p: any) => {
+            const slug = p.name?.toLowerCase().replace(/\s+/g, '-') || '';
+            if (productImageMap[slug]) {
+              return { ...p, images: [productImageMap[slug]] };
+            }
+            return p;
+          });
+          setProducts(withLocalImages.slice(0, 12));
         } else {
           setProducts(fallbackProducts);
         }
@@ -321,10 +286,9 @@ export function PremiumCollection() {
                     height: `${cardH}px`,
                     left: `${-cardW / 2}px`,
                     top: `${-cardH / 2}px`,
-                    transformStyle: 'preserve-3d',
                     transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
-
-
+                    backfaceVisibility: 'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
                   }}
                 >
                   <Link
@@ -338,11 +302,11 @@ export function PremiumCollection() {
                   >
                     <div className="relative w-full h-full bg-card">
                       <img
-                        src={getProductImage(product)}
+                        src={resolveProductImage(product)}
                         alt={product.name}
                         className="w-full h-full object-cover"
                         draggable={false}
-                        onError={(e) => { (e.target as HTMLImageElement).src = blackGraniteImg; }}
+                        onError={(e) => { (e.target as HTMLImageElement).src = defaultProductImage; }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
                       <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-4">

@@ -11,36 +11,15 @@ import { useWishlist } from '@/contexts/WishlistContext';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
-import blackGraniteImg from '@/assets/products/black-granite.jpg';
-import absoluteBlackImg from '@/assets/products/absolute-black-granite.png';
-import brownGraniteImg from '@/assets/products/brown-granite.png';
-import greenGraniteImg from '@/assets/products/green-granite.jpg';
-import bluePearlImg from '@/assets/products/blue-pearl.png';
-import redGraniteImg from '@/assets/products/red-granite.jpg';
-import greyGraniteImg from '@/assets/products/grey-granite.jpg';
-import kashmirWhiteImg from '@/assets/products/kashmir-white-granite.png';
-import steelGreyImg from '@/assets/products/steel-grey-granite.png';
-import imperialRedImg from '@/assets/products/imperial-red-granite.png';
-import greenGalaxyImg from '@/assets/products/green-galaxy-granite.png';
-
-const productImages: Record<string, string> = {
-  'black-galaxy-granite': blackGraniteImg,
-  'absolute-black-granite': absoluteBlackImg,
-  'kashmir-white-granite': kashmirWhiteImg,
-  'tan-brown-granite': brownGraniteImg,
-  'blue-pearl-granite': bluePearlImg,
-  'imperial-red-granite': imperialRedImg,
-  'steel-grey-granite': steelGreyImg,
-  'green-galaxy-granite': greenGalaxyImg,
-};
+import { productImageMap, resolveProductImage, defaultProductImage } from '@/lib/productImages';
 
 const fallbackProducts: Product[] = [
-  { id: 'fb-1', name: 'Black Galaxy Granite', slug: 'black-galaxy-granite', description: 'Premium black granite with golden flecks', short_description: 'Premium black granite', price: 4500, compare_price: 5500, images: [blackGraniteImg], stock_quantity: 100, is_active: true, is_featured: true, category: { name: 'Granite' } } as Product,
-  { id: 'fb-2', name: 'Absolute Black Granite', slug: 'absolute-black-granite', description: 'Deep black granite for modern spaces', short_description: 'Deep black granite', price: 3800, compare_price: 4200, images: [absoluteBlackImg], stock_quantity: 80, is_active: true, is_featured: true, category: { name: 'Granite' } } as Product,
-  { id: 'fb-3', name: 'Tan Brown Granite', slug: 'tan-brown-granite', description: 'Warm brown granite with natural patterns', short_description: 'Warm brown granite', price: 2800, compare_price: 3200, images: [brownGraniteImg], stock_quantity: 120, is_active: true, is_featured: true, category: { name: 'Granite' } } as Product,
-  { id: 'fb-4', name: 'Blue Pearl Granite', slug: 'blue-pearl-granite', description: 'Stunning blue granite with pearl-like shine', short_description: 'Blue pearl granite', price: 5200, compare_price: 6000, images: [bluePearlImg], stock_quantity: 50, is_active: true, is_featured: true, category: { name: 'Granite' } } as Product,
-  { id: 'fb-5', name: 'Green Galaxy Granite', slug: 'green-galaxy-granite', description: 'Exotic green granite with galaxy pattern', short_description: 'Green galaxy granite', price: 3500, compare_price: 4000, images: [greenGalaxyImg], stock_quantity: 60, is_active: true, is_featured: true, category: { name: 'Granite' } } as Product,
-  { id: 'fb-6', name: 'Imperial Red Granite', slug: 'imperial-red-granite', description: 'Rich red granite for bold designs', short_description: 'Imperial red granite', price: 4000, compare_price: 4500, images: [imperialRedImg], stock_quantity: 70, is_active: true, is_featured: true, category: { name: 'Granite' } } as Product,
+  { id: 'fb-1', name: 'Black Galaxy Granite', slug: 'black-galaxy-granite', description: 'Premium black granite with golden flecks', short_description: 'Premium black granite', price: 4500, compare_price: 5500, images: [productImageMap['black-galaxy-granite'] || defaultProductImage], stock_quantity: 100, is_active: true, is_featured: true, category: { name: 'Granite' } } as Product,
+  { id: 'fb-2', name: 'Absolute Black Granite', slug: 'absolute-black-granite', description: 'Deep black granite for modern spaces', short_description: 'Deep black granite', price: 3800, compare_price: 4200, images: [productImageMap['absolute-black-granite'] || defaultProductImage], stock_quantity: 80, is_active: true, is_featured: true, category: { name: 'Granite' } } as Product,
+  { id: 'fb-3', name: 'Tan Brown Granite', slug: 'tan-brown-granite', description: 'Warm brown granite with natural patterns', short_description: 'Warm brown granite', price: 2800, compare_price: 3200, images: [productImageMap['tan-brown-granite'] || defaultProductImage], stock_quantity: 120, is_active: true, is_featured: true, category: { name: 'Granite' } } as Product,
+  { id: 'fb-4', name: 'Blue Pearl Granite', slug: 'blue-pearl-granite', description: 'Stunning blue granite with pearl-like shine', short_description: 'Blue pearl granite', price: 5200, compare_price: 6000, images: [productImageMap['blue-pearl-granite'] || defaultProductImage], stock_quantity: 50, is_active: true, is_featured: true, category: { name: 'Granite' } } as Product,
+  { id: 'fb-5', name: 'Green Galaxy Granite', slug: 'green-galaxy-granite', description: 'Exotic green granite with galaxy pattern', short_description: 'Green galaxy granite', price: 3500, compare_price: 4000, images: [productImageMap['green-galaxy-granite'] || defaultProductImage], stock_quantity: 60, is_active: true, is_featured: true, category: { name: 'Granite' } } as Product,
+  { id: 'fb-6', name: 'Imperial Red Granite', slug: 'imperial-red-granite', description: 'Rich red granite for bold designs', short_description: 'Imperial red granite', price: 4000, compare_price: 4500, images: [productImageMap['imperial-red-granite'] || defaultProductImage], stock_quantity: 70, is_active: true, is_featured: true, category: { name: 'Granite' } } as Product,
 ];
 
 export function FeaturedProducts() {
@@ -76,12 +55,7 @@ export function FeaturedProducts() {
     return () => { cancelled = true; };
   }, []);
 
-  const getProductImage = (product: Product) => {
-    if (product.images && product.images.length > 0 && product.images[0] !== '/placeholder.svg') {
-      return product.images[0];
-    }
-    return productImages[product.slug] || blackGraniteImg;
-  };
+  const getProductImage = (product: Product) => resolveProductImage(product);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -153,7 +127,7 @@ export function FeaturedProducts() {
                   alt={product.name}
                   loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  onError={(e) => { (e.target as HTMLImageElement).src = blackGraniteImg; }}
+                  onError={(e) => { (e.target as HTMLImageElement).src = defaultProductImage; }}
                 />
                 {product.compare_price && product.compare_price > product.price && (
                   <span className="absolute top-2 left-2 px-1.5 py-0.5 bg-destructive text-destructive-foreground text-[10px] sm:text-xs font-semibold rounded" data-testid={`badge-discount-${product.id}`}>

@@ -22,6 +22,7 @@ import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { PageErrorFallback } from '@/components/ErrorBoundary';
 import { toast } from 'sonner';
+import { resolveProductImage, defaultProductImage } from '@/lib/productImages';
 
 export default function ProductsPage() {
   const { t } = useTranslation();
@@ -81,7 +82,7 @@ export default function ProductsPage() {
       name: product.name,
       price: product.price,
       quantity: 1,
-      image: product.images?.[0] || '/placeholder.svg',
+      image: resolveProductImage(product),
       description: product.short_description || product.description || undefined,
       category: product.category?.name || undefined,
       comparePrice: product.compare_price || undefined,
@@ -211,7 +212,7 @@ export default function ProductsPage() {
                   )}
                 >
                   <img
-                    src={product.images?.[0] || '/placeholder.svg'}
+                    src={resolveProductImage(product)}
                     alt={product.name}
                     className="w-full h-full object-cover"
                     loading="lazy"
