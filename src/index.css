@@ -153,6 +153,7 @@
   justify-content: center;
   position: relative;
   z-index: 1;
+  color: inherit;
 }
 .cta-ribbon-btn-outline {
   background: #ffffff;
@@ -211,9 +212,7 @@
 }
 .cta-ribbon-btn-dark:hover {
   box-shadow: inset 0 0 0 2px #ef4444;
-}
-.dark .cta-ribbon-btn-dark:hover {
-  background: #e5e5e5 !important;
+  color: #ffffff !important;
 }
 /* ===== End CTA Ribbon Buttons ===== */
 
