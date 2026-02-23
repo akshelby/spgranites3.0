@@ -140,13 +140,13 @@ export function Navbar() {
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
-              className="flex"
+              className="flex hover:text-red-500 transition-colors"
             >
               {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
 
             {user && (
-              <Button variant="ghost" size="icon" asChild className="hidden sm:flex">
+              <Button variant="ghost" size="icon" asChild className="hidden sm:flex hover:text-red-500 transition-colors">
                 <Link to="/wishlist">
                   <Heart className="h-5 w-5" />
                 </Link>
@@ -157,7 +157,7 @@ export function Navbar() {
               variant="ghost"
               size="icon"
               onClick={() => setMiniCartOpen(true)}
-              className="relative"
+              className="relative hover:text-red-500 transition-colors"
             >
               <ShoppingCart className="h-5 w-5" />
               {cartCount > 0 && (
