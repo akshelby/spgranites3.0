@@ -261,7 +261,7 @@ export default function ProductsPage() {
                     data-testid={`button-add-cart-${product.id}`}
                   >
                     <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 flex-shrink-0" />
-                    <span className="truncate">{t('products.addToCart')}</span>
+                    <span className="whitespace-nowrap">{t('products.addToCart')}</span>
                   </Button>
                 </div>
               </motion.div>
