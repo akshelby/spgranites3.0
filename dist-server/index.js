@@ -1332,8 +1332,7 @@ process.on("uncaughtException", (error) => {
 process.on("unhandledRejection", (reason) => {
   console.error("[Unhandled Rejection]:", reason);
 });
-var isDev = process.env.NODE_ENV !== "production" && process.env.REPL_ENVIRONMENT !== "production";
-var port = isDev ? 3001 : 5e3;
+var port = parseInt(process.env.PORT || "5000", 10);
 app.listen(port, "0.0.0.0", () => {
   console.log(`API server running on port ${port}`);
 });
