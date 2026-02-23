@@ -3,7 +3,7 @@ import { AdminLayout, StatsCard, PageHeader } from '@/components/admin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { FollowupList } from '@/components/admin/crm/FollowupList';
 import { Link } from 'react-router-dom';
 import {
@@ -82,35 +82,34 @@ export default function AdminCRMOverview() {
 
   const fetchOverview = async () => {
     try {
-      const [leadsRes, profilesRes, followupsRes] = await Promise.all([
-        supabase.from('leads' as any).select('*'),
-        supabase.from('profiles').select('id', { count: 'exact', head: true }),
-        supabase.from('crm_followups' as any).select('*').eq('status', 'pending'),
+      const [leads, users, followups] = await Promise.all([
+        api.get('/api/admin/leads'),
+        api.get('/api/admin/users'),
+        api.get('/api/admin/crm-followups'),
       ]);
 
-      const leads = (leadsRes.data as any[]) || [];
-      const followups = (followupsRes.data as any[]) || [];
-      const totalCustomers = profilesRes.count || 0;
+      const leadsArr = leads || [];
+      const followupsArr = (followups || []).filter((f: any) => f.status === 'pending');
+      const totalCustomers = (users || []).length;
 
       const pipelineCounts: PipelineStats = {
         new: 0, contacted: 0, interested: 0, quoted: 0, converted: 0, lost: 0,
       };
-      leads.forEach((l: any) => {
+      leadsArr.forEach((l: any) => {
         if (l.status in pipelineCounts) {
           pipelineCounts[l.status as keyof PipelineStats]++;
         }
       });
 
-      const now = new Date();
-      const overdueFollowups = followups.filter((f: any) => isPast(new Date(f.due_at)) && !isToday(new Date(f.due_at))).length;
-      const todayFollowups = followups.filter((f: any) => isToday(new Date(f.due_at))).length;
+      const overdueFollowups = followupsArr.filter((f: any) => isPast(new Date(f.due_at)) && !isToday(new Date(f.due_at))).length;
+      const todayFollowups = followupsArr.filter((f: any) => isToday(new Date(f.due_at))).length;
 
       const convertedCount = pipelineCounts.converted;
-      const totalNonLost = leads.length - pipelineCounts.lost;
+      const totalNonLost = leadsArr.length - pipelineCounts.lost;
       const conversionRate = totalNonLost > 0 ? Math.round((convertedCount / totalNonLost) * 100) : 0;
 
       setStats({
-        totalLeads: leads.length,
+        totalLeads: leadsArr.length,
         totalCustomers,
         overdueFollowups,
         todayFollowups,
@@ -118,7 +117,7 @@ export default function AdminCRMOverview() {
       });
       setPipeline(pipelineCounts);
 
-      const recent = leads
+      const recent = leadsArr
         .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
         .slice(0, 5);
       setRecentLeads(recent);

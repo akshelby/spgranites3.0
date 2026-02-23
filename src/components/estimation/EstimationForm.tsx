@@ -31,7 +31,7 @@ import { FormSection } from './FormSection';
 import { DrawingCanvas } from './DrawingCanvas';
 import { VoiceRecorder } from './VoiceRecorder';
 import { ImageUploader } from './ImageUploader';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -290,7 +290,7 @@ export function EstimationForm() {
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true);
     try {
-      const { error: submitError } = await supabase.from('estimation_enquiries').insert({
+      await api.post('/api/estimation-enquiries', {
         full_name: data.full_name,
         mobile_number: data.mobile_number,
         email: data.email || null,
@@ -320,8 +320,7 @@ export function EstimationForm() {
         voice_recording_url: data.voice_recording_url || null,
         reference_images: data.reference_images || null,
         status: 'pending',
-      }).select().single();
-      if (submitError) throw submitError;
+      });
 
       setIsSubmitted(true);
       toast.success('Estimation request submitted successfully!');

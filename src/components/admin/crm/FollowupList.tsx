@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { CrmFollowup } from '@/types/database';
 import { format, isPast, isToday } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -32,18 +32,16 @@ export function FollowupList({ leadId, userId, refreshKey, showAll }: FollowupLi
 
   const fetchFollowups = async () => {
     try {
-      let query = supabase
-        .from('crm_followups' as any)
-        .select('*')
-        .order('due_at', { ascending: true });
+      const params = new URLSearchParams();
+      if (leadId) params.set('lead_id', leadId);
+      if (userId) params.set('user_id', userId);
 
-      if (leadId) query = query.eq('lead_id', leadId);
-      if (userId) query = query.eq('user_id', userId);
-      if (!showAll) query = query.eq('status', 'pending');
-
-      const { data, error } = await query;
-      if (error) throw error;
-      setFollowups((data as any) || []);
+      const data = await api.get(`/api/admin/crm-followups?${params.toString()}`);
+      let result = data || [];
+      if (!showAll) {
+        result = result.filter((f: any) => f.status === 'pending');
+      }
+      setFollowups(result);
     } catch (err) {
       console.error('Error fetching follow-ups:', err);
     } finally {
@@ -53,12 +51,11 @@ export function FollowupList({ leadId, userId, refreshKey, showAll }: FollowupLi
 
   const updateStatus = async (id: string, status: 'done' | 'skipped') => {
     try {
-      const { error } = await supabase
-        .from('crm_followups' as any)
-        .update({ status, completed_at: new Date().toISOString() })
-        .eq('id', id);
+      await api.put(`/api/admin/crm-followups/${id}`, {
+        status,
+        completed_at: new Date().toISOString(),
+      });
 
-      if (error) throw error;
       toast({ title: status === 'done' ? 'Marked as done' : 'Skipped' });
       fetchFollowups();
     } catch (err) {

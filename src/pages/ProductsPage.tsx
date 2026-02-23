@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Product, ProductCategory } from '@/types/database';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
@@ -45,8 +45,7 @@ export default function ProductsPage() {
 
   const fetchCategories = async () => {
     try {
-      const { data, error } = await supabase.from('product_categories').select('*').eq('is_active', true);
-      if (error) throw error;
+      const data = await api.get('/api/categories');
       if (data) setCategories(data);
     } catch (err) {
       console.error('Failed to load categories:', err);
@@ -57,15 +56,8 @@ export default function ProductsPage() {
     setLoading(true);
     setError(null);
     try {
-      let query = supabase.from('products').select('*').eq('is_active', true).order('created_at', { ascending: false });
-      if (categorySlug) {
-        const { data: catData } = await supabase.from('product_categories').select('id').eq('slug', categorySlug).single();
-        if (catData) {
-          query = query.eq('category_id', catData.id);
-        }
-      }
-      const { data, error: fetchError } = await query;
-      if (fetchError) throw fetchError;
+      const url = categorySlug ? `/api/products?category=${categorySlug}` : '/api/products';
+      const data = await api.get(url);
       if (data) setProducts(data as Product[]);
     } catch (err) {
       console.error('Failed to load products:', err);

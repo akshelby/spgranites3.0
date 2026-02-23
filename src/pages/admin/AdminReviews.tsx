@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { AdminLayout, DataTable, PageHeader } from '@/components/admin';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { Trash2, Star, Image, Video, Eye } from 'lucide-react';
 import { format } from 'date-fns';
@@ -51,12 +51,8 @@ export default function AdminReviews() {
 
   const fetchReviews = async () => {
     try {
-      const { data, error } = await supabase
-        .from('customer_reviews')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      setReviews((data || []) as Review[]);
+      const data = await api.get('/api/admin/reviews');
+      setReviews((data?.customerReviews || []) as Review[]);
     } catch (error) {
       console.error('Error fetching reviews:', error);
       toast({ title: 'Error', description: 'Failed to load reviews.', variant: 'destructive' });
@@ -68,11 +64,7 @@ export default function AdminReviews() {
   const handleDelete = async () => {
     if (!deleteId) return;
     try {
-      const { error } = await supabase
-        .from('customer_reviews')
-        .delete()
-        .eq('id', deleteId) as any;
-      if (error) throw error;
+      await api.delete(`/api/admin/customer-reviews/${deleteId}`);
       toast({ title: 'Review removed for violating rules' });
       fetchReviews();
     } catch (error: any) {

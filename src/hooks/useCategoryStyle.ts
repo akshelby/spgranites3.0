@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 
 export type CategoryStyle = 'circle' | 'pill';
 
@@ -18,11 +18,8 @@ export function useCategoryStyle() {
     let cancelled = false;
     const fetchStyle = async () => {
       try {
-        const { data, error } = await (supabase.from('hero_carousel_settings') as any)
-          .select('category_style')
-          .limit(1)
-          .maybeSingle();
-        if (!cancelled && !error && data?.category_style) {
+        const data = await api.get('/api/hero-carousel/settings');
+        if (!cancelled && data?.category_style) {
           const dbStyle = data.category_style as CategoryStyle;
           setStyle(dbStyle);
           try { localStorage.setItem(STORAGE_KEY, dbStyle); } catch {}
@@ -37,15 +34,7 @@ export function useCategoryStyle() {
     setStyle(newStyle);
     try { localStorage.setItem(STORAGE_KEY, newStyle); } catch {}
     try {
-      const { data } = await (supabase.from('hero_carousel_settings') as any)
-        .select('id')
-        .limit(1)
-        .maybeSingle();
-      if (data?.id) {
-        await (supabase.from('hero_carousel_settings') as any)
-          .update({ category_style: newStyle })
-          .eq('id', data.id);
-      }
+      await api.put('/api/admin/carousel/settings', { category_style: newStyle });
     } catch {}
     window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY, newValue: newStyle }));
   };

@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/integrations/supabase/client';
 
 export function SocialAuthButtons() {
   const { t } = useTranslation();
@@ -14,29 +13,15 @@ export function SocialAuthButtons() {
     setLoading(true);
     setErrorMsg(null);
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth`,
-          queryParams: {
-            prompt: 'select_account',
-          },
-        },
-      });
-      if (error) throw error;
-      if (!data?.url) {
-        throw new Error('Could not get Google sign-in URL. Please try again.');
+      const data = await fetch('/api/auth/google', { method: 'POST' }).then(r => r.json());
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        toast.info('Google sign-in is coming soon!');
+        setLoading(false);
       }
     } catch (err: any) {
-      const message = err?.message || 'Failed to sign in with Google. Please try again.';
-      if (message.includes('provider is not enabled') || message.includes('Provider not found')) {
-        setErrorMsg('Google sign-in is not enabled. Please contact support.');
-      } else if (message.includes('network') || message.includes('fetch')) {
-        setErrorMsg('Network error. Please check your internet connection and try again.');
-      } else {
-        setErrorMsg(message);
-      }
-      toast.error(errorMsg || message);
+      toast.info('Google sign-in is coming soon!');
       setLoading(false);
     }
   };

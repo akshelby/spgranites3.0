@@ -3,7 +3,7 @@ import { Star, ImagePlus, Video, X, Loader2, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { CustomerReview } from '@/types/database';
 import { toast } from 'sonner';
@@ -99,18 +99,8 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
     setVideoUrl('');
   };
 
-  const uploadFile = async (file: File, folder: string): Promise<string | null> => {
-    const ext = file.name.split('.').pop();
-    const fileName = `${user!.id}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
-    const { error } = await supabase.storage
-      .from('reviews')
-      .upload(`${folder}/${fileName}`, file, { cacheControl: '3600', upsert: false });
-    if (error) {
-      console.error('Upload error:', error);
-      return null;
-    }
-    const { data: urlData } = supabase.storage.from('reviews').getPublicUrl(`${folder}/${fileName}`);
-    return urlData.publicUrl;
+  const uploadFile = async (_file: File, _folder: string): Promise<string | null> => {
+    return null;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -163,18 +153,10 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
       };
 
       if (editReview) {
-        const { error } = await supabase
-          .from('customer_reviews')
-          .update(reviewData as any)
-          .eq('id', editReview.id)
-          .eq('user_id', user!.id);
-        if (error) throw error;
+        await api.put(`/api/customer-reviews/${editReview.id}`, reviewData);
         toast.success('Review updated successfully!');
       } else {
-        const { error } = await supabase
-          .from('customer_reviews')
-          .insert(reviewData as any);
-        if (error) throw error;
+        await api.post('/api/customer-reviews', reviewData);
         toast.success('Review posted successfully!');
       }
 

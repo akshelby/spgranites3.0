@@ -1094,6 +1094,136 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  // ===== CRM: Leads =====
+  app.get("/api/admin/leads", requireAuth, requireAdmin, async (_req: Request, res: Response) => {
+    try {
+      const result = await db.select().from(schema.leads).orderBy(desc(schema.leads.created_at));
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/admin/leads", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const [lead] = await db.insert(schema.leads).values(req.body).returning();
+      res.json(lead);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.put("/api/admin/leads/:id", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const [lead] = await db.update(schema.leads).set({ ...req.body, updated_at: new Date() }).where(eq(schema.leads.id, req.params.id)).returning();
+      res.json(lead);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.delete("/api/admin/leads/:id", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      await db.delete(schema.leads).where(eq(schema.leads.id, req.params.id));
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // ===== CRM: Notes =====
+  app.get("/api/admin/crm-notes", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const { lead_id, user_id } = req.query;
+      let query = db.select().from(schema.crmNotes);
+      if (lead_id) {
+        query = query.where(eq(schema.crmNotes.lead_id, lead_id as string)) as any;
+      } else if (user_id) {
+        query = query.where(eq(schema.crmNotes.user_id, user_id as string)) as any;
+      }
+      const result = await query.orderBy(desc(schema.crmNotes.created_at));
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/admin/crm-notes", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const [note] = await db.insert(schema.crmNotes).values(req.body).returning();
+      res.json(note);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.delete("/api/admin/crm-notes/:id", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      await db.delete(schema.crmNotes).where(eq(schema.crmNotes.id, req.params.id));
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // ===== CRM: Followups =====
+  app.get("/api/admin/crm-followups", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const { lead_id, user_id } = req.query;
+      let query = db.select().from(schema.crmFollowups);
+      if (lead_id) {
+        query = query.where(eq(schema.crmFollowups.lead_id, lead_id as string)) as any;
+      } else if (user_id) {
+        query = query.where(eq(schema.crmFollowups.user_id, user_id as string)) as any;
+      }
+      const result = await query.orderBy(desc(schema.crmFollowups.due_at));
+      res.json(result);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/admin/crm-followups", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const [followup] = await db.insert(schema.crmFollowups).values(req.body).returning();
+      res.json(followup);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.put("/api/admin/crm-followups/:id", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const [followup] = await db.update(schema.crmFollowups).set({ ...req.body, updated_at: new Date() }).where(eq(schema.crmFollowups.id, req.params.id)).returning();
+      res.json(followup);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.delete("/api/admin/crm-followups/:id", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      await db.delete(schema.crmFollowups).where(eq(schema.crmFollowups.id, req.params.id));
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // ===== CRM: Dashboard =====
+  app.get("/api/admin/crm/overview", requireAuth, requireAdmin, async (_req: Request, res: Response) => {
+    try {
+      const allLeads = await db.select().from(schema.leads).orderBy(desc(schema.leads.created_at));
+      const upcomingFollowups = await db.select().from(schema.crmFollowups)
+        .where(eq(schema.crmFollowups.status, "pending"))
+        .orderBy(asc(schema.crmFollowups.due_at))
+        .limit(10);
+      res.json({ leads: allLeads, upcomingFollowups });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // ===== AI ASSISTANT =====
   const aiRateLimit = new Map<string, number[]>();
   app.post("/api/ai-chat", async (req: Request, res: Response) => {

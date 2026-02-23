@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { CrmNote } from '@/types/database';
 import { format } from 'date-fns';
 import { StickyNote } from 'lucide-react';
@@ -20,13 +20,12 @@ export function NotesList({ leadId, userId, refreshKey }: NotesListProps) {
 
   const fetchNotes = async () => {
     try {
-      let query = supabase.from('crm_notes' as any).select('*').order('created_at', { ascending: false });
-      if (leadId) query = query.eq('lead_id', leadId);
-      if (userId) query = query.eq('user_id', userId);
+      const params = new URLSearchParams();
+      if (leadId) params.set('lead_id', leadId);
+      if (userId) params.set('user_id', userId);
 
-      const { data, error } = await query;
-      if (error) throw error;
-      setNotes((data as any) || []);
+      const data = await api.get(`/api/admin/crm-notes?${params.toString()}`);
+      setNotes(data || []);
     } catch (err) {
       console.error('Error fetching notes:', err);
     } finally {

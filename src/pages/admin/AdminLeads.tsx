@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Lead } from '@/types/database';
 import { CRMDetailPanel } from '@/components/admin/crm/CRMDetailPanel';
 import { LeadForm } from '@/components/admin/crm/LeadForm';
@@ -41,13 +41,8 @@ export default function AdminLeads() {
 
   const fetchLeads = async () => {
     try {
-      const { data, error } = await supabase
-        .from('leads' as any)
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setLeads((data as any) || []);
+      const data = await api.get('/api/admin/leads');
+      setLeads(data || []);
     } catch (err) {
       console.error('Error fetching leads:', err);
     } finally {
@@ -60,8 +55,7 @@ export default function AdminLeads() {
       const updates: any = { status, updated_at: new Date().toISOString() };
       if (status === 'contacted') updates.last_contacted_at = new Date().toISOString();
 
-      const { error } = await supabase.from('leads' as any).update(updates).eq('id', id);
-      if (error) throw error;
+      await api.put(`/api/admin/leads/${id}`, updates);
       toast({ title: `Status updated to ${status}` });
       fetchLeads();
     } catch (err) {
@@ -72,8 +66,7 @@ export default function AdminLeads() {
   const deleteLead = async (id: string) => {
     if (!confirm('Delete this lead? This cannot be undone.')) return;
     try {
-      const { error } = await supabase.from('leads' as any).delete().eq('id', id);
-      if (error) throw error;
+      await api.delete(`/api/admin/leads/${id}`);
       toast({ title: 'Lead deleted' });
       fetchLeads();
     } catch (err) {

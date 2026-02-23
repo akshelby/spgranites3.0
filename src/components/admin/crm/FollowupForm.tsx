@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -29,7 +29,7 @@ export function FollowupForm({ leadId, userId, onFollowupAdded }: FollowupFormPr
 
     setSaving(true);
     try {
-      const { error } = await supabase.from('crm_followups' as any).insert({
+      await api.post('/api/admin/crm-followups', {
         lead_id: leadId || null,
         user_id: userId || null,
         due_at: new Date(dueAt).toISOString(),
@@ -38,7 +38,6 @@ export function FollowupForm({ leadId, userId, onFollowupAdded }: FollowupFormPr
         created_by: user.id,
       });
 
-      if (error) throw error;
       setDueAt('');
       setSummary('');
       setChannel('call');

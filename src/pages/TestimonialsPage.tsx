@@ -4,7 +4,7 @@ import { Star, Quote, Pencil, Trash2 } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { SPLoader } from '@/components/ui/SPLoader';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Testimonial, CustomerReview } from '@/types/database';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
@@ -38,18 +38,19 @@ export default function TestimonialsPage() {
 
   const fetchData = async () => {
     try {
-      const [testimonialRes, reviewRes] = await Promise.all([
-        supabase.from('testimonials').select('*').eq('is_active', true).order('display_order', { ascending: true }),
-        supabase.from('customer_reviews').select('*').order('created_at', { ascending: false }),
+      const [testimonialData, reviewData] = await Promise.all([
+        api.get('/api/testimonials'),
+        api.get('/api/customer-reviews'),
       ]);
-      if (testimonialRes.data) setTestimonials(testimonialRes.data as Testimonial[]);
-      if (reviewRes.data) setCustomerReviews(reviewRes.data as CustomerReview[]);
-
-      if (user) {
-        const { data } = await supabase.from('customer_reviews').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
-        if (data) setMyReviews(data as CustomerReview[]);
-      } else {
-        setMyReviews([]);
+      if (testimonialData) setTestimonials(testimonialData as Testimonial[]);
+      if (reviewData) {
+        setCustomerReviews(reviewData as CustomerReview[]);
+        if (user) {
+          const mine = (reviewData as CustomerReview[]).filter((r: any) => r.user_id === user.id);
+          setMyReviews(mine);
+        } else {
+          setMyReviews([]);
+        }
       }
     } catch {}
     setLoading(false);
@@ -58,12 +59,7 @@ export default function TestimonialsPage() {
   const handleDelete = async () => {
     if (!deleteId) return;
     try {
-      const { error } = await supabase
-        .from('customer_reviews')
-        .delete()
-        .eq('id', deleteId)
-        .eq('user_id', user!.id) as any;
-      if (error) throw error;
+      await api.delete(`/api/customer-reviews/${deleteId}`);
       toast.success('Review deleted');
       fetchData();
     } catch {

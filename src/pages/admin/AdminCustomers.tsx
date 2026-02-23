@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Profile } from '@/types/database';
 import { CRMDetailPanel } from '@/components/admin/crm/CRMDetailPanel';
 import { Search, User, ShoppingCart, ChevronRight } from 'lucide-react';
@@ -30,19 +30,13 @@ export default function AdminCustomers() {
 
   const fetchCustomers = async () => {
     try {
-      const { data: profiles, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      const { data: orders } = await supabase
-        .from('orders')
-        .select('user_id, total_amount, created_at');
+      const [profiles, orders] = await Promise.all([
+        api.get('/api/admin/users'),
+        api.get('/api/orders'),
+      ]);
 
       const ordersByUser: Record<string, { count: number; total: number; lastDate: string | null }> = {};
-      orders?.forEach((o: any) => {
+      (orders || []).forEach((o: any) => {
         if (!ordersByUser[o.user_id]) {
           ordersByUser[o.user_id] = { count: 0, total: 0, lastDate: null };
         }

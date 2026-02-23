@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Phone } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { useTranslation } from 'react-i18next';
 
 interface ContactNumber {
@@ -33,10 +33,9 @@ export function ContactNumbersDialog({ open, onOpenChange }: ContactNumbersDialo
     setLoading(true);
     setError(false);
     try {
-      const { data, error } = await supabase.from('contact_numbers' as any).select('*').eq('is_active', true).order('display_order', { ascending: true });
-      if (error) throw error;
+      const data = await api.get('/api/contact-numbers');
       if (data) {
-        setNumbers(data as any as ContactNumber[]);
+        setNumbers(data as ContactNumber[]);
       }
     } catch {
       setError(true);

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 import { Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -24,14 +24,13 @@ export function NoteForm({ leadId, userId, onNoteAdded }: NoteFormProps) {
 
     setSaving(true);
     try {
-      const { error } = await supabase.from('crm_notes' as any).insert({
+      await api.post('/api/admin/crm-notes', {
         lead_id: leadId || null,
         user_id: userId || null,
         author_id: user.id,
         note: note.trim(),
       });
 
-      if (error) throw error;
       setNote('');
       onNoteAdded();
       toast({ title: 'Note added' });

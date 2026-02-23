@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 
 const SESSION_DURATION = 30 * 60 * 1000;
 
@@ -24,14 +24,11 @@ export function VisitorTracker() {
 
     lastTracked.current = { page: pageUrl, time: now };
 
-    (supabase.from as any)('site_visitors')
-      .insert({
-        page_url: pageUrl,
-        user_agent: navigator.userAgent,
-        visited_at: new Date().toISOString(),
-      })
-      .then(() => {})
-      .catch(() => {});
+    api.post('/api/site-visitors', {
+      page_url: pageUrl,
+      user_agent: navigator.userAgent,
+      visited_at: new Date().toISOString(),
+    }).catch(() => {});
   }, [location.pathname]);
 
   return null;

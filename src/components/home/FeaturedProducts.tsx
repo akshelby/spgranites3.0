@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, ShoppingCart, Heart } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Product } from '@/types/database';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
@@ -54,8 +54,7 @@ export function FeaturedProducts() {
     let cancelled = false;
     const fetchFeaturedProducts = async (attempt = 0) => {
       try {
-        const { data, error } = await supabase.from('products').select('*').eq('is_active', true).order('created_at', { ascending: false });
-        if (error) throw error;
+        const data = await api.get('/api/products');
         if (cancelled) return;
         const featured = (data || []).filter((p: any) => p.is_featured);
         if (featured.length > 0) {

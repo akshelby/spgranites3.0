@@ -26,7 +26,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Address } from '@/types/database';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -98,10 +98,10 @@ export default function PaymentPage() {
       return;
     }
     if (addressId && user) {
-      supabase.from('addresses').select('*').eq('user_id', user.id).then(({ data }) => {
+      api.get('/api/addresses').then((data: any) => {
         const addr = data?.find((a: any) => a.id === addressId);
-        if (addr) setAddress(addr as any as Address);
-      });
+        if (addr) setAddress(addr as Address);
+      }).catch(() => {});
     }
   }, [user, items, addressId, navigate]);
 
@@ -165,8 +165,7 @@ export default function PaymentPage() {
       }));
 
       const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
-      const orderData: any = {
-        user_id: user!.id,
+      const orderPayload: any = {
         order_number: orderNumber,
         subtotal,
         tax_amount: tax,
@@ -176,14 +175,10 @@ export default function PaymentPage() {
         billing_address: address,
         payment_status: paymentMethod === 'cod' ? 'pending' : 'paid',
         status: 'pending',
+        items: orderItems,
       };
-      const { data: order, error: orderError } = await supabase.from('orders').insert(orderData).select().single();
-      if (orderError || !order) throw orderError;
-
-      const { error: itemsError } = await supabase.from('order_items').insert(
-        orderItems.map((item) => ({ ...item, order_id: order.id }))
-      );
-      if (itemsError) throw itemsError;
+      const order = await api.post('/api/orders', orderPayload);
+      if (!order) throw new Error('Order creation failed');
 
       setPaymentSuccess(true);
       clearCart();

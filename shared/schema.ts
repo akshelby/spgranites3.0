@@ -336,6 +336,46 @@ export const contactNumbers = pgTable("contact_numbers", {
   updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+export const leads = pgTable("leads", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  full_name: text("full_name").notNull(),
+  email: text("email"),
+  phone: text("phone"),
+  source: text("source"),
+  status: text("status").notNull().default("new"),
+  assigned_to: uuid("assigned_to"),
+  related_profile_id: uuid("related_profile_id"),
+  last_contacted_at: timestamp("last_contacted_at", { withTimezone: true }),
+  next_followup_at: timestamp("next_followup_at", { withTimezone: true }),
+  notes: text("notes"),
+  created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+});
+
+export const crmNotes = pgTable("crm_notes", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  lead_id: uuid("lead_id"),
+  user_id: uuid("user_id"),
+  author_id: uuid("author_id").notNull(),
+  note: text("note").notNull(),
+  created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+});
+
+export const crmFollowups = pgTable("crm_followups", {
+  id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
+  lead_id: uuid("lead_id"),
+  user_id: uuid("user_id"),
+  due_at: timestamp("due_at", { withTimezone: true }).notNull(),
+  completed_at: timestamp("completed_at", { withTimezone: true }),
+  status: text("status").notNull().default("pending"),
+  channel: text("channel"),
+  summary: text("summary"),
+  created_by: uuid("created_by").notNull(),
+  created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
+  updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow(),
+});
+
 export const sessions = pgTable("sessions", {
   id: uuid("id").primaryKey().default(sql`gen_random_uuid()`),
   user_id: uuid("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Wrench, Settings, Sparkles, Hammer, MessageCircle, Ruler } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Service } from '@/types/database';
 
 const serviceIconMap: Record<string, typeof Wrench> = {
@@ -25,8 +25,7 @@ export function ServicesSection() {
 
   const fetchServices = async () => {
     try {
-      const { data, error } = await supabase.from('services').select('*').eq('is_active', true).order('display_order', { ascending: true });
-      if (error) throw error;
+      const data = await api.get('/api/services');
       if (data && data.length > 0) {
         setServices(data as Service[]);
       } else {

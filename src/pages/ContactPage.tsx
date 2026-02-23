@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { MapPin, Phone, Mail, Clock } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
@@ -71,13 +71,12 @@ export default function ContactPage() {
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
     try {
-      const { error } = await supabase.from('enquiries').insert({
+      await api.post('/api/enquiries', {
         name: data.name,
         email: data.email || null,
         phone: data.phone,
         message: data.message,
-      }).select().single();
-      if (error) throw error;
+      });
 
       toast.success(t('contact.messageSent'));
       form.reset();

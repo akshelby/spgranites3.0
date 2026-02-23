@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { useAuth } from '@/hooks/useAuth';
 
 interface WishlistItem {
@@ -36,8 +36,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.from('wishlists').select('*').eq('user_id', user.id);
-      if (error) throw error;
+      const data = await api.get('/api/wishlist');
       setItems(
         (data || []).map((item: any) => ({
           id: item.id,
@@ -55,8 +54,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     if (!user) return;
 
     try {
-      const { data, error } = await supabase.from('wishlists').insert({ user_id: user.id, product_id: productId }).select().single();
-      if (error) throw error;
+      const data = await api.post('/api/wishlist', { product_id: productId });
       if (data) {
         setItems((prev) => [
           ...prev,
@@ -72,8 +70,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     if (!user) return;
 
     try {
-      const { error } = await supabase.from('wishlists').delete().eq('user_id', user.id).eq('product_id', productId);
-      if (error) throw error;
+      await api.delete(`/api/wishlist/${productId}`);
       setItems((prev) => prev.filter((item) => item.productId !== productId));
     } catch (error) {
       console.error('Error removing from wishlist:', error);

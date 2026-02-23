@@ -4,7 +4,7 @@ import { X, Bell, BellOff, Copy, Check, ArrowLeft, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { Message, Conversation } from "./types";
@@ -25,7 +25,6 @@ interface ChatWindowProps {
   onClearSession: () => void;
 }
 
-// Generate a unique reference ID
 function generateRefId(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let result = 'SPG-';
@@ -56,7 +55,6 @@ export function ChatWindow({
   const navigate = useNavigate();
   const notificationSoundRef = useRef<HTMLAudioElement | null>(null);
 
-  // Initialize notification sound
   useEffect(() => {
     notificationSoundRef.current = new Audio('/notification.mp3');
     notificationSoundRef.current.volume = 0.5;
@@ -66,8 +64,7 @@ export function ChatWindow({
     if (!refId || !conversationId) return;
     if (showLoader) setIsLoading(true);
     try {
-      const { data, error } = await supabase.from('messages').select('*').eq('conversation_id', conversationId).order('created_at', { ascending: true });
-      if (error) throw error;
+      const data = await api.get(`/api/chat/conversations/${conversationId}/messages`);
       setMessages(prev => {
         const confirmed = (data as Message[]) || [];
         const pending = prev.filter(m => m._tempId && m._status === 'sending');
@@ -95,7 +92,6 @@ export function ChatWindow({
     return () => clearInterval(interval);
   }, [refId, conversationId, fetchMessages]);
 
-  // Auto-scroll to bottom
   const scrollToBottom = useCallback(() => {
     setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -110,13 +106,9 @@ export function ChatWindow({
     const newRefId = generateRefId();
     
     try {
-      let customerName: string | null = null;
-      if (user) {
-        const { data: profile } = await supabase.from('profiles').select('full_name').eq('id', (user as any).id).maybeSingle();
-        customerName = profile?.full_name || user.email || null;
-      }
-      const { data, error } = await supabase.from('conversations').insert({ ref_id: newRefId, customer_email: user?.email || null, customer_name: customerName }).select().single();
-      if (error) throw error;
+      const data = await api.post('/api/chat/conversations', {
+        ref_id: newRefId,
+      });
       onSetSession(newRefId, data.id);
       setShowStartScreen(false);
     } catch (err) {
@@ -133,8 +125,7 @@ export function ChatWindow({
     if (!existingRefId.trim()) return;
 
     try {
-      const { data, error } = await supabase.from('conversations').select('*').eq('ref_id', existingRefId.trim().toUpperCase()).maybeSingle();
-      if (error) throw error;
+      const data = await api.get(`/api/chat/conversations/ref/${existingRefId.trim().toUpperCase()}`);
 
       if (!data) {
         toast({
@@ -179,19 +170,11 @@ export function ChatWindow({
     setMessages(prev => [...prev, optimisticMessage]);
 
     try {
-      const { data: msg, error } = await supabase.from('messages').insert({
-        conversation_id: conversationId,
+      const msg = await api.post(`/api/chat/conversations/${conversationId}/messages`, {
         ref_id: refId,
         sender_type: 'customer',
         content_text: text,
-      }).select().single();
-      if (error) throw error;
-
-      await supabase.from('conversations').update({
-        last_message_at: msg.created_at,
-        last_message_preview: msg.content_text?.substring(0, 100),
-        updated_at: new Date().toISOString(),
-      }).eq('id', msg.conversation_id);
+      });
 
       setMessages(prev =>
         prev.map(m => m._tempId === tempId ? { ...msg as Message, _status: 'sent' as const } : m)
@@ -217,19 +200,12 @@ export function ChatWindow({
       reader.onloadend = async () => {
         const dataUrl = reader.result as string;
         try {
-          const { data: msg, error } = await supabase.from('messages').insert({
-            conversation_id: conversationId,
+          await api.post(`/api/chat/conversations/${conversationId}/messages`, {
             ref_id: refId,
             sender_type: 'customer',
             media_url: dataUrl,
             media_type: type,
-          }).select().single();
-          if (error) throw error;
-          await supabase.from('conversations').update({
-            last_message_at: msg.created_at,
-            last_message_preview: `[Media: ${type}]`,
-            updated_at: new Date().toISOString(),
-          }).eq('id', msg.conversation_id);
+          });
           fetchMessages(false);
         } catch (err) {
           console.error('Error sending media:', err);

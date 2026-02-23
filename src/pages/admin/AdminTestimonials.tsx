@@ -13,7 +13,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Pencil, Trash2, Star } from 'lucide-react';
 
@@ -62,12 +62,8 @@ export default function AdminTestimonials() {
 
   const fetchTestimonials = async () => {
     try {
-      const { data, error } = await supabase
-        .from('testimonials')
-        .select('*')
-        .order('display_order', { ascending: true });
-      if (error) throw error;
-      setTestimonials((data as any) || []);
+      const data = await api.get('/api/admin/testimonials');
+      setTestimonials(data || []);
     } catch (error) {
       console.error('Error fetching testimonials:', error);
       toast({ title: 'Error', description: 'Failed to load testimonials.', variant: 'destructive' });
@@ -91,17 +87,10 @@ export default function AdminTestimonials() {
       };
 
       if (editingTestimonial) {
-        const { error } = await supabase
-          .from('testimonials')
-          .update(testimonialData as any)
-          .eq('id', editingTestimonial.id);
-        if (error) throw error;
+        await api.put(`/api/admin/testimonials/${editingTestimonial.id}`, testimonialData);
         toast({ title: 'Testimonial updated' });
       } else {
-        const { error } = await supabase
-          .from('testimonials')
-          .insert(testimonialData as any);
-        if (error) throw error;
+        await api.post('/api/admin/testimonials', testimonialData);
         toast({ title: 'Testimonial created' });
       }
 
@@ -131,11 +120,7 @@ export default function AdminTestimonials() {
     if (!confirm('Are you sure you want to delete this testimonial?')) return;
 
     try {
-      const { error } = await supabase
-        .from('testimonials')
-        .delete()
-        .eq('id', id);
-      if (error) throw error;
+      await api.delete(`/api/admin/testimonials/${id}`);
       toast({ title: 'Testimonial deleted' });
       fetchTestimonials();
     } catch (error: any) {

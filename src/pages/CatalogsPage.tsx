@@ -4,7 +4,7 @@ import { Download, FileText } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { SPLoader } from '@/components/ui/SPLoader';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Catalog } from '@/types/database';
 import { useTranslation } from 'react-i18next';
 
@@ -19,8 +19,7 @@ export default function CatalogsPage() {
 
   const fetchCatalogs = async () => {
     try {
-      const { data, error } = await supabase.from('catalogs').select('*').eq('is_active', true);
-      if (error) throw error;
+      const data = await api.get('/api/catalogs');
       if (data) setCatalogs(data as Catalog[]);
     } catch {}
     setLoading(false);
@@ -28,7 +27,7 @@ export default function CatalogsPage() {
 
   const handleDownload = async (catalog: Catalog) => {
     try {
-      await supabase.from('catalogs').update({ download_count: (catalog.download_count || 0) + 1 }).eq('id', catalog.id);
+      await api.post(`/api/catalogs/${catalog.id}/download`);
     } catch {}
     window.open(catalog.file_url, '_blank');
   };

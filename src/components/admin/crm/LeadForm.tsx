@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { Lead } from '@/types/database';
 import { useToast } from '@/hooks/use-toast';
 
@@ -56,12 +56,10 @@ export function LeadForm({ lead, onSaved, onCancel }: LeadFormProps) {
       };
 
       if (lead) {
-        const { error } = await supabase.from('leads' as any).update(payload).eq('id', lead.id);
-        if (error) throw error;
+        await api.put(`/api/admin/leads/${lead.id}`, payload);
         toast({ title: 'Lead updated' });
       } else {
-        const { error } = await supabase.from('leads' as any).insert(payload);
-        if (error) throw error;
+        await api.post('/api/admin/leads', payload);
         toast({ title: 'Lead created' });
       }
       onSaved();

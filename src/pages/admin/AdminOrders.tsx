@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { Search, Eye } from 'lucide-react';
 import { format } from 'date-fns';
@@ -49,12 +49,8 @@ export default function AdminOrders() {
 
   const fetchOrders = async () => {
     try {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      setOrders((data as any) || []);
+      const data = await api.get('/api/admin/orders');
+      setOrders(data || []);
     } catch (error: any) {
       console.error('Error fetching orders:', error);
       toast({ title: 'Error loading data', description: error?.message || 'Please try refreshing the page.', variant: 'destructive' });
@@ -65,11 +61,7 @@ export default function AdminOrders() {
 
   const updateOrderStatus = async (orderId: string, status: string) => {
     try {
-      const { error } = await supabase
-        .from('orders')
-        .update({ status } as any)
-        .eq('id', orderId);
-      if (error) throw error;
+      await api.put(`/api/admin/orders/${orderId}`, { status });
       toast({ title: 'Order status updated' });
       fetchOrders();
     } catch (error: any) {

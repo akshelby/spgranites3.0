@@ -3,7 +3,7 @@ import { AdminLayout, StatsCard, PageHeader } from '@/components/admin';
 import { useCategoryStyle } from '@/hooks/useCategoryStyle';
 import { LayoutGrid, Rows3 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import {
   Package,
   ShoppingCart,
@@ -68,75 +68,22 @@ export default function AdminDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const [productsRes, ordersRes, enquiriesRes, testimonialsRes, visitorsRes, usersRes] = await Promise.all([
-        supabase.from('products').select('id', { count: 'exact', head: true }),
-        supabase.from('orders').select('id, total_amount, status', { count: 'exact' }),
-        supabase.from('enquiries' as any).select('id', { count: 'exact', head: true }),
-        supabase.from('testimonials').select('rating'),
-        (supabase.from as any)('site_visitors').select('id', { count: 'exact', head: true }),
-        supabase.from('profiles').select('id', { count: 'exact', head: true }),
-      ]);
-
-      const totalProducts = productsRes.count || 0;
-      const totalOrders = ordersRes.count || 0;
-      const totalEnquiries = enquiriesRes.count || 0;
-      const totalVisitors = visitorsRes.count || 0;
-      const totalUsers = usersRes.count || 0;
-
-      const orderRows = ordersRes.data || [];
-      const totalRevenue = orderRows.reduce((sum: number, o: any) => sum + (Number(o.total_amount) || 0), 0);
-      const pendingOrders = orderRows.filter((o: any) => o.status === 'pending').length;
-
-      const testimonialRows = testimonialsRes.data || [];
-      const avgRating = testimonialRows.length > 0
-        ? Math.round((testimonialRows.reduce((sum: number, t: any) => sum + (t.rating || 0), 0) / testimonialRows.length) * 10) / 10
-        : 0;
-
-      const now = new Date();
-      const thisWeekStart = startOfDay(subDays(now, 7)).toISOString();
-      const lastWeekStart = startOfDay(subDays(now, 14)).toISOString();
-
-      const [thisWeekRes, lastWeekRes] = await Promise.all([
-        (supabase.from as any)('site_visitors')
-          .select('id', { count: 'exact', head: true })
-          .gte('visited_at', thisWeekStart),
-        (supabase.from as any)('site_visitors')
-          .select('id', { count: 'exact', head: true })
-          .gte('visited_at', lastWeekStart)
-          .lt('visited_at', thisWeekStart),
-      ]);
-
-      const thisWeekCount = thisWeekRes.count || 0;
-      const lastWeekCount = lastWeekRes.count || 0;
-      const growthPercent = lastWeekCount > 0
-        ? Math.round(((thisWeekCount - lastWeekCount) / lastWeekCount) * 100)
-        : thisWeekCount > 0 ? 100 : 0;
+      const dashboardData = await api.get('/api/admin/dashboard');
 
       setStats({
-        totalProducts,
-        totalOrders,
-        totalUsers,
-        totalEnquiries,
-        totalRevenue,
-        totalVisitors,
-        pendingOrders,
-        avgRating,
-        growthPercent,
+        totalProducts: dashboardData.totalProducts || 0,
+        totalOrders: dashboardData.totalOrders || 0,
+        totalUsers: dashboardData.totalUsers || 0,
+        totalEnquiries: dashboardData.totalEnquiries || 0,
+        totalRevenue: dashboardData.totalRevenue || 0,
+        totalVisitors: dashboardData.totalVisitors || 0,
+        pendingOrders: dashboardData.pendingOrders || 0,
+        avgRating: dashboardData.avgRating || 0,
+        growthPercent: dashboardData.growthPercent || 0,
       });
 
-      const { data: recentOrdersData } = await supabase
-        .from('orders')
-        .select('id, order_number, total_amount, status, created_at')
-        .order('created_at', { ascending: false })
-        .limit(5);
-      setRecentOrders((recentOrdersData as any) || []);
-
-      const { data: recentEnquiriesData } = await supabase
-        .from('enquiries' as any)
-        .select('id, name, phone, message, created_at, is_read')
-        .order('created_at', { ascending: false })
-        .limit(5);
-      setRecentEnquiries((recentEnquiriesData as any) || []);
+      setRecentOrders(dashboardData.recentOrders || []);
+      setRecentEnquiries(dashboardData.recentEnquiries || []);
     } catch (error: any) {
       console.error('Error fetching dashboard data:', error);
       toast.error('Failed to load dashboard data. Please refresh the page.');

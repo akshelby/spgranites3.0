@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { format } from 'date-fns';
 import { ShoppingCart, MessageSquare, Calculator, StickyNote, Clock, Package } from 'lucide-react';
 
@@ -39,64 +39,55 @@ export function ActivityTimeline({ userId, leadId, refreshKey }: ActivityTimelin
       const timeline: TimelineItem[] = [];
 
       if (userId) {
-        const { data: orders } = await supabase
-          .from('orders')
-          .select('id, order_number, total_amount, status, created_at')
-          .eq('user_id', userId)
-          .order('created_at', { ascending: false })
-          .limit(10);
-
-        orders?.forEach((o: any) => {
-          timeline.push({
-            id: `order-${o.id}`,
-            type: 'order',
-            title: `Order ${o.order_number}`,
-            description: `₹${Number(o.total_amount).toLocaleString()} — ${o.status}`,
-            date: o.created_at,
+        try {
+          const orders = await api.get('/api/orders');
+          const userOrders = (orders || []).filter((o: any) => o.user_id === userId).slice(0, 10);
+          userOrders.forEach((o: any) => {
+            timeline.push({
+              id: `order-${o.id}`,
+              type: 'order',
+              title: `Order ${o.order_number}`,
+              description: `₹${Number(o.total_amount).toLocaleString()} — ${o.status}`,
+              date: o.created_at,
+            });
           });
-        });
+        } catch {}
       }
 
-      const notesQuery = supabase
-        .from('crm_notes' as any)
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10);
+      const notesParams = new URLSearchParams();
+      if (leadId) notesParams.set('lead_id', leadId);
+      if (userId) notesParams.set('user_id', userId);
 
-      if (leadId) notesQuery.eq('lead_id', leadId);
-      if (userId) notesQuery.eq('user_id', userId);
-
-      const { data: notes } = await notesQuery;
-      notes?.forEach((n: any) => {
-        timeline.push({
-          id: `note-${n.id}`,
-          type: 'note',
-          title: 'Note added',
-          description: n.note.length > 80 ? n.note.substring(0, 80) + '...' : n.note,
-          date: n.created_at,
+      try {
+        const notes = await api.get(`/api/admin/crm-notes?${notesParams.toString()}`);
+        (notes || []).forEach((n: any) => {
+          timeline.push({
+            id: `note-${n.id}`,
+            type: 'note',
+            title: 'Note added',
+            description: n.note.length > 80 ? n.note.substring(0, 80) + '...' : n.note,
+            date: n.created_at,
+          });
         });
-      });
+      } catch {}
 
-      const followupsQuery = supabase
-        .from('crm_followups' as any)
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10);
+      const followupsParams = new URLSearchParams();
+      if (leadId) followupsParams.set('lead_id', leadId);
+      if (userId) followupsParams.set('user_id', userId);
 
-      if (leadId) followupsQuery.eq('lead_id', leadId);
-      if (userId) followupsQuery.eq('user_id', userId);
-
-      const { data: followups } = await followupsQuery;
-      followups?.forEach((f: any) => {
-        timeline.push({
-          id: `followup-${f.id}`,
-          type: 'followup',
-          title: `Follow-up (${f.channel || 'call'})`,
-          description: f.summary || `${f.status}`,
-          date: f.created_at,
-          meta: f.status,
+      try {
+        const followups = await api.get(`/api/admin/crm-followups?${followupsParams.toString()}`);
+        (followups || []).forEach((f: any) => {
+          timeline.push({
+            id: `followup-${f.id}`,
+            type: 'followup',
+            title: `Follow-up (${f.channel || 'call'})`,
+            description: f.summary || `${f.status}`,
+            date: f.created_at,
+            meta: f.status,
+          });
         });
-      });
+      } catch {}
 
       timeline.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
       setItems(timeline);
