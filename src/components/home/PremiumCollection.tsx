@@ -329,62 +329,50 @@ export function PremiumCollection() {
                       draggable={false}
                     />
                   </div>
-                  {Array.from({ length: 20 }).map((_, si) => (
-                    <div
-                      key={`r-${si}`}
-                      className="absolute top-0"
-                      style={{
-                        width: '1px',
-                        height: '100%',
-                        right: '0px',
-                        transform: `rotateY(90deg) translateZ(${si}px)`,
-                        background: si < 5 ? '#4a4a4a' : si < 12 ? '#3a3a3a' : '#2a2a2a',
-                        transformOrigin: 'right center',
-                      }}
-                    />
-                  ))}
-                  {Array.from({ length: 20 }).map((_, si) => (
-                    <div
-                      key={`l-${si}`}
-                      className="absolute top-0"
-                      style={{
-                        width: '1px',
-                        height: '100%',
-                        left: '0px',
-                        transform: `rotateY(-90deg) translateZ(${si}px)`,
-                        background: si < 5 ? '#4a4a4a' : si < 12 ? '#3a3a3a' : '#2a2a2a',
-                        transformOrigin: 'left center',
-                      }}
-                    />
-                  ))}
-                  {Array.from({ length: 20 }).map((_, si) => (
-                    <div
-                      key={`b-${si}`}
-                      className="absolute left-0"
-                      style={{
-                        width: '100%',
-                        height: '1px',
-                        bottom: '0px',
-                        transform: `rotateX(90deg) translateZ(${si}px)`,
-                        background: si < 5 ? '#3a3a3a' : '#2a2a2a',
-                        transformOrigin: 'bottom center',
-                      }}
-                    />
-                  ))}
-                  {Array.from({ length: 20 }).map((_, si) => (
-                    <div
-                      key={`t-${si}`}
-                      className="absolute left-0"
-                      style={{
-                        width: '100%',
-                        height: '1px',
-                        top: '0px',
-                        transform: `rotateX(-90deg) translateZ(${si}px)`,
-                        background: si < 5 ? '#4a4a4a' : '#3a3a3a',
-                        transformOrigin: 'top center',
-                      }}
-                    />
-                  ))}
+                  <div
+                    className="absolute top-0"
+                    style={{
+                      width: '20px',
+                      height: '100%',
+                      right: '-10px',
+                      transform: 'rotateY(90deg)',
+                      background: 'linear-gradient(to right, #555, #333, #222)',
+                      transformOrigin: 'left center',
+                    }}
+                  />
+                  <div
+                    className="absolute top-0"
+                    style={{
+                      width: '20px',
+                      height: '100%',
+                      left: '-10px',
+                      transform: 'rotateY(-90deg)',
+                      background: 'linear-gradient(to left, #555, #333, #222)',
+                      transformOrigin: 'right center',
+                    }}
+                  />
+                  <div
+                    className="absolute left-0"
+                    style={{
+                      width: '100%',
+                      height: '20px',
+                      bottom: '-10px',
+                      transform: 'rotateX(90deg)',
+                      background: 'linear-gradient(to bottom, #444, #222)',
+                      transformOrigin: 'top center',
+                    }}
+                  />
+                  <div
+                    className="absolute left-0"
+                    style={{
+                      width: '100%',
+                      height: '20px',
+                      top: '-10px',
+                      transform: 'rotateX(-90deg)',
+                      background: 'linear-gradient(to top, #555, #333)',
+                      transformOrigin: 'bottom center',
+                    }}
+                  />
                 </div>
               );
             })}
