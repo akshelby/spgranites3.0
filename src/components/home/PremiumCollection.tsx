@@ -311,6 +311,8 @@ export function PremiumCollection() {
                         alt={product.name}
                         className="w-full h-full object-cover"
                         draggable={false}
+                        loading="eager"
+                        fetchPriority="high"
                         onError={(e) => { (e.target as HTMLImageElement).src = defaultProductImage; }}
                       />
                       <div className="absolute bottom-0 left-0 right-0 px-2 py-1 sm:px-3 sm:py-2 bg-gradient-to-t from-black/70 to-transparent">
