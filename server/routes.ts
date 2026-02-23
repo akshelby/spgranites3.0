@@ -84,14 +84,16 @@ export function registerRoutes(app: Express) {
       const hashedPassword = await bcrypt.hash(password, 10);
       const [user] = await db.insert(schema.users).values({ email, password: hashedPassword }).returning();
 
-      await db.insert(schema.profiles).values({ user_id: user.id, email });
-      await db.insert(schema.userRoles).values({ user_id: user.id, role: "user" });
+      await db.insert(schema.profiles).values({ user_id: user.id, email, display_name: email.split('@')[0] });
+      const ADMIN_EMAILS = ['akshelby9999@gmail.com', 'srajith9999@gmail.com'];
+      const assignedRole = ADMIN_EMAILS.includes(email.toLowerCase()) ? 'admin' : 'user';
+      await db.insert(schema.userRoles).values({ user_id: user.id, role: assignedRole });
 
       const token = generateToken();
       const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
       await db.insert(schema.sessions).values({ user_id: user.id, token, expires_at: expiresAt });
 
-      res.json({ user: { id: user.id, email: user.email }, token });
+      res.json({ user: { id: user.id, email: user.email }, token, role: assignedRole });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
