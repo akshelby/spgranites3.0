@@ -111,14 +111,7 @@ export function PremiumCollection() {
       const rawAngle = (i * perCard + rotationRef.current) % 360;
       const normalized = ((rawAngle % 360) + 360) % 360;
       const dist = normalized > 180 ? 360 - normalized : normalized;
-      if (dist > 120) {
-        el.style.opacity = '0.35';
-      } else if (dist > 90) {
-        const t = (dist - 90) / 30;
-        el.style.opacity = `${1 - t * 0.65}`;
-      } else {
-        el.style.opacity = '1';
-      }
+      el.style.opacity = '1';
     }
   }, []);
 
