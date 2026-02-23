@@ -25,7 +25,7 @@ const languages = [
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(true);
   const location = useLocation();
   const { user, role, signOut } = useAuth();
   const { getCartCount, setMiniCartOpen } = useCart();
