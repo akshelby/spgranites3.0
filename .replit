@@ -50,9 +50,9 @@ integrations = ["javascript_database:1.0.0", "javascript_openai_ai_integrations:
 
 [deployment]
 deploymentTarget = "autoscale"
-build = ["bash", "-c", "npm run build"]
+build = ["bash", "build.sh"]
 publicDir = "dist"
-run = ["bash", "-c", "npx tsx server/index.ts"]
+run = ["node", "dist-server/index.js"]
 
 [[ports]]
 localPort = 3001
