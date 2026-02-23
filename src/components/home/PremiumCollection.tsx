@@ -111,7 +111,7 @@ export function PremiumCollection() {
       const rawAngle = (i * perCard + rotationRef.current) % 360;
       const normalized = ((rawAngle % 360) + 360) % 360;
       const dist = normalized > 180 ? 360 - normalized : normalized;
-      el.style.opacity = dist > 90 ? '0.2' : '1';
+      el.style.opacity = '1';
     }
   }, []);
 
@@ -280,6 +280,7 @@ export function PremiumCollection() {
                     left: `${-cardW / 2}px`,
                     top: `${-cardH / 2}px`,
                     transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
+                    transformStyle: 'preserve-3d',
                   }}
                 >
                   <Link
@@ -287,7 +288,7 @@ export function PremiumCollection() {
                     className={cn(
                       'block w-full h-full rounded-xl overflow-hidden shadow-xl',
                     )}
-                    style={{}}
+                    style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
                     onClick={(e) => { if (isDraggingRef.current) e.preventDefault(); }}
                     data-testid={`collection-card-${product.id}`}
                   >
@@ -312,6 +313,22 @@ export function PremiumCollection() {
                       </div>
                     </div>
                   </Link>
+                  <div
+                    className="absolute inset-0 rounded-xl overflow-hidden"
+                    style={{
+                      backfaceVisibility: 'hidden',
+                      WebkitBackfaceVisibility: 'hidden',
+                      transform: 'rotateY(180deg)',
+                      opacity: 0.2,
+                    }}
+                  >
+                    <img
+                      src={resolveProductImage(product)}
+                      alt=""
+                      className="w-full h-full object-cover"
+                      draggable={false}
+                    />
+                  </div>
                 </div>
               );
             })}
