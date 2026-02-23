@@ -329,6 +329,50 @@ export function PremiumCollection() {
                       draggable={false}
                     />
                   </div>
+                  <div
+                    className="absolute top-0 rounded-r-lg"
+                    style={{
+                      width: '12px',
+                      height: '100%',
+                      right: '-6px',
+                      transform: 'rotateY(90deg)',
+                      background: 'linear-gradient(to right, #3a3a3a, #2a2a2a, #1a1a1a)',
+                      transformOrigin: 'left center',
+                    }}
+                  />
+                  <div
+                    className="absolute top-0 rounded-l-lg"
+                    style={{
+                      width: '12px',
+                      height: '100%',
+                      left: '-6px',
+                      transform: 'rotateY(-90deg)',
+                      background: 'linear-gradient(to left, #3a3a3a, #2a2a2a, #1a1a1a)',
+                      transformOrigin: 'right center',
+                    }}
+                  />
+                  <div
+                    className="absolute left-0 rounded-b-lg"
+                    style={{
+                      width: '100%',
+                      height: '12px',
+                      bottom: '-6px',
+                      transform: 'rotateX(90deg)',
+                      background: 'linear-gradient(to bottom, #2a2a2a, #1a1a1a)',
+                      transformOrigin: 'top center',
+                    }}
+                  />
+                  <div
+                    className="absolute left-0 rounded-t-lg"
+                    style={{
+                      width: '100%',
+                      height: '12px',
+                      top: '-6px',
+                      transform: 'rotateX(-90deg)',
+                      background: 'linear-gradient(to top, #3a3a3a, #2a2a2a)',
+                      transformOrigin: 'bottom center',
+                    }}
+                  />
                 </div>
               );
             })}
