@@ -228,8 +228,8 @@ export function PremiumCollection() {
   const anglePerCard = 360 / cardCount;
   const isLargeDesktop = !isMobile && typeof window !== 'undefined' && window.innerWidth >= 1280;
   const isTablet = !isMobile && typeof window !== 'undefined' && window.innerWidth >= 640 && window.innerWidth < 1280;
-  const cardW = isMobile ? 84 : isLargeDesktop ? 210 : isTablet ? 175 : 126;
-  const cardH = isMobile ? 119 : isLargeDesktop ? 280 : isTablet ? 238 : 182;
+  const cardW = isMobile ? 92 : isLargeDesktop ? 231 : isTablet ? 193 : 139;
+  const cardH = isMobile ? 131 : isLargeDesktop ? 308 : isTablet ? 262 : 200;
   const containerH = isMobile ? 200 : isLargeDesktop ? 400 : isTablet ? 340 : 290;
   const halfCard = cardW / 2;
   const gap = isMobile ? 4 : isLargeDesktop ? 6 : isTablet ? 5 : 5;
