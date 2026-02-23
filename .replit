@@ -52,7 +52,7 @@ integrations = ["javascript_database:1.0.0", "javascript_openai_ai_integrations:
 deploymentTarget = "autoscale"
 build = ["npm", "run", "build"]
 publicDir = "dist"
-run = ["node", "--import", "tsx", "server/index.ts"]
+run = ["npx", "tsx", "server/index.ts"]
 
 [[ports]]
 localPort = 3001
