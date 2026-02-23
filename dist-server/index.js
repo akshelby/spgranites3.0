@@ -69,8 +69,16 @@ function registerRoutes(app2) {
   });
   app2.post("/api/auth/google", async (req, res) => {
     try {
-      const origin = req.headers.origin || req.headers.referer?.replace(/\/$/, "") || `${req.protocol}://${req.get("host")}`;
+      const forwardedHost = req.headers["x-forwarded-host"];
+      const forwardedProto = req.headers["x-forwarded-proto"] || "https";
+      let origin;
+      if (forwardedHost) {
+        origin = `${forwardedProto}://${forwardedHost}`;
+      } else {
+        origin = req.headers.origin || req.headers.referer?.replace(/\/$/, "") || `${req.protocol}://${req.get("host")}`;
+      }
       const redirectTo = `${origin}/auth/callback`;
+      console.log("[Google OAuth] redirectTo:", redirectTo);
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {

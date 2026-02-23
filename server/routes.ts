@@ -63,8 +63,16 @@ export function registerRoutes(app: Express) {
   // Google OAuth - initiate
   app.post("/api/auth/google", async (req: Request, res: Response) => {
     try {
-      const origin = req.headers.origin || req.headers.referer?.replace(/\/$/, '') || `${req.protocol}://${req.get('host')}`;
+      const forwardedHost = req.headers['x-forwarded-host'] as string;
+      const forwardedProto = (req.headers['x-forwarded-proto'] as string) || 'https';
+      let origin: string;
+      if (forwardedHost) {
+        origin = `${forwardedProto}://${forwardedHost}`;
+      } else {
+        origin = req.headers.origin || req.headers.referer?.replace(/\/$/,'') || `${req.protocol}://${req.get('host')}`;
+      }
       const redirectTo = `${origin}/auth/callback`;
+      console.log('[Google OAuth] redirectTo:', redirectTo);
 
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
