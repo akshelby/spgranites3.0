@@ -35,11 +35,12 @@ export function FeaturedProducts() {
       try {
         const data = await api.get('/api/products');
         if (cancelled) return;
-        const featured = (data || []).filter((p: any) => p.is_featured);
+        const safeData = Array.isArray(data) ? data : [];
+        const featured = safeData.filter((p: any) => p.is_featured);
         if (featured.length > 0) {
           setProducts(featured.slice(0, 8) as Product[]);
-        } else if (data && data.length > 0) {
-          setProducts(data.slice(0, 8) as Product[]);
+        } else if (safeData.length > 0) {
+          setProducts(safeData.slice(0, 8) as Product[]);
         } else {
           setProducts(fallbackProducts);
         }

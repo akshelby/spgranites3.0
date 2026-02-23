@@ -38,7 +38,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     try {
       const data = await api.get('/api/wishlist');
       setItems(
-        (data || []).map((item: any) => ({
+        (Array.isArray(data) ? data : []).map((item: any) => ({
           id: item.id,
           productId: item.product_id || item.productId,
         }))

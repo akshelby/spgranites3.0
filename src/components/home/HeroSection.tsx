@@ -54,7 +54,7 @@ export function HeroSection() {
   const fetchCarouselCards = async () => {
     try {
       const data = await api.get('/api/hero-carousel/cards');
-      if (data && data.length > 0) {
+      if (Array.isArray(data) && data.length > 0) {
         const mappedCards = data.map((card: any) => ({
           ...card,
           image_url: (card.image_url === '/placeholder.svg' || card.image_url?.includes('unsplash'))
