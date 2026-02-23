@@ -167,7 +167,7 @@ export function FeaturedProducts() {
                     size="default"
                     variant="outline"
                     onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
-                    className="hidden lg:inline-flex text-xs"
+                    className="hidden lg:inline-flex text-xs border-red-500 text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950"
                     data-testid={`button-add-cart-desktop-${product.id}`}
                   >
                     <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
@@ -177,7 +177,7 @@ export function FeaturedProducts() {
                     size="icon"
                     variant="outline"
                     onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
-                    className="lg:hidden"
+                    className="lg:hidden border-red-500 text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950"
                     data-testid={`button-add-cart-${product.id}`}
                   >
                     <ShoppingCart className="h-3.5 w-3.5" />
