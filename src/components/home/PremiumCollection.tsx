@@ -47,8 +47,6 @@ export function PremiumCollection() {
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const radiusRef = useRef(0);
   const speedRef = useRef(parseFloat(localStorage.getItem('spg_collection_speed') || '0.1'));
-  const isVisibleRef = useRef(false);
-  const sectionRef = useRef<HTMLElement>(null);
 
   const [isMobile, setIsMobile] = useState(false);
 
@@ -118,22 +116,11 @@ export function PremiumCollection() {
   }, []);
 
   useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { isVisibleRef.current = entry.isIntersecting; },
-      { threshold: 0.1 }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
     let lastTime = performance.now();
     const tick = (now: number) => {
       const dt = now - lastTime;
       lastTime = now;
-      if (isVisibleRef.current && autoRotateRef.current && !isDraggingRef.current && products.length > 0) {
+      if (autoRotateRef.current && !isDraggingRef.current && products.length > 0) {
         rotationRef.current -= speedRef.current * (dt / 16);
         applyRotation();
       }
@@ -238,7 +225,7 @@ export function PremiumCollection() {
   radiusRef.current = radius;
 
   return (
-    <section ref={sectionRef} className="py-8 sm:py-12 md:py-16 bg-muted/30 overflow-hidden">
+    <section className="py-8 sm:py-12 md:py-16 bg-muted/30 overflow-hidden">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
