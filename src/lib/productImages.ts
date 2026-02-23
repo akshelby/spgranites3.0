@@ -1,17 +1,17 @@
 import blackGraniteImg from '@/assets/products/black-granite.jpg';
-import absoluteBlackImg from '@/assets/products/absolute-black-granite.png';
-import brownGraniteImg from '@/assets/products/brown-granite.png';
+import absoluteBlackImg from '@/assets/products/absolute-black-granite.jpg';
+import brownGraniteImg from '@/assets/products/brown-granite.jpg';
 import greenGraniteImg from '@/assets/products/green-granite.jpg';
-import bluePearlImg from '@/assets/products/blue-pearl.png';
+import bluePearlImg from '@/assets/products/blue-pearl.jpg';
 import redGraniteImg from '@/assets/products/red-granite.jpg';
 import greyGraniteImg from '@/assets/products/grey-granite.jpg';
-import kashmirWhiteImg from '@/assets/products/kashmir-white-granite.png';
-import steelGreyImg from '@/assets/products/steel-grey-granite.png';
-import imperialRedImg from '@/assets/products/imperial-red-granite.png';
-import greenGalaxyImg from '@/assets/products/green-galaxy-granite.png';
-import brownPearlImg from '@/assets/products/brown-pearl-granite.png';
-import blueGalaxyImg from '@/assets/products/blue-galaxy-granite.png';
-import forestGreenImg from '@/assets/products/forest-green-granite.png';
+import kashmirWhiteImg from '@/assets/products/kashmir-white-granite.jpg';
+import steelGreyImg from '@/assets/products/steel-grey-granite.jpg';
+import imperialRedImg from '@/assets/products/imperial-red-granite.jpg';
+import greenGalaxyImg from '@/assets/products/green-galaxy-granite.jpg';
+import brownPearlImg from '@/assets/products/brown-pearl-granite.jpg';
+import blueGalaxyImg from '@/assets/products/blue-galaxy-granite.jpg';
+import forestGreenImg from '@/assets/products/forest-green-granite.jpg';
 
 export const productImageMap: Record<string, string> = {
   'black-galaxy-granite': blackGraniteImg,
