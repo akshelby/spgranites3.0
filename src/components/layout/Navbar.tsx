@@ -104,7 +104,7 @@ export function Navbar() {
                   'px-4 py-2.5 text-base font-medium rounded-lg transition-colors whitespace-nowrap shrink-0',
                   location.pathname === link.href
                     ? 'text-white bg-primary shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                    : 'text-foreground hover:text-primary hover:bg-accent'
                 )}
                 data-testid={`nav-${link.href.replace('/', '') || 'home'}`}
               >
@@ -244,7 +244,7 @@ export function Navbar() {
                     'block px-4 py-3 rounded-lg text-sm font-medium transition-colors',
                     location.pathname === link.href
                       ? 'text-white bg-primary shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      : 'text-foreground hover:text-primary hover:bg-accent'
                   )}
                 >
                   {link.name}
