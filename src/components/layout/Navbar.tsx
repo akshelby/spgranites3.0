@@ -101,10 +101,10 @@ export function Navbar() {
                   addTab(link.href, link.name);
                 }}
                 className={cn(
-                  'px-4 py-2.5 text-base font-medium rounded-lg transition-colors whitespace-nowrap shrink-0 text-center min-w-[80px]',
+                  'px-4 py-2.5 text-base font-medium rounded-lg whitespace-nowrap shrink-0 text-center min-w-[80px]',
                   location.pathname === link.href
                     ? 'text-white bg-primary shadow-sm'
-                    : 'text-foreground hover:text-white hover:bg-black hover:border hover:border-red-500'
+                    : 'text-foreground hover-slide border border-transparent'
                 )}
                 data-testid={`nav-${link.href.replace('/', '') || 'home'}`}
               >
@@ -202,7 +202,7 @@ export function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button asChild size="sm" className="h-auto py-1.5 px-3 hover:bg-black hover:text-white hover:border hover:border-red-500">
+              <Button asChild size="sm" className="h-auto py-1.5 px-3 hover-slide border border-transparent">
                 <Link to="/auth" className="text-xs whitespace-nowrap">
                   Sign In
                 </Link>

@@ -256,7 +256,7 @@ export default function ProductsPage() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="w-full mt-1.5 text-[10px] sm:text-xs px-6 border-red-500 text-red-600 hover:bg-black hover:text-white hover:border-red-500 dark:hover:bg-black"
+                    className="w-full mt-1.5 text-[10px] sm:text-xs px-6 border-red-500 text-red-600 hover-slide"
                     onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
                     data-testid={`button-add-cart-${product.id}`}
                   >

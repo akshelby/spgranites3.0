@@ -4,6 +4,34 @@
 
 /* SP Granites Design System - Premium Stone-Inspired Theme */
 
+/* Slide-in hover effect for buttons and nav links */
+.hover-slide {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+.hover-slide::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  transform: translateX(-100%);
+  transition: transform 0.35s ease;
+  z-index: -1;
+  border-radius: inherit;
+}
+.hover-slide:hover::before {
+  transform: translateX(0);
+}
+.hover-slide:hover {
+  color: white !important;
+  border-color: #ef4444 !important;
+}
+
 /* Brand Name Typography */
 .brand-name {
   font-family: 'Playfair Display', Georgia, serif;

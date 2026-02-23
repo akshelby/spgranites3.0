@@ -194,7 +194,7 @@ export function FeaturedProducts() {
           viewport={{ once: true }}
           className="text-center mt-6 sm:mt-10"
         >
-          <Button asChild size="default" className="hover:bg-black hover:text-white hover:border hover:border-red-500" data-testid="button-view-all-products">
+          <Button asChild size="default" className="hover-slide border border-transparent" data-testid="button-view-all-products">
             <Link to="/products">
               {t('featured.viewAll')}
               <ArrowRight className="ml-2 h-4 w-4" />
