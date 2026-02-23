@@ -28,6 +28,7 @@ import OrdersPage from "./pages/OrdersPage";
 import OrderDetailPage from "./pages/OrderDetailPage";
 import ProfilePage from "./pages/ProfilePage";
 import Auth from "./pages/Auth";
+import AuthCallback from "./pages/AuthCallback";
 import StoneVisualizerPage from "./pages/StoneVisualizerPage";
 import AboutPage from "./pages/AboutPage";
 import PaymentPage from "./pages/PaymentPage";
@@ -103,6 +104,7 @@ const App = () => (
                 <Route path="/about" element={<AboutPage />} />
                 <Route path="/chat" element={<ChatPage />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="/privacy" element={<PrivacyPolicyPage />} />
                 <Route path="/terms" element={<TermsOfServicePage />} />
 

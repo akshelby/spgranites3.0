@@ -59,6 +59,61 @@ export function registerRoutes(app: Express) {
   });
 
   // ===== AUTH ROUTES =====
+
+  // Google OAuth - initiate
+  app.post("/api/auth/google", async (req: Request, res: Response) => {
+    try {
+      const origin = req.headers.origin || req.headers.referer?.replace(/\/$/, '') || `${req.protocol}://${req.get('host')}`;
+      const redirectTo = `${origin}/auth/callback`;
+
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo,
+          skipBrowserRedirect: true,
+        },
+      });
+      if (error) throw error;
+      res.json({ url: data.url });
+    } catch (error: any) {
+      console.error('[Google OAuth Error]:', error.message);
+      res.status(500).json({ error: "Google sign-in is not configured. Please set up Google OAuth in Supabase dashboard." });
+    }
+  });
+
+  // Google OAuth - exchange code for session
+  app.post("/api/auth/callback", async (req: Request, res: Response) => {
+    try {
+      const { access_token } = req.body;
+      if (!access_token) return res.status(400).json({ error: "No access token provided" });
+
+      const { data: { user }, error } = await supabase.auth.getUser(access_token);
+      if (error || !user) return res.status(401).json({ error: "Invalid token" });
+
+      const { data: existingProfile } = await supabase.from('profiles').select('*').eq('user_id', user.id).maybeSingle();
+      if (!existingProfile) {
+        await supabase.from('profiles').insert({
+          user_id: user.id,
+          email: user.email,
+          display_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
+          avatar_url: user.user_metadata?.avatar_url || null,
+        });
+      }
+
+      const { data: existingRole } = await supabase.from('user_roles').select('*').eq('user_id', user.id).maybeSingle();
+      if (!existingRole) {
+        const assignedRole = ADMIN_EMAILS.includes((user.email || '').toLowerCase()) ? 'admin' : 'user';
+        await supabase.from('user_roles').insert({ user_id: user.id, role: assignedRole });
+      }
+
+      const role = await getUserRole(user.id);
+      res.json({ user: { id: user.id, email: user.email }, token: access_token, role });
+    } catch (error: any) {
+      console.error('[OAuth Callback Error]:', error.message);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   app.post("/api/auth/signup", async (req: Request, res: Response) => {
     try {
       const { email, password } = req.body;
