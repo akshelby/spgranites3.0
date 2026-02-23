@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { CategoryItem } from './CategoryItem';
 import { CategoryItemPill } from './CategoryItemPill';
 import { BhrundhavanIcon } from './BhrundhavanIcon';
@@ -158,7 +157,7 @@ const categories: Category[] = [
     id: 'chat-support',
     nameKey: 'categories.chatSupport',
     icon: ChatSupportIcon,
-    link: '#chat',
+    link: '/chat',
     descriptionKey: 'categories.chatSupportDesc',
     iconColor: 'text-white',
     bgColor: RED,
@@ -179,13 +178,8 @@ const containerVariants = {
 
 export function CategoriesSection() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const { style } = useCategoryStyle();
-
-  const openChatWidget = () => {
-    navigate('/chat');
-  };
 
   const isPill = style === 'pill';
 
@@ -229,7 +223,6 @@ export function CategoriesSection() {
               index,
               onClick:
                 category.id === 'contact-us' ? () => setContactDialogOpen(true) :
-                category.id === 'chat-support' ? openChatWidget :
                 undefined,
             };
 
