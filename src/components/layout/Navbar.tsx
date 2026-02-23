@@ -202,7 +202,7 @@ export function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button asChild size="sm" className="h-auto py-1.5 px-3 hover-slide border border-transparent">
+              <Button asChild size="sm" className="h-auto py-1.5 px-3 hover-slide border-2 border-transparent">
                 <Link to="/auth" className="text-xs whitespace-nowrap">
                   Sign In
                 </Link>
