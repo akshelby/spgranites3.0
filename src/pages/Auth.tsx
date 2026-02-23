@@ -9,7 +9,6 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { PasswordInput } from '@/components/auth/PasswordInput';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 const Auth = () => {
@@ -69,18 +68,12 @@ const Auth = () => {
       return;
     }
     setResetting(true);
-    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    toast.info('Password reset via email link is not yet supported. Please contact support.');
     setResetting(false);
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success('Password updated successfully!');
-      navigate('/');
-    }
   };
 
   const handleSuccess = () => {
-    navigate('/');
+    navigate(redirectTo);
   };
 
   const [timedOut, setTimedOut] = useState(false);
