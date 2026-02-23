@@ -53,16 +53,16 @@ export default function AdminCarousel() {
 
   const [collectionSpeed, setCollectionSpeed] = useState(() => {
     const saved = localStorage.getItem('spg_collection_speed');
-    return saved ? parseFloat(saved) : 0.6;
+    return saved ? parseFloat(saved) : 0.1;
   });
 
   const speedLabels: Record<string, string> = {
-    '0.2': 'Very Slow',
-    '0.4': 'Slow',
-    '0.6': 'Normal',
-    '0.8': 'Fast',
-    '1': 'Very Fast',
-    '1.5': 'Ultra Fast',
+    '0.05': 'Very Slow',
+    '0.1': 'Slow',
+    '0.2': 'Normal',
+    '0.4': 'Fast',
+    '0.6': 'Very Fast',
+    '1': 'Ultra Fast',
   };
 
   const getSpeedLabel = (val: number) => {
@@ -403,15 +403,15 @@ export default function AdminCarousel() {
             <Slider
               value={[collectionSpeed]}
               onValueChange={handleSpeedChange}
-              min={0.1}
-              max={1.5}
-              step={0.1}
+              min={0.05}
+              max={1}
+              step={0.05}
               className="flex-1"
             />
             <span className="text-xs text-muted-foreground whitespace-nowrap">Fast</span>
           </div>
           <p className="text-xs text-muted-foreground">
-            Current speed: {collectionSpeed.toFixed(1)}x — Changes apply instantly on the homepage.
+            Current speed: {collectionSpeed.toFixed(2)}x — Changes apply instantly on the homepage.
           </p>
         </CardContent>
       </Card>
