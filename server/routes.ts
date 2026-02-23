@@ -530,6 +530,15 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  app.put("/api/admin/conversations/:id", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const [conv] = await db.update(schema.conversations).set({ ...req.body, updated_at: new Date() }).where(eq(schema.conversations.id, req.params.id)).returning();
+      res.json(conv);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // ===== ADMIN ROUTES =====
   
   // Admin: All products (including inactive)

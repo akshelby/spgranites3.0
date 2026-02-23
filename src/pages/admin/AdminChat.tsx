@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { supabase } from "@/integrations/supabase/client";
+import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { Message, Conversation } from "@/components/chat/types";
 import { MessageBubble } from "@/components/chat/MessageBubble";
@@ -42,12 +42,8 @@ export default function AdminChat() {
 
   const loadConversations = useCallback(async () => {
     try {
-      const { data, error } = await supabase
-        .from('conversations')
-        .select('*')
-        .order('last_message_at', { ascending: false });
-      if (error) throw error;
-      const convs = (data as Conversation[]) || [];
+      const data = await api.get('/api/conversations');
+      const convs = (Array.isArray(data) ? data : []) as Conversation[];
       setConversations(convs);
       setStats({
         total: convs.length,
@@ -70,14 +66,9 @@ export default function AdminChat() {
   const fetchMessages = useCallback(async () => {
     if (!selectedConversation) return;
     try {
-      const { data, error } = await supabase
-        .from('messages')
-        .select('*')
-        .eq('conversation_id', selectedConversation.id)
-        .order('created_at', { ascending: true });
-      if (error) throw error;
+      const data = await api.get(`/api/conversations/${selectedConversation.id}/messages`);
       setMessages(prev => {
-        const confirmed = (data as Message[]) || [];
+        const confirmed = (Array.isArray(data) ? data : []) as Message[];
         const pending = prev.filter(m => m._tempId && m._status === 'sending');
         const merged = [...confirmed];
         pending.forEach(p => {
@@ -99,7 +90,6 @@ export default function AdminChat() {
     return () => clearInterval(interval);
   }, [selectedConversation, fetchMessages]);
 
-  // Auto-scroll
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -110,8 +100,7 @@ export default function AdminChat() {
     if (!newMessage.trim() || !selectedConversation || isSending) return;
     const text = newMessage.trim();
     const tempId = `temp-${Date.now()}-${Math.random()}`;
-    
-    // Optimistic update — show message immediately
+
     const optimisticMsg: Message = {
       id: tempId, conversation_id: selectedConversation.id, ref_id: selectedConversation.ref_id,
       sender_type: 'staff', sender_name: 'Support Team', content_text: text,
@@ -120,22 +109,17 @@ export default function AdminChat() {
     };
     setMessages(prev => [...prev, optimisticMsg]);
     setNewMessage("");
-    
+
     setIsSending(true);
     try {
-      const { data, error } = await supabase
-        .from('messages')
-        .insert({
-          conversation_id: selectedConversation.id,
-          ref_id: selectedConversation.ref_id,
-          sender_type: 'staff',
-          sender_name: 'Support Team',
-          content_text: text,
-        })
-        .select()
-        .single();
-      if (error) throw error;
-      setMessages(prev => prev.map(m => m._tempId === tempId ? { ...data as Message, _status: 'sent' as const } : m));
+      const msg = await api.post('/api/messages', {
+        conversation_id: selectedConversation.id,
+        ref_id: selectedConversation.ref_id,
+        sender_type: 'staff',
+        sender_name: 'Support Team',
+        content_text: text,
+      });
+      setMessages(prev => prev.map(m => m._tempId === tempId ? { ...msg as Message, _status: 'sent' as const } : m));
     } catch (err) {
       console.error('Error sending message:', err);
       setMessages(prev => prev.map(m => m._tempId === tempId ? { ...m, _status: 'failed' as const } : m));
@@ -155,17 +139,15 @@ export default function AdminChat() {
         const dataUrl = reader.result as string;
         const mediaType = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : 'audio';
         try {
-          const { error: insertError } = await supabase
-            .from('messages')
-            .insert({
-              conversation_id: selectedConversation.id,
-              ref_id: selectedConversation.ref_id,
-              sender_type: 'staff',
-              sender_name: 'Support Team',
-              media_url: dataUrl,
-              media_type: mediaType,
-            });
-          if (insertError) throw insertError;
+          await api.post('/api/messages', {
+            conversation_id: selectedConversation.id,
+            ref_id: selectedConversation.ref_id,
+            sender_type: 'staff',
+            sender_name: 'Support Team',
+            media_url: dataUrl,
+            media_type: mediaType,
+          });
+          fetchMessages();
         } catch (err) {
           console.error('Error sending media:', err);
           toast({ title: "Error", description: "Failed to send media.", variant: "destructive" });
@@ -185,30 +167,24 @@ export default function AdminChat() {
   const handleCloseConversation = async () => {
     if (!selectedConversation) return;
     try {
-      const { error } = await supabase
-        .from('conversations')
-        .update({ status: 'closed' })
-        .eq('id', selectedConversation.id);
-      if (error) throw error;
+      await api.put(`/api/admin/conversations/${selectedConversation.id}`, { status: 'closed' });
       setSelectedConversation({ ...selectedConversation, status: 'closed' });
       toast({ title: "Conversation Closed", description: "The conversation has been marked as closed." });
     } catch (err) {
       console.error('Error closing conversation:', err);
+      toast({ title: "Error", description: "Failed to close conversation.", variant: "destructive" });
     }
   };
 
   const handleReopenConversation = async () => {
     if (!selectedConversation) return;
     try {
-      const { error } = await supabase
-        .from('conversations')
-        .update({ status: 'open' })
-        .eq('id', selectedConversation.id);
-      if (error) throw error;
+      await api.put(`/api/admin/conversations/${selectedConversation.id}`, { status: 'open' });
       setSelectedConversation({ ...selectedConversation, status: 'open' });
       toast({ title: "Conversation Reopened", description: "The conversation is now open." });
     } catch (err) {
       console.error('Error reopening conversation:', err);
+      toast({ title: "Error", description: "Failed to reopen conversation.", variant: "destructive" });
     }
   };
 
@@ -321,7 +297,6 @@ export default function AdminChat() {
                       )}
                     >
                       <div className="flex items-start gap-3">
-                        {/* Avatar */}
                         <div className={cn(
                           "w-10 h-10 rounded-full flex items-center justify-center shrink-0 text-white font-semibold text-sm",
                           conv.status === 'open' ? "bg-orange-500" : "bg-green-500"
@@ -435,7 +410,6 @@ export default function AdminChat() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {/* Message stats */}
                     <div className="hidden lg:flex items-center gap-3 text-xs text-muted-foreground mr-2">
                       <span>{messages.length} msgs</span>
                       <span>{customerMessages.length} from user</span>
@@ -517,13 +491,14 @@ export default function AdminChat() {
                       />
                       <Button
                         size="icon" variant="ghost"
-                        className="h-9 w-9 rounded-full shrink-0"
+                        className="h-10 w-10 shrink-0"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isSending}
                       >
-                        <Paperclip className="w-4 h-4" />
+                        <Paperclip className="w-5 h-5" />
                       </Button>
                       <Textarea
+                        placeholder="Type a reply..."
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyDown={(e) => {
@@ -532,46 +507,26 @@ export default function AdminChat() {
                             handleSendMessage();
                           }
                         }}
-                        placeholder="Type your reply..."
-                        className="flex-1 min-h-[40px] max-h-[120px] resize-none rounded-xl text-sm"
+                        className="min-h-[40px] max-h-[120px] rounded-xl resize-none"
                         rows={1}
-                        disabled={isSending}
                       />
                       <Button
                         size="icon"
-                        className="h-9 w-9 rounded-full bg-primary hover:bg-primary/90 shrink-0"
+                        className="h-10 w-10 shrink-0 rounded-xl"
                         onClick={handleSendMessage}
                         disabled={!newMessage.trim() || isSending}
                       >
-                        {isSending ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Send className="w-4 h-4" />
-                        )}
+                        {isSending ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
                       </Button>
                     </div>
                   )}
                 </div>
               </>
             ) : (
-              <div className="flex-1 flex flex-col items-center justify-center text-center p-8">
-                <div className="w-20 h-20 rounded-2xl bg-muted flex items-center justify-center mb-4">
-                  <MessageCircle className="w-10 h-10 text-muted-foreground" />
-                </div>
-                <h3 className="text-lg font-semibold mb-1">Chat Support Dashboard</h3>
-                <p className="text-sm text-muted-foreground max-w-sm">
-                  Select a conversation from the sidebar to view messages and respond to customer queries.
-                </p>
-                <div className="flex items-center gap-4 mt-6 text-sm text-muted-foreground">
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-orange-500" />
-                    {stats.open} need attention
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-green-500" />
-                    {stats.closed} resolved
-                  </span>
-                </div>
+              <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
+                <MessageCircle className="w-16 h-16 text-muted-foreground/30 mb-4" />
+                <h3 className="font-semibold text-lg text-muted-foreground">Select a Conversation</h3>
+                <p className="text-sm text-muted-foreground mt-1">Choose a conversation from the sidebar to start chatting</p>
               </div>
             )}
           </div>
