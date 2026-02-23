@@ -281,6 +281,8 @@ export function PremiumCollection() {
                     top: `${-cardH / 2}px`,
                     transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
                     transformStyle: 'preserve-3d',
+                    opacity: 0,
+                    transition: 'opacity 0.3s ease',
                   }}
                 >
                   <Link
