@@ -111,7 +111,7 @@ export function PremiumCollection() {
       const rawAngle = (i * perCard + rotationRef.current) % 360;
       const normalized = ((rawAngle % 360) + 360) % 360;
       const dist = normalized > 180 ? 360 - normalized : normalized;
-      el.style.opacity = '1';
+      el.style.opacity = dist > 90 ? '0.2' : '1';
     }
   }, []);
 
