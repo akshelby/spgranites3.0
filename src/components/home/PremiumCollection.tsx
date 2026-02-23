@@ -280,8 +280,6 @@ export function PremiumCollection() {
                     left: `${-cardW / 2}px`,
                     top: `${-cardH / 2}px`,
                     transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
-                    backfaceVisibility: 'hidden',
-                    WebkitBackfaceVisibility: 'hidden',
                   }}
                 >
                   <Link
@@ -289,7 +287,7 @@ export function PremiumCollection() {
                     className={cn(
                       'block w-full h-full rounded-xl overflow-hidden shadow-xl',
                     )}
-                    style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+                    style={{}}
                     onClick={(e) => { if (isDraggingRef.current) e.preventDefault(); }}
                     data-testid={`collection-card-${product.id}`}
                   >
