@@ -313,7 +313,7 @@ export function PremiumCollection() {
                         draggable={false}
                         onError={(e) => { (e.target as HTMLImageElement).src = defaultProductImage; }}
                       />
-                      <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-4 bg-black/60">
+                      <div className="absolute bottom-0 left-0 right-0 px-2 py-1 sm:px-3 sm:py-2 bg-gradient-to-t from-black/70 to-transparent">
                         <h3 className="text-white text-xs sm:text-base font-semibold leading-tight">
                           {product.name}
                         </h3>
