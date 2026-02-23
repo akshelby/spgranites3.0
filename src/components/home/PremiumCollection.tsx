@@ -313,13 +313,12 @@ export function PremiumCollection() {
                         draggable={false}
                         onError={(e) => { (e.target as HTMLImageElement).src = defaultProductImage; }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
-                      <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-4">
-                        <h3 className="text-white text-xs sm:text-base font-semibold leading-tight drop-shadow">
+                      <div className="absolute bottom-0 left-0 right-0 p-2 sm:p-4 bg-black/60">
+                        <h3 className="text-white text-xs sm:text-base font-semibold leading-tight">
                           {product.name}
                         </h3>
                         {product.price && (
-                          <p className="text-white/90 text-[10px] sm:text-sm mt-0.5 sm:mt-1 drop-shadow">
+                          <p className="text-white/90 text-[10px] sm:text-sm mt-0.5 sm:mt-1">
                             ₹{Number(product.price).toLocaleString('en-IN')}
                           </p>
                         )}
