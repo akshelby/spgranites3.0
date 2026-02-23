@@ -129,13 +129,14 @@
   }
 }
 .cta-ribbon-btn:hover {
-  background: #333333;
-  transform: scale(1.04);
+  transform: none;
 }
 .cta-ribbon-btn-inner {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  z-index: 1;
 }
 .cta-ribbon-btn-outline {
   background: #ffffff;
@@ -148,23 +149,52 @@
 .cta-ribbon-btn-red {
   background: #dc2626;
   color: #ffffff;
+  overflow: hidden;
+}
+.cta-ribbon-btn-red::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000000;
+  transform: translateX(-100%);
+  transition: transform 0.35s ease;
+}
+.cta-ribbon-btn-red:hover::after {
+  transform: translateX(0);
 }
 .cta-ribbon-btn-red:hover {
-  background: #b91c1c;
+  box-shadow: inset 0 0 0 2px #ef4444;
 }
 .cta-ribbon-btn-dark {
   background: #1a1a1a;
   color: #ffffff;
   border: none;
   box-shadow: none;
+  overflow: hidden;
 }
 .dark .cta-ribbon-btn-dark {
   background: #ffffff !important;
   color: #1a1a1a !important;
 }
+.cta-ribbon-btn-dark::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000000;
+  transform: translateX(-100%);
+  transition: transform 0.35s ease;
+}
+.cta-ribbon-btn-dark:hover::after {
+  transform: translateX(0);
+}
 .cta-ribbon-btn-dark:hover {
-  background: #333333;
-  transform: scale(1.04);
+  box-shadow: inset 0 0 0 2px #ef4444;
 }
 .dark .cta-ribbon-btn-dark:hover {
   background: #e5e5e5 !important;
