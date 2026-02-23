@@ -109,7 +109,7 @@ export default function ProductsPage() {
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 mb-3 sm:mb-5">
           <div>
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold" data-testid="text-page-title">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold heading-stylish" data-testid="text-page-title">
               {t('products.title')}
             </h1>
             <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">

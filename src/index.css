@@ -32,6 +32,22 @@
   border-color: #ef4444 !important;
 }
 
+/* Stylish Section/Page Headings */
+.heading-stylish {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 900;
+  background: linear-gradient(135deg, #dc2626 0%, #7f1d1d 40%, #1a1a1a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.dark .heading-stylish {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 40%, #ffffff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* Brand Name Typography */
 .brand-name {
   font-family: 'Playfair Display', Georgia, serif;

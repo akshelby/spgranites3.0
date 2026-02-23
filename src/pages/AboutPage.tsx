@@ -50,7 +50,7 @@ export default function AboutPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-xl sm:text-2xl lg:text-4xl font-display font-bold mt-1 mb-2 sm:mb-3"
+            className="text-xl sm:text-2xl lg:text-4xl font-display font-bold mt-1 mb-2 sm:mb-3 heading-stylish"
             data-testid="text-about-title"
           >
             {t('about.title')}
@@ -72,7 +72,7 @@ export default function AboutPage() {
           className="grid sm:grid-cols-2 gap-4 sm:gap-6 mb-8 sm:mb-12"
         >
           <div className="space-y-3 sm:space-y-4">
-            <h2 className="text-lg sm:text-xl font-display font-bold" data-testid="text-who-we-are">
+            <h2 className="text-lg sm:text-xl font-display font-bold heading-stylish" data-testid="text-who-we-are">
               {t('about.whoWeAre')}
             </h2>
             <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">

@@ -193,7 +193,7 @@ export function CategoriesSection() {
           transition={{ duration: 0.5 }}
           className="text-center mb-3 sm:mb-6 md:mb-8"
         >
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-display font-bold text-foreground leading-tight" data-testid="text-categories-title">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-display font-bold leading-tight heading-stylish" data-testid="text-categories-title">
             {t('categories.title')}
           </h2>
           <p className="mt-1 text-[11px] sm:text-xs md:text-sm text-muted-foreground">

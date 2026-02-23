@@ -56,7 +56,7 @@ export function ServicesSection() {
           className="text-center mb-3 sm:mb-6 lg:mb-8"
         >
           <span className="text-[11px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-services-label">{t('services.label')}</span>
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold mt-1 sm:mt-1.5 mb-1.5 sm:mb-3 leading-tight" data-testid="text-services-title">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold mt-1 sm:mt-1.5 mb-1.5 sm:mb-3 leading-tight heading-stylish" data-testid="text-services-title">
             {t('services.title')}
           </h2>
           <p className="text-muted-foreground text-[11px] sm:text-xs lg:text-sm max-w-2xl mx-auto">
