@@ -101,7 +101,7 @@ export function Navbar() {
                   addTab(link.href, link.name);
                 }}
                 className={cn(
-                  'px-4 py-2.5 text-base font-medium rounded-lg transition-colors whitespace-nowrap shrink-0',
+                  'px-4 py-2.5 text-base font-medium rounded-lg transition-colors whitespace-nowrap shrink-0 text-center min-w-[80px]',
                   location.pathname === link.href
                     ? 'text-white bg-primary shadow-sm'
                     : 'text-foreground hover:text-white hover:bg-black hover:border hover:border-red-500'
@@ -116,7 +116,7 @@ export function Navbar() {
           <div className="flex items-center gap-1 sm:gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="gap-1 px-2" data-testid="button-language-switcher">
+                <Button variant="ghost" size="sm" className="gap-1 px-2 min-w-[60px]" data-testid="button-language-switcher">
                   <span className="text-xs font-semibold">{languages.find(l => l.code === i18n.language)?.short || 'ENG'}</span>
                   <svg className="h-3 w-3 opacity-60" viewBox="0 0 12 12" fill="none"><path d="M3 5l3 3 3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </Button>
