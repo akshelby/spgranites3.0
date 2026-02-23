@@ -52,7 +52,7 @@ process.on('unhandledRejection', (reason) => {
   console.error('[Unhandled Rejection]:', reason);
 });
 
-const port = 5000;
+const port = process.env.REPL_SLUG ? (hasDistFolder ? 5000 : 3001) : 5000;
 app.listen(port, "0.0.0.0", () => {
   console.log(`API server running on port ${port}`);
 });

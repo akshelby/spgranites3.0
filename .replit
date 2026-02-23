@@ -12,17 +12,33 @@ author = "agent"
 task = "workflow.run"
 args = "Backend server"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Frontend dev"
+
 [[workflows.workflow]]
 name = "Backend server"
 author = "agent"
 
 [workflows.workflow.metadata]
-outputType = "webview"
+outputType = "console"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npx tsx server/index.ts"
+waitForPort = 3001
+
+[[workflows.workflow]]
+name = "Frontend dev"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
 waitForPort = 5000
+
+[workflows.workflow.metadata]
+outputType = "webview"
 
 [nix]
 channel = "stable-25_05"
@@ -43,13 +59,13 @@ localPort = 3001
 externalPort = 3001
 
 [[ports]]
-localPort = 5000
-externalPort = 80
-
-[[ports]]
 localPort = 5173
 externalPort = 5173
 
 [[ports]]
 localPort = 5174
 externalPort = 3002
+
+[[ports]]
+localPort = 5000
+externalPort = 80
