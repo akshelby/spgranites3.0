@@ -329,50 +329,6 @@ export function PremiumCollection() {
                       draggable={false}
                     />
                   </div>
-                  <div
-                    className="absolute top-0"
-                    style={{
-                      width: '20px',
-                      height: '100%',
-                      right: '-10px',
-                      transform: 'rotateY(90deg)',
-                      background: 'linear-gradient(to right, #555, #333, #222)',
-                      transformOrigin: 'left center',
-                    }}
-                  />
-                  <div
-                    className="absolute top-0"
-                    style={{
-                      width: '20px',
-                      height: '100%',
-                      left: '-10px',
-                      transform: 'rotateY(-90deg)',
-                      background: 'linear-gradient(to left, #555, #333, #222)',
-                      transformOrigin: 'right center',
-                    }}
-                  />
-                  <div
-                    className="absolute left-0"
-                    style={{
-                      width: '100%',
-                      height: '20px',
-                      bottom: '-10px',
-                      transform: 'rotateX(90deg)',
-                      background: 'linear-gradient(to bottom, #444, #222)',
-                      transformOrigin: 'top center',
-                    }}
-                  />
-                  <div
-                    className="absolute left-0"
-                    style={{
-                      width: '100%',
-                      height: '20px',
-                      top: '-10px',
-                      transform: 'rotateX(-90deg)',
-                      background: 'linear-gradient(to top, #555, #333)',
-                      transformOrigin: 'bottom center',
-                    }}
-                  />
                 </div>
               );
             })}
