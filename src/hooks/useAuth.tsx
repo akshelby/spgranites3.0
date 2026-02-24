@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
-import { api, getToken, setToken, removeToken } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
+import type { User, Session } from '@supabase/supabase-js';
 
 type AppRole = 'admin' | 'moderator' | 'user';
 
@@ -21,104 +22,112 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function mapUser(user: User | null): AuthUser | null {
+  if (!user) return null;
+  return { id: user.id, email: user.email || '' };
+}
+
+async function fetchRole(userId: string): Promise<AppRole> {
+  try {
+    const { data, error } = await supabase.rpc('get_user_role', { _user_id: userId });
+    if (!error && data) return data as AppRole;
+  } catch {}
+  return 'user';
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const checkAuth = useCallback(async () => {
-    const token = getToken();
-    if (!token) {
+  const handleSession = useCallback(async (session: Session | null) => {
+    if (session?.user) {
+      setUser(mapUser(session.user));
+      const userRole = await fetchRole(session.user.id);
+      setRole(userRole);
+    } else {
       setUser(null);
       setRole(null);
-      setLoading(false);
-      return;
     }
-
-    try {
-      const data = await api.get('/api/auth/me');
-      if (data?.user) {
-        setUser(data.user);
-        setRole((data.role as AppRole) || 'user');
-      } else {
-        removeToken();
-        setUser(null);
-        setRole(null);
-      }
-    } catch {
-      removeToken();
-      setUser(null);
-      setRole(null);
-    } finally {
-      setLoading(false);
-    }
+    setLoading(false);
   }, []);
 
   useEffect(() => {
-    checkAuth();
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (_event, session) => {
+        await handleSession(session);
+      }
+    );
 
-    const handleSessionExpired = () => {
-      removeToken();
-      setUser(null);
-      setRole(null);
-    };
+    // Then get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      handleSession(session);
+    });
 
-    window.addEventListener('auth:session-expired', handleSessionExpired);
     return () => {
-      window.removeEventListener('auth:session-expired', handleSessionExpired);
+      subscription.unsubscribe();
     };
-  }, [checkAuth]);
+  }, [handleSession]);
 
   const signUp = async (email: string, password: string) => {
     try {
-      const data = await api.post('/api/auth/signup', { email, password });
-      if (data.token) {
-        setToken(data.token);
-        setUser(data.user);
-        setRole('user');
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: window.location.origin,
+        },
+      });
+      if (error) {
+        const msg = error.message.includes('already registered')
+          ? 'An account with this email already exists. Try signing in instead.'
+          : error.message;
+        return { error: new Error(msg) };
       }
       return { error: null };
     } catch (err: any) {
-      const msg = err?.message?.includes('already registered')
-        ? 'An account with this email already exists. Try signing in instead.'
-        : err?.message || 'Unable to create account. Please try again.';
-      return { error: new Error(msg) };
+      return { error: new Error(err?.message || 'Unable to create account. Please try again.') };
     }
   };
 
   const signIn = async (email: string, password: string) => {
     try {
-      const data = await api.post('/api/auth/signin', { email, password });
-      if (data.token) {
-        setToken(data.token);
-        setUser(data.user);
-        setRole((data.role as AppRole) || 'user');
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        const msg = error.message.includes('Invalid')
+          ? 'Invalid email or password. Please try again.'
+          : error.message;
+        return { error: new Error(msg) };
       }
       return { error: null };
     } catch (err: any) {
-      const msg = err?.message?.includes('Invalid')
-        ? 'Invalid email or password. Please try again.'
-        : err?.message || 'Unable to sign in. Please try again.';
-      return { error: new Error(msg) };
+      return { error: new Error(err?.message || 'Unable to sign in. Please try again.') };
     }
   };
 
-  const resetPassword = async (_email: string) => {
-    return { error: new Error('Password reset is not available yet. Please contact support.') };
+  const resetPassword = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth?mode=reset`,
+      });
+      if (error) return { error: new Error(error.message) };
+      return { error: null };
+    } catch (err: any) {
+      return { error: new Error(err?.message || 'Unable to send reset email.') };
+    }
   };
 
   const signOut = async () => {
-    try {
-      await api.post('/api/auth/signout');
-    } catch {}
-    removeToken();
+    await supabase.auth.signOut();
     setUser(null);
     setRole(null);
     window.location.href = '/auth';
   };
 
   const refreshAuth = async () => {
-    await checkAuth();
+    const { data: { session } } = await supabase.auth.getSession();
+    await handleSession(session);
   };
 
   return (
