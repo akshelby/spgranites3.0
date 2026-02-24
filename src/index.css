@@ -158,10 +158,31 @@
 .cta-ribbon-btn-outline {
   background: #ffffff;
   color: #1a1a1a;
-  border: none;
+  border: 2px solid transparent;
+  overflow: hidden;
+}
+.dark .cta-ribbon-btn-outline {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+.cta-ribbon-btn-outline::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000000;
+  transform: translateX(-100%);
+  transition: transform 0.35s ease;
+}
+.cta-ribbon-btn-outline:hover::after {
+  transform: translateX(0);
 }
 .cta-ribbon-btn-outline:hover {
-  background: #e5e5e5;
+  background: #ffffff;
+  border-color: #ef4444 !important;
+  color: #ffffff !important;
 }
 .cta-ribbon-btn-red {
   background: #dc2626;
