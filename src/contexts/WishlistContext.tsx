@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
 interface WishlistItem {
@@ -22,10 +22,9 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const { user } = useAuth();
 
-  // Fetch wishlist when user changes
   useEffect(() => {
     if (user) {
-      fetchWishlist();
+      void fetchWishlist();
     } else {
       setItems([]);
     }
@@ -33,18 +32,25 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
 
   const fetchWishlist = async () => {
     if (!user) return;
-    
+
     setIsLoading(true);
     try {
-      const data = await api.get('/api/wishlist');
+      const { data, error } = await supabase
+        .from('wishlists')
+        .select('id, product_id')
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
       setItems(
         (Array.isArray(data) ? data : []).map((item: any) => ({
           id: item.id,
-          productId: item.product_id || item.productId,
+          productId: item.product_id,
         }))
       );
     } catch (error) {
       console.error('Error fetching wishlist:', error);
+      setItems([]);
     } finally {
       setIsLoading(false);
     }
@@ -54,12 +60,19 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     if (!user) return;
 
     try {
-      const data = await api.post('/api/wishlist', { product_id: productId });
+      const { data, error } = await supabase
+        .from('wishlists')
+        .insert({ user_id: user.id, product_id: productId })
+        .select('id, product_id')
+        .single();
+
+      if (error) throw error;
+
       if (data) {
-        setItems((prev) => [
-          ...prev,
-          { id: data.id, productId: data.product_id || productId },
-        ]);
+        setItems((prev) => {
+          if (prev.some((item) => item.productId === productId)) return prev;
+          return [...prev, { id: data.id, productId: data.product_id }];
+        });
       }
     } catch (error) {
       console.error('Error adding to wishlist:', error);
@@ -70,7 +83,14 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     if (!user) return;
 
     try {
-      await api.delete(`/api/wishlist/${productId}`);
+      const { error } = await supabase
+        .from('wishlists')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('product_id', productId);
+
+      if (error) throw error;
+
       setItems((prev) => prev.filter((item) => item.productId !== productId));
     } catch (error) {
       console.error('Error removing from wishlist:', error);
