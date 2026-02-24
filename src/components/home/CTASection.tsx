@@ -31,7 +31,7 @@ export function CTASection() {
           <div className="flex flex-col sm:flex-row flex-wrap gap-5 sm:gap-6 justify-center items-center">
             <Link
               to="/estimation"
-              className="cta-ribbon-btn cta-ribbon-btn-dark group"
+              className="cta-ribbon-btn cta-ribbon-btn-cta-dark group"
               data-testid="button-cta-estimation"
             >
               <span className="cta-ribbon-btn-inner">
@@ -41,7 +41,7 @@ export function CTASection() {
             </Link>
             <a
               href="tel:+919876543210"
-              className="cta-ribbon-btn cta-ribbon-btn-outline group"
+              className="cta-ribbon-btn cta-ribbon-btn-cta-outline group"
               data-testid="button-cta-call"
             >
               <span className="cta-ribbon-btn-inner">
