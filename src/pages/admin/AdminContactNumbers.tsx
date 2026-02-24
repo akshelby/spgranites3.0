@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Trash2, Phone, GripVertical } from 'lucide-react';
 
@@ -30,25 +30,21 @@ export default function AdminContactNumbers() {
 
   useEffect(() => {
     fetchNumbers();
-    const timeout = setTimeout(() => {
-      setLoading((prev) => {
-        if (prev) {
-          toast({ title: 'Loading timeout', description: 'Data is taking too long to load. Please try refreshing.', variant: 'destructive' });
-        }
-        return false;
-      });
-    }, 15000);
-    return () => clearTimeout(timeout);
   }, []);
 
   const fetchNumbers = async () => {
     setLoading(true);
     try {
-      const data = await api.get('/api/admin/contact-numbers');
+      const { data, error } = await supabase
+        .from('contact_numbers')
+        .select('*')
+        .order('display_order', { ascending: true });
+      
+      if (error) throw error;
       setNumbers(data || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching contact numbers:', error);
-      toast({ title: 'Error', description: 'Failed to load contact numbers.', variant: 'destructive' });
+      toast({ title: 'Error', description: error?.message, variant: 'destructive' });
     }
     setLoading(false);
   };
@@ -58,41 +54,56 @@ export default function AdminContactNumbers() {
     setSaving(true);
     try {
       const maxOrder = numbers.length > 0 ? Math.max(...numbers.map(n => n.display_order)) : 0;
-      await api.post('/api/admin/contact-numbers', {
+      const { error } = await supabase.from('contact_numbers').insert({
         phone_number: phoneInput.trim(),
         label: labelInput.trim() || null,
         is_active: true,
         display_order: maxOrder + 1,
       });
+
+      if (error) throw error;
+      
       toast({ title: 'Number added successfully' });
       setPhoneInput('');
       setLabelInput('');
       setDialogOpen(false);
       fetchNumbers();
-    } catch (error) {
-      toast({ title: 'Failed to add number', variant: 'destructive' });
+    } catch (error: any) {
+      toast({ title: 'Failed to add number', description: error.message, variant: 'destructive' });
     }
     setSaving(false);
   };
 
   const handleToggle = async (id: string, currentActive: boolean) => {
     try {
-      await api.put(`/api/admin/contact-numbers/${id}`, { is_active: !currentActive });
+      const { error } = await supabase
+        .from('contact_numbers')
+        .update({ is_active: !currentActive })
+        .eq('id', id);
+        
+      if (error) throw error;
+      
       setNumbers(prev =>
         prev.map(n => n.id === id ? { ...n, is_active: !currentActive } : n)
       );
-    } catch (error) {
-      toast({ title: 'Failed to update', variant: 'destructive' });
+    } catch (error: any) {
+      toast({ title: 'Failed to update', description: error.message, variant: 'destructive' });
     }
   };
 
   const handleDelete = async (id: string) => {
     try {
-      await api.delete(`/api/admin/contact-numbers/${id}`);
+      const { error } = await supabase
+        .from('contact_numbers')
+        .delete()
+        .eq('id', id);
+        
+      if (error) throw error;
+      
       toast({ title: 'Number deleted' });
       setNumbers(prev => prev.filter(n => n.id !== id));
-    } catch (error) {
-      toast({ title: 'Failed to delete', variant: 'destructive' });
+    } catch (error: any) {
+      toast({ title: 'Failed to delete', description: error.message, variant: 'destructive' });
     }
   };
 
