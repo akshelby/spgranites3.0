@@ -119,10 +119,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setRole(null);
-    window.location.href = '/auth';
+    try {
+      setUser(null);
+      setRole(null);
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch (err) {
+      console.error('Sign out error:', err);
+    } finally {
+      window.location.href = '/auth';
+    }
   };
 
   const refreshAuth = async () => {
