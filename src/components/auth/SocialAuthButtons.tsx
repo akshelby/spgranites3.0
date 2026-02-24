@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { supabase } from '@/integrations/supabase/client';
 
 export function SocialAuthButtons() {
   const { t } = useTranslation();
@@ -13,15 +14,20 @@ export function SocialAuthButtons() {
     setLoading(true);
     setErrorMsg(null);
     try {
-      const data = await fetch('/api/auth/google', { method: 'POST' }).then(r => r.json());
-      if (data?.url) {
-        window.location.href = data.url;
-      } else {
-        toast.info('Google sign-in is coming soon!');
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) {
+        setErrorMsg(error.message);
+        toast.error('Google sign-in failed');
         setLoading(false);
       }
     } catch (err: any) {
-      toast.info('Google sign-in is coming soon!');
+      setErrorMsg('Something went wrong. Please try again.');
+      toast.error('Google sign-in failed');
       setLoading(false);
     }
   };
