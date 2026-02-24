@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { Product, ProductCategory } from '@/types/database';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
@@ -46,8 +46,12 @@ export default function ProductsPage() {
 
   const fetchCategories = async () => {
     try {
-      const data = await api.get('/api/categories');
-      if (data) setCategories(data);
+      const { data, error } = await supabase
+        .from('product_categories')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+      if (!error && data) setCategories(data as ProductCategory[]);
     } catch (err) {
       console.error('Failed to load categories:', err);
     }
@@ -57,9 +61,17 @@ export default function ProductsPage() {
     setLoading(true);
     setError(null);
     try {
-      const url = categorySlug ? `/api/products?category=${categorySlug}` : '/api/products';
-      const data = await api.get(url);
-      if (data) setProducts(data as Product[]);
+      const { data, error: fetchError } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+      if (fetchError) throw fetchError;
+      let results = (data || []) as unknown as Product[];
+      if (categorySlug) {
+        results = results.filter((p: any) => p.category_slug === categorySlug);
+      }
+      setProducts(results);
     } catch (err) {
       console.error('Failed to load products:', err);
       setError('Failed to load products. Please try again.');
