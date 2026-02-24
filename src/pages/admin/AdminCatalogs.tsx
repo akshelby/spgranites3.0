@@ -13,7 +13,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Pencil, Trash2, Download, FileText } from 'lucide-react';
 
@@ -44,24 +44,20 @@ export default function AdminCatalogs() {
 
   useEffect(() => {
     fetchCatalogs();
-    const timeout = setTimeout(() => {
-      setLoading((prev) => {
-        if (prev) {
-          toast({ title: 'Loading timeout', description: 'Data is taking too long to load. Please try refreshing.', variant: 'destructive' });
-        }
-        return false;
-      });
-    }, 15000);
-    return () => clearTimeout(timeout);
   }, []);
 
   const fetchCatalogs = async () => {
     try {
-      const data = await api.get('/api/admin/catalogs');
+      const { data, error } = await supabase
+        .from('catalogs')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
       setCatalogs(data || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching catalogs:', error);
-      toast({ title: 'Error', description: 'Failed to load catalogs.', variant: 'destructive' });
+      toast({ title: 'Error', description: error?.message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -79,10 +75,17 @@ export default function AdminCatalogs() {
       };
 
       if (editingCatalog) {
-        await api.put(`/api/admin/catalogs/${editingCatalog.id}`, catalogData);
+        const { error } = await supabase
+          .from('catalogs')
+          .update(catalogData)
+          .eq('id', editingCatalog.id);
+        if (error) throw error;
         toast({ title: 'Catalog updated' });
       } else {
-        await api.post('/api/admin/catalogs', catalogData);
+        const { error } = await supabase
+          .from('catalogs')
+          .insert(catalogData);
+        if (error) throw error;
         toast({ title: 'Catalog created' });
       }
 
@@ -109,7 +112,11 @@ export default function AdminCatalogs() {
     if (!confirm('Are you sure you want to delete this catalog?')) return;
 
     try {
-      await api.delete(`/api/admin/catalogs/${id}`);
+      const { error } = await supabase
+        .from('catalogs')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
       toast({ title: 'Catalog deleted' });
       fetchCatalogs();
     } catch (error: any) {

@@ -13,7 +13,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 
@@ -49,24 +49,20 @@ export default function AdminServices() {
 
   useEffect(() => {
     fetchServices();
-    const timeout = setTimeout(() => {
-      setLoading((prev) => {
-        if (prev) {
-          toast({ title: 'Loading timeout', description: 'Data is taking too long to load. Please try refreshing.', variant: 'destructive' });
-        }
-        return false;
-      });
-    }, 15000);
-    return () => clearTimeout(timeout);
   }, []);
 
   const fetchServices = async () => {
     try {
-      const data = await api.get('/api/admin/services');
+      const { data, error } = await supabase
+        .from('services')
+        .select('*')
+        .order('display_order', { ascending: true });
+      
+      if (error) throw error;
       setServices(data || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching services:', error);
-      toast({ title: 'Error', description: 'Failed to load services.', variant: 'destructive' });
+      toast({ title: 'Error', description: error?.message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -87,10 +83,17 @@ export default function AdminServices() {
       };
 
       if (editingService) {
-        await api.put(`/api/admin/services/${editingService.id}`, serviceData);
+        const { error } = await supabase
+          .from('services')
+          .update(serviceData)
+          .eq('id', editingService.id);
+        if (error) throw error;
         toast({ title: 'Service updated' });
       } else {
-        await api.post('/api/admin/services', serviceData);
+        const { error } = await supabase
+          .from('services')
+          .insert(serviceData);
+        if (error) throw error;
         toast({ title: 'Service created' });
       }
 
@@ -120,7 +123,11 @@ export default function AdminServices() {
     if (!confirm('Are you sure you want to delete this service?')) return;
 
     try {
-      await api.delete(`/api/admin/services/${id}`);
+      const { error } = await supabase
+        .from('services')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
       toast({ title: 'Service deleted' });
       fetchServices();
     } catch (error: any) {

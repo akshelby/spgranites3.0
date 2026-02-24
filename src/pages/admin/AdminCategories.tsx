@@ -13,7 +13,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 
@@ -43,24 +43,20 @@ export default function AdminCategories() {
 
   useEffect(() => {
     fetchCategories();
-    const timeout = setTimeout(() => {
-      setLoading((prev) => {
-        if (prev) {
-          toast({ title: 'Loading timeout', description: 'Data is taking too long to load. Please try refreshing.', variant: 'destructive' });
-        }
-        return false;
-      });
-    }, 15000);
-    return () => clearTimeout(timeout);
   }, []);
 
   const fetchCategories = async () => {
     try {
-      const data = await api.get('/api/admin/categories');
+      const { data, error } = await supabase
+        .from('product_categories')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
       setCategories(data || []);
     } catch (error: any) {
       console.error('Error fetching categories:', error);
-      toast({ title: 'Error loading data', description: error?.message || 'Please try refreshing the page.', variant: 'destructive' });
+      toast({ title: 'Error loading data', description: error?.message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -78,10 +74,17 @@ export default function AdminCategories() {
       };
 
       if (editingCategory) {
-        await api.put(`/api/admin/categories/${editingCategory.id}`, categoryData);
+        const { error } = await supabase
+          .from('product_categories')
+          .update(categoryData)
+          .eq('id', editingCategory.id);
+        if (error) throw error;
         toast({ title: 'Category updated successfully' });
       } else {
-        await api.post('/api/admin/categories', categoryData);
+        const { error } = await supabase
+          .from('product_categories')
+          .insert(categoryData);
+        if (error) throw error;
         toast({ title: 'Category created successfully' });
       }
 
@@ -108,7 +111,12 @@ export default function AdminCategories() {
     if (!confirm('Are you sure you want to delete this category?')) return;
 
     try {
-      await api.delete(`/api/admin/categories/${id}`);
+      const { error } = await supabase
+        .from('product_categories')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
       toast({ title: 'Category deleted successfully' });
       fetchCategories();
     } catch (error: any) {

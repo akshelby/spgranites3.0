@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Plus, Pencil, Trash2, Image } from 'lucide-react';
 
@@ -47,24 +47,20 @@ export default function AdminBanners() {
 
   useEffect(() => {
     fetchBanners();
-    const timeout = setTimeout(() => {
-      setLoading((prev) => {
-        if (prev) {
-          toast({ title: 'Loading timeout', description: 'Data is taking too long to load. Please try refreshing.', variant: 'destructive' });
-        }
-        return false;
-      });
-    }, 15000);
-    return () => clearTimeout(timeout);
   }, []);
 
   const fetchBanners = async () => {
     try {
-      const data = await api.get('/api/admin/banners');
+      const { data, error } = await supabase
+        .from('banners')
+        .select('*')
+        .order('display_order', { ascending: true });
+      
+      if (error) throw error;
       setBanners(data || []);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching banners:', error);
-      toast({ title: 'Error', description: 'Failed to load banners.', variant: 'destructive' });
+      toast({ title: 'Error', description: error?.message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -85,10 +81,17 @@ export default function AdminBanners() {
       };
 
       if (editingBanner) {
-        await api.put(`/api/admin/banners/${editingBanner.id}`, bannerData);
+        const { error } = await supabase
+          .from('banners')
+          .update(bannerData)
+          .eq('id', editingBanner.id);
+        if (error) throw error;
         toast({ title: 'Banner updated' });
       } else {
-        await api.post('/api/admin/banners', bannerData);
+        const { error } = await supabase
+          .from('banners')
+          .insert(bannerData);
+        if (error) throw error;
         toast({ title: 'Banner created' });
       }
 
@@ -118,7 +121,11 @@ export default function AdminBanners() {
     if (!confirm('Are you sure you want to delete this banner?')) return;
 
     try {
-      await api.delete(`/api/admin/banners/${id}`);
+      const { error } = await supabase
+        .from('banners')
+        .delete()
+        .eq('id', id);
+      if (error) throw error;
       toast({ title: 'Banner deleted' });
       fetchBanners();
     } catch (error: any) {

@@ -7,7 +7,7 @@ import { SPLoader } from '@/components/ui/SPLoader';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { Product } from '@/types/database';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
@@ -55,11 +55,38 @@ export default function ProductDetailPage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await api.get(`/api/products/${slug}`);
+      // Fetch product by slug or id
+      const { data, error: fetchError } = await supabase
+        .from('products')
+        .select('*, category:product_categories(*)')
+        .or(`slug.eq.${slug},id.eq.${slug}`)
+        .single();
+
+      if (fetchError) throw fetchError;
+
       if (data) {
-        const fullProduct = { ...data, reviews: data.reviews || [] } as Product;
-        setProduct(fullProduct);
-        setReviews((data.reviews || []) as ProductReview[]);
+        setProduct(data as any);
+
+        // Fetch reviews separately
+        const { data: reviewsData } = await supabase
+          .from('product_reviews')
+          .select('*')
+          .eq('product_id', data.id)
+          .order('created_at', { ascending: false });
+
+        // Fetch profile info for each review
+        const reviewsWithProfiles: ProductReview[] = [];
+        if (reviewsData) {
+          for (const r of reviewsData) {
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('full_name, display_name')
+              .eq('id', r.user_id)
+              .single();
+            reviewsWithProfiles.push({ ...r, profiles: profileData } as any);
+          }
+        }
+        setReviews(reviewsWithProfiles);
       }
     } catch (err: any) {
       console.error('Failed to load product:', err);
@@ -67,6 +94,24 @@ export default function ProductDetailPage() {
       toast.error('Failed to load product');
     }
     setLoading(false);
+  };
+
+  const fetchRelatedProducts = async (categoryId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('category_id', categoryId)
+        .limit(4);
+
+      if (error) {
+        console.error('Failed to load related products:', error);
+      } else {
+        setRelatedProducts(data as any);
+      }
+    } catch (err: any) {
+      console.error('Failed to load related products:', err);
+    }
   };
 
   const avgRating = reviews.length > 0
@@ -77,22 +122,29 @@ export default function ProductDetailPage() {
     if (!user || !product) return;
     setSubmittingReview(true);
     try {
-      await api.post('/api/product-reviews', {
-        product_id: product.id,
-        rating: reviewRating,
-        review_text: reviewText || null,
-        user_id: user.id,
-      });
-      toast.success(t('products.reviewSubmitted'));
-      setReviewText('');
-      setReviewRating(5);
-      fetchProduct();
-    } catch (err: any) {
-      if (err?.message?.includes('already') || err?.responseBody?.error?.includes('already')) {
-        toast.error(t('products.alreadyReviewed'));
+      const { error: insertError } = await supabase
+        .from('product_reviews')
+        .insert({
+          product_id: product.id,
+          rating: reviewRating,
+          review_text: reviewText || null,
+          user_id: user.id,
+        });
+
+      if (insertError) {
+        if (insertError.message?.includes('unique') || insertError.message?.includes('duplicate')) {
+          toast.error(t('products.alreadyReviewed'));
+        } else {
+          throw insertError;
+        }
       } else {
-        toast.error(t('products.reviewFailed'));
+        toast.success(t('products.reviewSubmitted'));
+        setReviewText('');
+        setReviewRating(5);
+        fetchProduct();
       }
+    } catch (err: any) {
+      toast.error(t('products.reviewFailed'));
     } finally {
       setSubmittingReview(false);
     }
@@ -430,7 +482,7 @@ export default function ProductDetailPage() {
                             </div>
                           </div>
                           <span className="text-[10px] text-muted-foreground">
-                            {format(new Date(review.created_at), 'MMM d, yyyy')}
+                            {format(new Date(review.created_at), 'dd MMM yyyy')}
                           </span>
                         </div>
                         {review.review_text && (
@@ -442,44 +494,14 @@ export default function ProductDetailPage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs sm:text-sm text-muted-foreground">{t('products.noReviews')}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground py-4 text-center">
+                    {t('products.noReviews')}
+                  </p>
                 )}
               </TabsContent>
             </Tabs>
           </motion.div>
         </div>
-
-        {relatedProducts.length > 0 && (
-          <section className="mt-8 sm:mt-12">
-            <h2 className="text-lg sm:text-xl font-display font-bold mb-3 sm:mb-4" data-testid="text-related-title">
-              {t('products.relatedProducts')}
-            </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3">
-              {relatedProducts.map((rp) => (
-                <Link
-                  key={rp.id}
-                  to={`/products/${rp.slug}`}
-                  className="group bg-card rounded-lg overflow-hidden border border-border hover-elevate transition-all"
-                  data-testid={`link-related-${rp.id}`}
-                >
-                  <div className="aspect-[4/3] overflow-hidden">
-                    <img
-                      src={resolveProductImage(rp)}
-                      alt={rp.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="p-2 sm:p-2.5">
-                    <h3 className="text-xs sm:text-sm font-medium line-clamp-1">{rp.name}</h3>
-                    <p className="text-sm font-bold text-primary mt-0.5">
-                      {formatPrice(rp.price)}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
       </div>
     </MainLayout>
   );
