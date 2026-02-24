@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +11,7 @@ import { TabProvider } from "@/contexts/TabContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { VisitorTracker } from "@/components/VisitorTracker";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { toast } from "sonner";
 import '@/i18n';
 
 // Pages
@@ -78,9 +80,19 @@ const queryClient = new QueryClient({
   },
 });
 
-const App = () => (
-  <ErrorBoundary>
-  <QueryClientProvider client={queryClient}>
+function AppContent() {
+  useEffect(() => {
+    const handleRejection = (event: PromiseRejectionEvent) => {
+      console.error('Unhandled promise rejection:', event.reason);
+      toast.error('Something went wrong. Please refresh and try again.');
+      event.preventDefault();
+    };
+
+    window.addEventListener('unhandledrejection', handleRejection);
+    return () => window.removeEventListener('unhandledrejection', handleRejection);
+  }, []);
+
+  return (
     <TooltipProvider>
       <AuthProvider>
         <CartProvider>
@@ -148,7 +160,14 @@ const App = () => (
         </CartProvider>
       </AuthProvider>
     </TooltipProvider>
-  </QueryClientProvider>
+  );
+}
+
+const App = () => (
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <AppContent />
+    </QueryClientProvider>
   </ErrorBoundary>
 );
 
