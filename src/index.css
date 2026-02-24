@@ -209,10 +209,11 @@
 }
 .cta-ribbon-btn-dark:hover::after {
   transform: translateX(0);
+  background: #ffffff;
 }
 .cta-ribbon-btn-dark:hover {
   box-shadow: inset 0 0 0 2px #ef4444;
-  color: #ffffff !important;
+  color: #000000 !important;
 }
 /* ===== End CTA Ribbon Buttons ===== */
 
