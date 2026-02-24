@@ -191,13 +191,13 @@
 .cta-ribbon-btn-dark {
   background: #1a1a1a !important;
   color: #ffffff !important;
-  border: none;
+  border: 2px solid transparent;
   box-shadow: none;
   overflow: hidden;
 }
 .dark .cta-ribbon-btn-dark {
-  background: #1a1a1a !important;
-  color: #ffffff !important;
+  background: #ffffff !important;
+  color: #1a1a1a !important;
 }
 .cta-ribbon-btn-dark::after {
   content: '';
@@ -212,11 +212,18 @@
 }
 .cta-ribbon-btn-dark:hover::after {
   transform: translateX(0);
-  background: #ffffff;
+  background: #000000;
 }
 .cta-ribbon-btn-dark:hover {
-  box-shadow: inset 0 0 0 2px #ef4444;
-  color: #000000 !important;
+  border-color: #ef4444 !important;
+  color: #ffffff !important;
+}
+.dark .cta-ribbon-btn-dark:hover::after {
+  background: #000000;
+}
+.dark .cta-ribbon-btn-dark:hover {
+  border-color: #ef4444 !important;
+  color: #ffffff !important;
 }
 /* ===== End CTA Ribbon Buttons ===== */
 
