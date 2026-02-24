@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Star, Quote } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { Testimonial } from '@/types/database';
 
 const defaultTestimonials: Testimonial[] = [
@@ -21,15 +21,15 @@ export function TestimonialsSection() {
 
   const fetchTestimonials = async () => {
     try {
-      const data = await api.get('/api/testimonials');
-      if (Array.isArray(data) && data.length > 0) {
+      const { data, error } = await supabase
+        .from('testimonials')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
+      if (!error && Array.isArray(data) && data.length > 0) {
         setTestimonials(data as Testimonial[]);
       } else {
-        setTestimonials([
-          { id: '1', customer_name: 'Rajesh Kumar', company: 'Home Owner', designation: null, review_text: 'Excellent quality granite and professional installation. The team was punctual and the work was completed perfectly.', rating: 5, image_url: null, is_active: true, display_order: 1, created_at: '', updated_at: '' },
-          { id: '2', customer_name: 'Priya Sharma', company: 'Interior Designer', designation: 'Lead Designer', review_text: 'I recommend SP Granites to all my clients. Their marble collection is stunning and the craftsmanship is top-notch.', rating: 5, image_url: null, is_active: true, display_order: 2, created_at: '', updated_at: '' },
-          { id: '3', customer_name: 'Anand Builders', company: 'Construction Company', designation: 'Project Manager', review_text: 'We have been working with SP Granites for over 5 years. Reliable, quality products, and excellent customer service.', rating: 5, image_url: null, is_active: true, display_order: 3, created_at: '', updated_at: '' },
-        ]);
+        setTestimonials(defaultTestimonials);
       }
     } catch {
       setTestimonials(defaultTestimonials);

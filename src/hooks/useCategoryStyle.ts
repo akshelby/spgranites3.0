@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { api } from '@/lib/api';
+
 
 export type CategoryStyle = 'circle' | 'pill';
 
@@ -15,27 +15,22 @@ export function useCategoryStyle() {
   });
 
   useEffect(() => {
+    // localStorage-driven style to avoid dependency on unstable legacy API endpoints
     let cancelled = false;
-    const fetchStyle = async () => {
+    if (!cancelled) {
       try {
-        const data = await api.get('/api/hero-carousel/settings');
-        if (!cancelled && data?.category_style) {
-          const dbStyle = data.category_style as CategoryStyle;
-          setStyle(dbStyle);
-          try { localStorage.setItem(STORAGE_KEY, dbStyle); } catch {}
+        const stored = localStorage.getItem(STORAGE_KEY) as CategoryStyle | null;
+        if (stored === 'circle' || stored === 'pill') {
+          setStyle(stored);
         }
       } catch {}
-    };
-    fetchStyle();
+    }
     return () => { cancelled = true; };
   }, []);
 
   const updateStyle = async (newStyle: CategoryStyle) => {
     setStyle(newStyle);
     try { localStorage.setItem(STORAGE_KEY, newStyle); } catch {}
-    try {
-      await api.put('/api/admin/carousel/settings', { category_style: newStyle });
-    } catch {}
     window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY, newValue: newStyle }));
   };
 
