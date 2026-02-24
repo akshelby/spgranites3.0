@@ -50,7 +50,7 @@ export default function ProductsPage() {
         .from('product_categories')
         .select('*')
         .eq('is_active', true)
-        .order('display_order', { ascending: true });
+        .order('name', { ascending: true });
       if (!error && data) setCategories(data as ProductCategory[]);
     } catch (err) {
       console.error('Failed to load categories:', err);
