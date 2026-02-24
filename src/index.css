@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent layout shift when overlays hide scrollbar */
+html {
+  scrollbar-gutter: stable;
+}
+
 /* SP Granites Design System - Premium Stone-Inspired Theme */
 
 /* Slide-in hover effect for buttons and nav links */
