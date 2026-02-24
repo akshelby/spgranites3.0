@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { useWishlist } from '@/contexts/WishlistContext';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/hooks/useAuth';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { Product } from '@/types/database';
 import { useTranslation } from 'react-i18next';
 
@@ -33,10 +33,12 @@ export default function WishlistPage() {
 
     try {
       const productIds = items.map((i) => i.productId);
-      const allProducts = await api.get('/api/products');
-      if (allProducts) {
-        const filtered = (allProducts as Product[]).filter((p: Product) => productIds.includes(p.id));
-        setProducts(filtered);
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .in('id', productIds);
+      if (!error && data) {
+        setProducts(data as unknown as Product[]);
       }
     } catch {}
     setLoading(false);

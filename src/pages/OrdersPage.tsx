@@ -7,7 +7,7 @@ import { SPLoader } from '@/components/ui/SPLoader';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { Order } from '@/types/database';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
@@ -48,8 +48,13 @@ export default function OrdersPage() {
   const fetchOrders = async () => {
     setError(null);
     try {
-      const data = await api.get('/api/orders');
-      if (data) setOrders(data as Order[]);
+      const { data, error: fetchError } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('user_id', user!.id)
+        .order('created_at', { ascending: false });
+      if (fetchError) throw fetchError;
+      setOrders((data || []) as unknown as Order[]);
     } catch (err) {
       console.error('Orders fetch error:', err);
       setError('Failed to load your orders. Please try again.');
