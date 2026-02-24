@@ -195,7 +195,7 @@
   content: '';
   position: absolute;
   top: 0; left: 0; width: 100%; height: 100%;
-  background: #000000;
+  background: #ffffff;
   transform: translateX(-100%);
   transition: transform 0.35s ease;
 }
@@ -204,7 +204,7 @@
 }
 .cta-ribbon-btn-cta-dark:hover {
   border-color: #ef4444 !important;
-  color: #ffffff !important;
+  color: #000000 !important;
 }
 .cta-ribbon-btn-cta-outline {
   background: #ffffff !important;
