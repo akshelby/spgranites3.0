@@ -119,15 +119,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    setUser(null);
+    setRole(null);
     try {
-      setUser(null);
-      setRole(null);
       await supabase.auth.signOut({ scope: 'local' });
     } catch (err) {
       console.error('Sign out error:', err);
-    } finally {
-      window.location.href = '/auth';
     }
+    // Manually clear any remaining Supabase auth data from localStorage
+    const keys = Object.keys(localStorage);
+    keys.forEach((key) => {
+      if (key.startsWith('sb-') && key.includes('-auth-token')) {
+        localStorage.removeItem(key);
+      }
+    });
+    window.location.href = '/auth';
   };
 
   const refreshAuth = async () => {
