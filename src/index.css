@@ -184,6 +184,49 @@
   border-color: #ef4444 !important;
   color: #ffffff !important;
 }
+/* CTA section specific buttons - fixed colors regardless of theme (on red bg) */
+.cta-ribbon-btn-cta-dark {
+  background: #1a1a1a !important;
+  color: #ffffff !important;
+  border: 2px solid transparent;
+  overflow: hidden;
+}
+.cta-ribbon-btn-cta-dark::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: #000000;
+  transform: translateX(-100%);
+  transition: transform 0.35s ease;
+}
+.cta-ribbon-btn-cta-dark:hover::after {
+  transform: translateX(0);
+}
+.cta-ribbon-btn-cta-dark:hover {
+  border-color: #ef4444 !important;
+  color: #ffffff !important;
+}
+.cta-ribbon-btn-cta-outline {
+  background: #ffffff !important;
+  color: #1a1a1a !important;
+  border: 2px solid transparent;
+  overflow: hidden;
+}
+.cta-ribbon-btn-cta-outline::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: #000000;
+  transform: translateX(-100%);
+  transition: transform 0.35s ease;
+}
+.cta-ribbon-btn-cta-outline:hover::after {
+  transform: translateX(0);
+}
+.cta-ribbon-btn-cta-outline:hover {
+  border-color: #ef4444 !important;
+  color: #ffffff !important;
+}
 .cta-ribbon-btn-red {
   background: #dc2626;
   color: #ffffff;
