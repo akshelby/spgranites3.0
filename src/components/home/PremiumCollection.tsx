@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { api } from '@/lib/api';
+import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { productImageMap, resolveProductImage, defaultProductImage } from '@/lib/productImages';
@@ -54,8 +54,13 @@ export function PremiumCollection() {
     let cancelled = false;
     const fetchProducts = async (attempt = 0) => {
       try {
-        const data = await api.get('/api/products');
-        if (cancelled) return;
+        const { data, error } = await supabase
+          .from('products')
+          .select('*')
+          .eq('is_active', true)
+          .order('created_at', { ascending: false });
+
+        if (cancelled || error) return;
         const allProducts = (Array.isArray(data) ? data : []).filter((p: any) => p.is_active);
         if (allProducts.length >= 6) {
           const withLocalImages = allProducts.map((p: any) => {
