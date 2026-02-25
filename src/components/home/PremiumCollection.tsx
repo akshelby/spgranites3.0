@@ -289,6 +289,7 @@ export function PremiumCollection() {
                     style={{
                       backfaceVisibility: 'visible',
                       WebkitBackfaceVisibility: 'visible',
+                      transform: 'translateZ(0)',
                     }}
                     onClick={(e) => { if (isDraggingRef.current) e.preventDefault(); }}
                     data-testid={`collection-card-${product.id}`}
@@ -315,23 +316,6 @@ export function PremiumCollection() {
                       </div>
                     </div>
                   </Link>
-                  <div
-                    className="absolute inset-0 rounded-xl overflow-hidden bg-card"
-                    style={{
-                      transform: 'rotateY(180deg)',
-                      backfaceVisibility: 'visible',
-                      WebkitBackfaceVisibility: 'visible',
-                      opacity: 1,
-                    }}
-                  >
-                    <img
-                      src={imageSrc}
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                      draggable={false}
-                      onError={(e) => { (e.target as HTMLImageElement).src = defaultProductImage; }}
-                    />
-                  </div>
                 </div>
               );
             })}
