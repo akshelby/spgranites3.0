@@ -108,7 +108,8 @@ export function PremiumCollection() {
     const el = containerRef.current;
     if (!el) return;
     const nativeWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 2) {
+      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      if (Math.abs(delta) > 2) {
         e.preventDefault();
       }
     };
@@ -223,11 +224,8 @@ export function PremiumCollection() {
   const handleWheel = useCallback((e: React.WheelEvent) => {
     if (isMobile) return;
 
-    const isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
-    const delta = isHorizontal ? e.deltaX : e.deltaY;
+    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
     if (Math.abs(delta) < 2) return;
-
-    if (!isHorizontal) return;
 
     stopMomentum();
     autoRotateRef.current = false;
@@ -270,7 +268,7 @@ export function PremiumCollection() {
             Premium Collection
           </h2>
           <p className="mt-1 sm:mt-1.5 text-[11px] sm:text-xs text-muted-foreground">
-            {isMobile ? 'Swipe to rotate' : 'Drag to rotate'}
+            {isMobile ? 'Swipe to rotate' : 'Scroll to rotate'}
           </p>
         </motion.div>
 
