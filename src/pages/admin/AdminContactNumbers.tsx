@@ -35,7 +35,7 @@ export default function AdminContactNumbers() {
   const fetchNumbers = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('contact_numbers')
         .select('*')
         .order('display_order', { ascending: true });
@@ -54,7 +54,7 @@ export default function AdminContactNumbers() {
     setSaving(true);
     try {
       const maxOrder = numbers.length > 0 ? Math.max(...numbers.map(n => n.display_order)) : 0;
-      const { error } = await supabase.from('contact_numbers').insert({
+      const { error } = await (supabase as any).from('contact_numbers').insert({
         phone_number: phoneInput.trim(),
         label: labelInput.trim() || null,
         is_active: true,
@@ -76,7 +76,7 @@ export default function AdminContactNumbers() {
 
   const handleToggle = async (id: string, currentActive: boolean) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('contact_numbers')
         .update({ is_active: !currentActive })
         .eq('id', id);
@@ -93,7 +93,7 @@ export default function AdminContactNumbers() {
 
   const handleDelete = async (id: string) => {
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('contact_numbers')
         .delete()
         .eq('id', id);
