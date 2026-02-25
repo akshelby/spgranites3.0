@@ -96,7 +96,7 @@ Preferred communication style: Simple, everyday language.
 - Frontend: Vite on port **5000** with HMR, proxies `/api` to backend
 - Backend: Express on port **3001**
 - Production: Backend serves built frontend from `dist/` on port 5000
-- `npm run dev` starts Vite dev server
+- Workflow command: `PORT=3001 node_modules/.bin/tsx server/index.ts & node_modules/.bin/vite`
 
 ### Environment Variables
 

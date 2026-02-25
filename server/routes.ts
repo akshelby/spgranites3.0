@@ -2,10 +2,16 @@ import { Express, Request, Response, NextFunction } from "express";
 import { supabase } from "./supabase";
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
-});
+let _openai: OpenAI | null = null;
+function getOpenAI(): OpenAI {
+  if (!_openai) {
+    _openai = new OpenAI({
+      apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+      baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+    });
+  }
+  return _openai;
+}
 
 const ADMIN_EMAILS = ['akshelby9999@gmail.com', 'srajith9999@gmail.com'];
 
@@ -1433,7 +1439,7 @@ If you don't know something specific (like exact prices or stock availability), 
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
-      const stream = await openai.chat.completions.create({
+      const stream = await getOpenAI().chat.completions.create({
         model: "gpt-5-nano",
         messages: [
           { role: "system", content: systemPrompt },
