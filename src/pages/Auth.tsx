@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2, Mail, Phone, X, Lock } from 'lucide-react';
@@ -72,12 +73,29 @@ const Auth = () => {
     setResetting(false);
   };
 
+  const waitForSession = async (maxAttempts = 8, delayMs = 250) => {
+    for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) return session;
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+    return null;
+  };
+
   const handleSuccess = async () => {
+    const session = await waitForSession();
+
+    if (!session?.user) {
+      toast.error('Sign-in finished, but session was not saved. Please try again.');
+      return;
+    }
+
     try {
       await refreshAuth();
     } catch {
-      // ignore and still navigate
+      // ignore and still navigate with confirmed session
     }
+
     navigate(redirectTo, { replace: true });
   };
 
