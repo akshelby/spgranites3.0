@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,52 +14,50 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { toast } from "sonner";
 import '@/i18n';
 
-// Pages
 import HomePage from "./pages/HomePage";
-import ProductsPage from "./pages/ProductsPage";
-import ProductDetailPage from "./pages/ProductDetailPage";
-import ServicesPage from "./pages/ServicesPage";
-import ContactPage from "./pages/ContactPage";
-import TestimonialsPage from "./pages/TestimonialsPage";
-import CatalogsPage from "./pages/CatalogsPage";
-import EstimationPage from "./pages/EstimationPage";
-import CartPage from "./pages/CartPage";
-import ChatPage from "./pages/ChatPage";
-import WishlistPage from "./pages/WishlistPage";
-import OrdersPage from "./pages/OrdersPage";
-import OrderDetailPage from "./pages/OrderDetailPage";
-import ProfilePage from "./pages/ProfilePage";
-import Auth from "./pages/Auth";
-import AuthCallback from "./pages/AuthCallback";
-import StoneVisualizerPage from "./pages/StoneVisualizerPage";
-import AboutPage from "./pages/AboutPage";
-import PaymentPage from "./pages/PaymentPage";
-import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
-import TermsOfServicePage from "./pages/TermsOfServicePage";
-import NotFound from "./pages/NotFound";
-// Admin Pages
-import {
-  AdminDashboard,
-  AdminProducts,
-  AdminCategories,
-  AdminOrders,
-  AdminEnquiries,
-  AdminEstimations,
-  AdminReviews,
-  AdminTestimonials,
-  AdminServices,
-  AdminCatalogs,
-  AdminBanners,
-  AdminCarousel,
-  AdminLocations,
-  AdminUsers,
-  AdminAnalytics,
-  AdminChat,
-  AdminContactNumbers,
-  AdminCRMOverview,
-  AdminCustomers,
-  AdminLeads,
-} from "./pages/admin";
+
+const ProductsPage = lazy(() => import("./pages/ProductsPage"));
+const ProductDetailPage = lazy(() => import("./pages/ProductDetailPage"));
+const ServicesPage = lazy(() => import("./pages/ServicesPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const TestimonialsPage = lazy(() => import("./pages/TestimonialsPage"));
+const CatalogsPage = lazy(() => import("./pages/CatalogsPage"));
+const EstimationPage = lazy(() => import("./pages/EstimationPage"));
+const CartPage = lazy(() => import("./pages/CartPage"));
+const ChatPage = lazy(() => import("./pages/ChatPage"));
+const WishlistPage = lazy(() => import("./pages/WishlistPage"));
+const OrdersPage = lazy(() => import("./pages/OrdersPage"));
+const OrderDetailPage = lazy(() => import("./pages/OrderDetailPage"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const Auth = lazy(() => import("./pages/Auth"));
+const AuthCallback = lazy(() => import("./pages/AuthCallback"));
+const StoneVisualizerPage = lazy(() => import("./pages/StoneVisualizerPage"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
+const PaymentPage = lazy(() => import("./pages/PaymentPage"));
+const PrivacyPolicyPage = lazy(() => import("./pages/PrivacyPolicyPage"));
+const TermsOfServicePage = lazy(() => import("./pages/TermsOfServicePage"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminProducts = lazy(() => import("./pages/admin/AdminProducts"));
+const AdminCategories = lazy(() => import("./pages/admin/AdminCategories"));
+const AdminOrders = lazy(() => import("./pages/admin/AdminOrders"));
+const AdminEnquiries = lazy(() => import("./pages/admin/AdminEnquiries"));
+const AdminEstimations = lazy(() => import("./pages/admin/AdminEstimations"));
+const AdminReviews = lazy(() => import("./pages/admin/AdminReviews"));
+const AdminTestimonials = lazy(() => import("./pages/admin/AdminTestimonials"));
+const AdminServices = lazy(() => import("./pages/admin/AdminServices"));
+const AdminCatalogs = lazy(() => import("./pages/admin/AdminCatalogs"));
+const AdminBanners = lazy(() => import("./pages/admin/AdminBanners"));
+const AdminCarousel = lazy(() => import("./pages/admin/AdminCarousel"));
+const AdminLocations = lazy(() => import("./pages/admin/AdminLocations"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const AdminAnalytics = lazy(() => import("./pages/admin/AdminAnalytics"));
+const AdminChat = lazy(() => import("./pages/admin/AdminChat"));
+const AdminContactNumbers = lazy(() => import("./pages/admin/AdminContactNumbers"));
+const AdminCRMOverview = lazy(() => import("./pages/admin/AdminCRMOverview"));
+const AdminCustomers = lazy(() => import("./pages/admin/AdminCustomers"));
+const AdminLeads = lazy(() => import("./pages/admin/AdminLeads"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -102,6 +100,7 @@ function AppContent() {
             <BrowserRouter>
               <TabProvider>
               <VisitorTracker />
+              <Suspense fallback={null}>
               <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<HomePage />} />
@@ -154,6 +153,7 @@ function AppContent() {
                 {/* Catch-all */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              </Suspense>
               </TabProvider>
             </BrowserRouter>
           </WishlistProvider>
