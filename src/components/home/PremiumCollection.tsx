@@ -221,8 +221,8 @@ export function PremiumCollection() {
   const isLargeDesktop = !isMobile && typeof window !== 'undefined' && window.innerWidth >= 1280;
   const isTablet = !isMobile && typeof window !== 'undefined' && window.innerWidth >= 640 && window.innerWidth < 1280;
   const cardW = isMobile ? 90 : isLargeDesktop ? 226 : isTablet ? 189 : 136;
-  const cardH = isMobile ? 128 : isLargeDesktop ? 301 : isTablet ? 256 : 196;
-  const containerH = isMobile ? 170 : isLargeDesktop ? 340 : isTablet ? 289 : 247;
+  const cardH = isMobile ? 128 : isLargeDesktop ? 255 : isTablet ? 213 : 196;
+  const containerH = isMobile ? 170 : isLargeDesktop ? 300 : isTablet ? 260 : 247;
   const halfCard = cardW / 2;
   const gap = isMobile ? 4 : isLargeDesktop ? 6 : isTablet ? 5 : 5;
   const minRadius = Math.ceil((halfCard + gap) / Math.sin(Math.PI / cardCount));
