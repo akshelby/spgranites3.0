@@ -14,16 +14,39 @@ export function SocialAuthButtons() {
     setLoading(true);
     setErrorMsg(null);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-      if (error) {
-        setErrorMsg(error.message);
-        toast.error('Google sign-in failed');
-        setLoading(false);
+      const isCustomDomain =
+        !window.location.hostname.includes('lovable.app') &&
+        !window.location.hostname.includes('lovableproject.com');
+
+      if (isCustomDomain) {
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: `${window.location.origin}/auth/callback`,
+            skipBrowserRedirect: true,
+          },
+        });
+        if (error) {
+          setErrorMsg(error.message);
+          toast.error('Google sign-in failed');
+          setLoading(false);
+          return;
+        }
+        if (data?.url) {
+          window.location.href = data.url;
+        }
+      } else {
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: `${window.location.origin}/auth/callback`,
+          },
+        });
+        if (error) {
+          setErrorMsg(error.message);
+          toast.error('Google sign-in failed');
+          setLoading(false);
+        }
       }
     } catch (err: any) {
       setErrorMsg('Something went wrong. Please try again.');
