@@ -275,6 +275,8 @@ export function PremiumCollection() {
                     top: `${-cardH / 2}px`,
                     transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
                     transformStyle: 'preserve-3d',
+                    backfaceVisibility: 'visible',
+                    WebkitBackfaceVisibility: 'visible',
                     willChange: 'transform',
                     opacity: 1,
                   }}
@@ -285,9 +287,8 @@ export function PremiumCollection() {
                       'absolute inset-0 block w-full h-full rounded-xl overflow-hidden shadow-xl bg-card',
                     )}
                     style={{
-                      transform: 'translateZ(0.5px)',
-                      backfaceVisibility: 'hidden',
-                      WebkitBackfaceVisibility: 'hidden',
+                      backfaceVisibility: 'visible',
+                      WebkitBackfaceVisibility: 'visible',
                     }}
                     onClick={(e) => { if (isDraggingRef.current) e.preventDefault(); }}
                     data-testid={`collection-card-${product.id}`}
@@ -317,9 +318,9 @@ export function PremiumCollection() {
                   <div
                     className="absolute inset-0 rounded-xl overflow-hidden bg-card"
                     style={{
-                      transform: 'rotateY(180deg) translateZ(0.5px)',
-                      backfaceVisibility: 'hidden',
-                      WebkitBackfaceVisibility: 'hidden',
+                      transform: 'rotateY(180deg)',
+                      backfaceVisibility: 'visible',
+                      WebkitBackfaceVisibility: 'visible',
                       opacity: 1,
                     }}
                   >
