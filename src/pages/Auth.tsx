@@ -73,7 +73,15 @@ const Auth = () => {
   };
 
   const handleSuccess = () => {
-    navigate(redirectTo);
+    const isCustomDomain =
+      !window.location.hostname.includes('lovable.app') &&
+      !window.location.hostname.includes('lovableproject.com');
+
+    if (isCustomDomain) {
+      window.location.href = redirectTo;
+    } else {
+      navigate(redirectTo);
+    }
   };
 
   const [timedOut, setTimedOut] = useState(false);
