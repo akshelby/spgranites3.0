@@ -261,6 +261,7 @@ export function PremiumCollection() {
           >
             {products.map((product, index) => {
               const angle = index * anglePerCard;
+              const imageSrc = resolveProductImage(product);
 
               return (
                 <div
@@ -281,18 +282,19 @@ export function PremiumCollection() {
                   <Link
                     to={`/products/${product.slug || product.id}`}
                     className={cn(
-                      'block w-full h-full rounded-xl overflow-hidden shadow-xl',
+                      'absolute inset-0 block w-full h-full rounded-xl overflow-hidden shadow-xl bg-card',
                     )}
                     style={{
-                      backfaceVisibility: 'visible',
-                      WebkitBackfaceVisibility: 'visible',
+                      transform: 'translateZ(0.5px)',
+                      backfaceVisibility: 'hidden',
+                      WebkitBackfaceVisibility: 'hidden',
                     }}
                     onClick={(e) => { if (isDraggingRef.current) e.preventDefault(); }}
                     data-testid={`collection-card-${product.id}`}
                   >
                     <div className="relative w-full h-full bg-card">
                       <img
-                        src={resolveProductImage(product)}
+                        src={imageSrc}
                         alt={product.name}
                         className="w-full h-full object-cover"
                         draggable={false}
@@ -313,17 +315,20 @@ export function PremiumCollection() {
                     </div>
                   </Link>
                   <div
-                    className="absolute inset-0 rounded-xl overflow-hidden"
+                    className="absolute inset-0 rounded-xl overflow-hidden bg-card"
                     style={{
-                      transform: 'rotateY(180deg)',
+                      transform: 'rotateY(180deg) translateZ(0.5px)',
+                      backfaceVisibility: 'hidden',
+                      WebkitBackfaceVisibility: 'hidden',
                       opacity: 1,
                     }}
                   >
                     <img
-                      src={resolveProductImage(product)}
+                      src={imageSrc}
                       alt={product.name}
                       className="w-full h-full object-cover"
                       draggable={false}
+                      onError={(e) => { (e.target as HTMLImageElement).src = defaultProductImage; }}
                     />
                   </div>
                 </div>
