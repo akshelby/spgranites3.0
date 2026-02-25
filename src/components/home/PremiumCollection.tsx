@@ -108,8 +108,7 @@ export function PremiumCollection() {
     const el = containerRef.current;
     if (!el) return;
     const nativeWheel = (e: WheelEvent) => {
-      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-      if (Math.abs(delta) > 1) {
+      if (Math.abs(e.deltaX) > Math.abs(e.deltaY) && Math.abs(e.deltaX) > 2) {
         e.preventDefault();
       }
     };
@@ -222,10 +221,14 @@ export function PremiumCollection() {
   const wheelTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
-    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-    if (Math.abs(delta) < 1) return;
+    if (isMobile) return;
 
-    e.preventDefault();
+    const isHorizontal = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+    const delta = isHorizontal ? e.deltaX : e.deltaY;
+    if (Math.abs(delta) < 2) return;
+
+    if (!isHorizontal) return;
+
     stopMomentum();
     autoRotateRef.current = false;
 
@@ -236,7 +239,7 @@ export function PremiumCollection() {
     wheelTimeoutRef.current = setTimeout(() => {
       autoRotateRef.current = true;
     }, 2000);
-  }, [stopMomentum, applyRotation]);
+  }, [isMobile, stopMomentum, applyRotation]);
 
   const cardCount = products.length;
   if (cardCount === 0) return null;
@@ -267,7 +270,7 @@ export function PremiumCollection() {
             Premium Collection
           </h2>
           <p className="mt-1 sm:mt-1.5 text-[11px] sm:text-xs text-muted-foreground">
-            {isMobile ? 'Swipe to rotate' : 'Scroll or drag to rotate'}
+            {isMobile ? 'Swipe to rotate' : 'Drag to rotate'}
           </p>
         </motion.div>
 
