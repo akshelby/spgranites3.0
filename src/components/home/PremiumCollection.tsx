@@ -273,7 +273,8 @@ export function PremiumCollection() {
                     left: `${-cardW / 2}px`,
                     top: `${-cardH / 2}px`,
                     transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
-                    transformStyle: 'preserve-3d',
+                    backfaceVisibility: 'hidden',
+                    WebkitBackfaceVisibility: 'hidden',
                     willChange: 'transform',
                     opacity: 1,
                   }}
@@ -284,9 +285,8 @@ export function PremiumCollection() {
                       'block w-full h-full rounded-xl overflow-hidden shadow-xl',
                     )}
                     style={{
-                      backfaceVisibility: isMobile ? 'hidden' : 'visible',
-                      WebkitBackfaceVisibility: isMobile ? 'hidden' : 'visible',
-                      transform: isMobile ? 'none' : 'translateZ(0)',
+                      backfaceVisibility: 'hidden',
+                      WebkitBackfaceVisibility: 'hidden',
                     }}
                     onClick={(e) => { if (isDraggingRef.current) e.preventDefault(); }}
                     data-testid={`collection-card-${product.id}`}
