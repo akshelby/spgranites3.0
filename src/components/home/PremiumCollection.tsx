@@ -104,6 +104,19 @@ export function PremiumCollection() {
     return () => window.removeEventListener('spg_collection_speed_change', handler);
   }, []);
 
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const nativeWheel = (e: WheelEvent) => {
+      const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+      if (Math.abs(delta) > 1) {
+        e.preventDefault();
+      }
+    };
+    el.addEventListener('wheel', nativeWheel, { passive: false });
+    return () => el.removeEventListener('wheel', nativeWheel);
+  }, []);
+
   const applyRotation = useCallback(() => {
     if (!spinnerRef.current) return;
     spinnerRef.current.style.transform = `translateX(-50%) translateY(-50%) rotateY(${rotationRef.current}deg)`;
@@ -206,6 +219,25 @@ export function PremiumCollection() {
     isHorizontalSwipe.current = null;
   }, [startMomentum]);
 
+  const wheelTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleWheel = useCallback((e: React.WheelEvent) => {
+    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    if (Math.abs(delta) < 1) return;
+
+    e.preventDefault();
+    stopMomentum();
+    autoRotateRef.current = false;
+
+    rotationRef.current += delta * 0.15;
+    applyRotation();
+
+    if (wheelTimeoutRef.current) clearTimeout(wheelTimeoutRef.current);
+    wheelTimeoutRef.current = setTimeout(() => {
+      autoRotateRef.current = true;
+    }, 2000);
+  }, [stopMomentum, applyRotation]);
+
   const cardCount = products.length;
   if (cardCount === 0) return null;
 
@@ -235,7 +267,7 @@ export function PremiumCollection() {
             Premium Collection
           </h2>
           <p className="mt-1 sm:mt-1.5 text-[11px] sm:text-xs text-muted-foreground">
-            Swipe to rotate
+            {isMobile ? 'Swipe to rotate' : 'Scroll or drag to rotate'}
           </p>
         </motion.div>
 
@@ -252,6 +284,7 @@ export function PremiumCollection() {
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerLeave={handlePointerUp}
+          onWheel={handleWheel}
           data-testid="premium-collection-carousel"
         >
           <div
@@ -326,7 +359,9 @@ export function PremiumCollection() {
           </div>
         </div>
 
-        <p className="text-center text-xs text-muted-foreground mt-2">Swipe</p>
+        <p className="text-center text-xs text-muted-foreground mt-2">
+          {isMobile ? 'Swipe' : 'Scroll to browse'}
+        </p>
       </div>
     </section>
   );
