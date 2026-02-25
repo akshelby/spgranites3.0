@@ -36,6 +36,7 @@ export function PremiumCollection() {
   const rotationRef = useRef(0);
   const autoRotateRef = useRef(true);
   const isDraggingRef = useRef(false);
+  const isPointerDownRef = useRef(false);
   const velocityRef = useRef(0);
   const lastMoveRef = useRef({ x: 0, time: 0 });
   const startXRef = useRef(0);
@@ -152,6 +153,7 @@ export function PremiumCollection() {
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     stopMomentum();
     autoRotateRef.current = false;
+    isPointerDownRef.current = true;
     startXRef.current = e.clientX;
     startRotRef.current = rotationRef.current;
     velocityRef.current = 0;
@@ -161,6 +163,7 @@ export function PremiumCollection() {
   }, [stopMomentum]);
 
   const handlePointerMove = useCallback((e: React.PointerEvent) => {
+    if (!isPointerDownRef.current) return;
     if (isHorizontalSwipe.current === false) return;
 
     const dx = Math.abs(e.clientX - startXRef.current);
@@ -193,6 +196,7 @@ export function PremiumCollection() {
   }, [applyRotation]);
 
   const handlePointerUp = useCallback(() => {
+    isPointerDownRef.current = false;
     if (isDraggingRef.current) {
       isDraggingRef.current = false;
       startMomentum();
