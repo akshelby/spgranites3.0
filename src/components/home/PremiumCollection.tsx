@@ -105,18 +105,8 @@ export function PremiumCollection() {
 
   const applyRotation = useCallback(() => {
     if (!spinnerRef.current) return;
-    spinnerRef.current.style.transform = `translateX(-50%) translateY(-50%)`;
-
-    const cardCount = products.length;
-    if (cardCount === 0) return;
-    const anglePerCard = 360 / cardCount;
-
-    cardRefs.current.forEach((card, index) => {
-      if (!card) return;
-      const orbitAngle = index * anglePerCard + rotationRef.current;
-      card.style.transform = `rotateY(${orbitAngle}deg) translateZ(${radiusRef.current}px) rotateY(${-orbitAngle}deg)`;
-    });
-  }, [products.length]);
+    spinnerRef.current.style.transform = `translateX(-50%) translateY(-50%) rotateY(${rotationRef.current}deg)`;
+  }, []);
 
   useEffect(() => {
     let lastTime = performance.now();
@@ -282,7 +272,7 @@ export function PremiumCollection() {
                     height: `${cardH}px`,
                     left: `${-cardW / 2}px`,
                     top: `${-cardH / 2}px`,
-                    transform: `rotateY(${angle}deg) translateZ(${radius}px) rotateY(${-angle}deg)`,
+                    transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
                     transformStyle: 'preserve-3d',
                     willChange: 'transform',
                     opacity: 1,
@@ -322,6 +312,20 @@ export function PremiumCollection() {
                       </div>
                     </div>
                   </Link>
+                  <div
+                    className="absolute inset-0 rounded-xl overflow-hidden"
+                    style={{
+                      transform: 'rotateY(180deg)',
+                      opacity: 1,
+                    }}
+                  >
+                    <img
+                      src={resolveProductImage(product)}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                      draggable={false}
+                    />
+                  </div>
                 </div>
               );
             })}
