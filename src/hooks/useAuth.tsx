@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useRef, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { User, Session } from '@supabase/supabase-js';
 
@@ -39,24 +39,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [role, setRole] = useState<AppRole | null>(null);
   const [loading, setLoading] = useState(true);
+  const roleRequestRef = useRef(0);
 
-  const handleSession = useCallback(async (session: Session | null) => {
+  const handleSession = useCallback((session: Session | null) => {
+    const requestId = ++roleRequestRef.current;
+
     if (session?.user) {
       setUser(mapUser(session.user));
-      const userRole = await fetchRole(session.user.id);
-      setRole(userRole);
+      setRole(null);
+      setLoading(false);
+
+      fetchRole(session.user.id)
+        .then((userRole) => {
+          if (roleRequestRef.current === requestId) {
+            setRole(userRole);
+          }
+        })
+        .catch(() => {
+          if (roleRequestRef.current === requestId) {
+            setRole('user');
+          }
+        });
     } else {
       setUser(null);
       setRole(null);
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
 
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        await handleSession(session);
+      (_event, session) => {
+        handleSession(session);
       }
     );
 
@@ -138,7 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    await handleSession(session);
+    handleSession(session);
   };
 
   return (
@@ -155,3 +170,4 @@ export function useAuth() {
   }
   return context;
 }
+
