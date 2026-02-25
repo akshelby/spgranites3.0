@@ -230,7 +230,7 @@ export function PremiumCollection() {
     stopMomentum();
     autoRotateRef.current = false;
 
-    rotationRef.current += delta * 0.15;
+    rotationRef.current -= delta * 0.15;
     applyRotation();
 
     if (wheelTimeoutRef.current) clearTimeout(wheelTimeoutRef.current);
