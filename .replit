@@ -21,7 +21,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "PORT=3001 node_modules/.bin/tsx server/index.ts & node_modules/.bin/vite"
+args = "bash start.sh"
 waitForPort = 5000
 
 [nix]

@@ -8,6 +8,8 @@ SP Granites is a full-stack e-commerce web application for a granite, marble, an
 
 Preferred communication style: Simple, everyday language.
 
+**Backend**: This project ALWAYS uses Supabase as its sole backend (auth, database, storage). Do NOT use Replit's built-in Postgres, Drizzle ORM connected to DATABASE_URL, or any other platform-specific database. The app is designed to be portable across platforms (Lovable, Antigravity, etc.) and Supabase is the single source of truth for all data. All server-side data access must go through `server/supabase.ts` using the Supabase client.
+
 ## System Architecture
 
 ### Frontend
