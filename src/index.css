@@ -281,11 +281,11 @@ html {
 }
 .cta-ribbon-btn-dark:hover::after {
   transform: translateX(0);
-  background: #000000;
+  background: #ffffff;
 }
 .cta-ribbon-btn-dark:hover {
   border-color: #ef4444 !important;
-  color: #ffffff !important;
+  color: #1a1a1a !important;
 }
 .dark .cta-ribbon-btn-dark:hover::after {
   background: #000000;
