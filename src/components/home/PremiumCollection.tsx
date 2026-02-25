@@ -283,7 +283,11 @@ export function PremiumCollection() {
                     className={cn(
                       'block w-full h-full rounded-xl overflow-hidden shadow-xl',
                     )}
-                    style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+                    style={{
+                      backfaceVisibility: isMobile ? 'hidden' : 'visible',
+                      WebkitBackfaceVisibility: isMobile ? 'hidden' : 'visible',
+                      transform: isMobile ? 'none' : 'translateZ(0)',
+                    }}
                     onClick={(e) => { if (isDraggingRef.current) e.preventDefault(); }}
                     data-testid={`collection-card-${product.id}`}
                   >
@@ -309,22 +313,24 @@ export function PremiumCollection() {
                       </div>
                     </div>
                   </Link>
-                  <div
-                    className="absolute inset-0 rounded-xl overflow-hidden"
-                    style={{
-                      backfaceVisibility: 'hidden',
-                      WebkitBackfaceVisibility: 'hidden',
-                      transform: 'rotateY(180deg)',
-                      opacity: 0.2,
-                    }}
-                  >
-                    <img
-                      src={resolveProductImage(product)}
-                      alt=""
-                      className="w-full h-full object-cover"
-                      draggable={false}
-                    />
-                  </div>
+                  {isMobile && (
+                    <div
+                      className="absolute inset-0 rounded-xl overflow-hidden"
+                      style={{
+                        backfaceVisibility: 'hidden',
+                        WebkitBackfaceVisibility: 'hidden',
+                        transform: 'rotateY(180deg)',
+                        opacity: 0.2,
+                      }}
+                    >
+                      <img
+                        src={resolveProductImage(product)}
+                        alt=""
+                        className="w-full h-full object-cover"
+                        draggable={false}
+                      />
+                    </div>
+                  )}
                 </div>
               );
             })}
