@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 const Auth = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, refreshAuth } = useAuth();
   const { t } = useTranslation();
   const [authMethod, setAuthMethod] = useState<'email' | 'phone'>('email');
   const redirectTo = searchParams.get('redirect') || '/';
@@ -72,16 +72,13 @@ const Auth = () => {
     setResetting(false);
   };
 
-  const handleSuccess = () => {
-    const isCustomDomain =
-      !window.location.hostname.includes('lovable.app') &&
-      !window.location.hostname.includes('lovableproject.com');
-
-    if (isCustomDomain) {
-      window.location.href = redirectTo;
-    } else {
-      navigate(redirectTo);
+  const handleSuccess = async () => {
+    try {
+      await refreshAuth();
+    } catch {
+      // ignore and still navigate
     }
+    navigate(redirectTo, { replace: true });
   };
 
   const [timedOut, setTimedOut] = useState(false);
