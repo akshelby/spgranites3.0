@@ -273,8 +273,7 @@ export function PremiumCollection() {
                     left: `${-cardW / 2}px`,
                     top: `${-cardH / 2}px`,
                     transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
-                    backfaceVisibility: 'hidden',
-                    WebkitBackfaceVisibility: 'hidden',
+                    transformStyle: 'preserve-3d',
                     willChange: 'transform',
                     opacity: 1,
                   }}
@@ -285,8 +284,8 @@ export function PremiumCollection() {
                       'block w-full h-full rounded-xl overflow-hidden shadow-xl',
                     )}
                     style={{
-                      backfaceVisibility: 'hidden',
-                      WebkitBackfaceVisibility: 'hidden',
+                      backfaceVisibility: 'visible',
+                      WebkitBackfaceVisibility: 'visible',
                     }}
                     onClick={(e) => { if (isDraggingRef.current) e.preventDefault(); }}
                     data-testid={`collection-card-${product.id}`}
@@ -313,24 +312,20 @@ export function PremiumCollection() {
                       </div>
                     </div>
                   </Link>
-                  {isMobile && (
-                    <div
-                      className="absolute inset-0 rounded-xl overflow-hidden"
-                      style={{
-                        backfaceVisibility: 'hidden',
-                        WebkitBackfaceVisibility: 'hidden',
-                        transform: 'rotateY(180deg)',
-                        opacity: 0.2,
-                      }}
-                    >
-                      <img
-                        src={resolveProductImage(product)}
-                        alt=""
-                        className="w-full h-full object-cover"
-                        draggable={false}
-                      />
-                    </div>
-                  )}
+                  <div
+                    className="absolute inset-0 rounded-xl overflow-hidden"
+                    style={{
+                      transform: 'rotateY(180deg)',
+                      opacity: 1,
+                    }}
+                  >
+                    <img
+                      src={resolveProductImage(product)}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                      draggable={false}
+                    />
+                  </div>
                 </div>
               );
             })}
