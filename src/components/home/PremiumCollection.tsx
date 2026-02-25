@@ -105,8 +105,19 @@ export function PremiumCollection() {
 
   const applyRotation = useCallback(() => {
     if (!spinnerRef.current) return;
+
     spinnerRef.current.style.transform = `translateX(-50%) translateY(-50%) rotateY(${rotationRef.current}deg)`;
-  }, []);
+
+    const total = products.length;
+    if (total === 0) return;
+
+    const angleStep = 360 / total;
+    cardRefs.current.forEach((card, index) => {
+      if (!card) return;
+      const angle = index * angleStep;
+      card.style.transform = `rotateY(${angle}deg) translateZ(${radiusRef.current}px) rotateY(${-rotationRef.current}deg)`;
+    });
+  }, [products.length]);
 
   useEffect(() => {
     let lastTime = performance.now();
@@ -273,7 +284,7 @@ export function PremiumCollection() {
                     height: `${cardH}px`,
                     left: `${-cardW / 2}px`,
                     top: `${-cardH / 2}px`,
-                    transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
+                    transform: `rotateY(${angle}deg) translateZ(${radius}px) rotateY(${-rotationRef.current}deg)`,
                     transformStyle: 'preserve-3d',
                     backfaceVisibility: 'visible',
                     WebkitBackfaceVisibility: 'visible',
