@@ -106,18 +106,6 @@ export function PremiumCollection() {
   const applyRotation = useCallback(() => {
     if (!spinnerRef.current) return;
     spinnerRef.current.style.transform = `translateX(-50%) translateY(-50%) rotateY(${rotationRef.current}deg)`;
-
-    const count = cardRefs.current.length;
-    if (count === 0) return;
-    const perCard = 360 / count;
-    for (let i = 0; i < count; i++) {
-      const el = cardRefs.current[i];
-      if (!el) continue;
-      const rawAngle = (i * perCard + rotationRef.current) % 360;
-      const normalized = ((rawAngle % 360) + 360) % 360;
-      const dist = normalized > 180 ? 360 - normalized : normalized;
-      el.style.opacity = '1';
-    }
   }, []);
 
   useEffect(() => {
@@ -286,8 +274,8 @@ export function PremiumCollection() {
                     top: `${-cardH / 2}px`,
                     transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
                     transformStyle: 'preserve-3d',
-                    opacity: 0,
-                    transition: 'opacity 0.3s ease',
+                    willChange: 'transform',
+                    opacity: 1,
                   }}
                 >
                   <Link
