@@ -1468,4 +1468,72 @@ If you don't know something specific (like exact prices or stock availability), 
       }
     }
   });
+
+  // ── Site Settings (public read, admin write) ──
+  app.get("/api/site-settings", async (_req: Request, res: Response) => {
+    try {
+      const { data, error } = await supabase.from('site_settings').select('key, value');
+      if (error) {
+        // Table might not exist yet, return defaults
+        return res.json(getDefaultSiteSettings());
+      }
+      const settings: Record<string, string> = {};
+      const defaults = getDefaultSiteSettings();
+      for (const [k, v] of Object.entries(defaults)) {
+        settings[k] = v;
+      }
+      if (data) {
+        for (const row of data) {
+          settings[row.key] = row.value;
+        }
+      }
+      res.json(settings);
+    } catch {
+      res.json(getDefaultSiteSettings());
+    }
+  });
+
+  app.put("/api/admin/site-settings", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const settings = req.body as Record<string, string>;
+      const defaults = getDefaultSiteSettings();
+      const validKeys = Object.keys(defaults);
+
+      for (const [key, value] of Object.entries(settings)) {
+        if (!validKeys.includes(key)) continue;
+        const { error } = await supabase.from('site_settings').upsert(
+          { key, value: String(value) },
+          { onConflict: 'key' }
+        );
+        if (error) {
+          console.error(`Error saving setting ${key}:`, error);
+        }
+      }
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Error saving site settings:", error);
+      res.status(500).json({ error: "Failed to save settings" });
+    }
+  });
+}
+
+function getDefaultSiteSettings(): Record<string, string> {
+  return {
+    phone_primary: '+91 98765 43210',
+    phone_secondary: '+91 98765 43211',
+    whatsapp_number: '919876543210',
+    email_primary: 'info@spgranites.com',
+    email_secondary: 'sales@spgranites.com',
+    address_line1: '123 Stone Avenue, Industrial Area',
+    address_line2: 'Chennai, Tamil Nadu 600001',
+    working_hours_weekday: 'Mon - Sat: 9:00 AM - 7:00 PM',
+    working_hours_sunday: 'Sunday: Closed',
+    social_facebook: 'https://facebook.com',
+    social_instagram: 'https://instagram.com',
+    social_twitter: 'https://twitter.com',
+    social_youtube: 'https://youtube.com',
+    company_name: 'SP Granites',
+    company_tagline: 'Premium Stone Works',
+    map_embed_url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3916.2649!2d76.9558!3d11.0168!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTHCsDAxJzAwLjUiTiA3NsKwNTcnMjAuOSJF!5e0!3m2!1sen!2sin!4v1',
+  };
 }

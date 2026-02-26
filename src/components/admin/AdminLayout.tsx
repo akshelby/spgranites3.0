@@ -66,6 +66,7 @@ const menuItems = [
   { icon: Handshake, label: 'CRM', href: '/admin/crm' },
   { icon: Users, label: 'CRM Customers', href: '/admin/crm/customers' },
   { icon: UserPlus, label: 'CRM Leads', href: '/admin/crm/leads' },
+  { icon: Settings, label: 'Site Settings', href: '/admin/settings' },
 ];
 
 function SidebarContent({ collapsed, onItemClick }: { collapsed: boolean; onItemClick?: () => void }) {

@@ -13,3 +13,29 @@ export const supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
     persistSession: false,
   },
 });
+
+export async function initSiteSettingsTable() {
+  try {
+    const { error } = await supabase.rpc('exec_sql', {
+      sql: `CREATE TABLE IF NOT EXISTS site_settings (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL DEFAULT '',
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      );`
+    });
+    if (error) {
+      console.log('site_settings table init via RPC failed (may need manual creation):', error.message);
+      const { data, error: checkError } = await supabase.from('site_settings').select('key').limit(1);
+      if (checkError && checkError.code === '42P01') {
+        console.warn('site_settings table does not exist. Please create it in Supabase SQL editor:');
+        console.warn('CREATE TABLE site_settings (key TEXT PRIMARY KEY, value TEXT NOT NULL DEFAULT \'\', updated_at TIMESTAMPTZ DEFAULT NOW());');
+      } else {
+        console.log('site_settings table already exists or accessible');
+      }
+    } else {
+      console.log('site_settings table ready');
+    }
+  } catch (err) {
+    console.log('site_settings init check skipped');
+  }
+}

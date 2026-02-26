@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSiteSettings } from '@/contexts/SiteSettingsContext';
 
 export function WhatsAppButton() {
   const [showTooltip, setShowTooltip] = useState(false);
+  const settings = useSiteSettings();
   
-  const phoneNumber = '919876543210';
   const message = encodeURIComponent('Hello! I would like to inquire about your granite products.');
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+  const whatsappUrl = `https://wa.me/${settings.whatsapp_number}?text=${message}`;
 
   return (
     <div className="fixed bottom-24 right-6 z-40">

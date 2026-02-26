@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { CategoryItem } from './CategoryItem';
@@ -6,6 +6,7 @@ import { CategoryItemPill } from './CategoryItemPill';
 import { BhrundhavanIcon } from './BhrundhavanIcon';
 import { ContactNumbersDialog } from './ContactNumbersDialog';
 import { useCategoryStyle } from '@/hooks/useCategoryStyle';
+import { useSiteSettings } from '@/contexts/SiteSettingsContext';
 import {
   KitchenSlabIcon,
   VanityTopIcon,
@@ -132,7 +133,7 @@ const categories: Category[] = [
     id: 'call-us',
     nameKey: 'categories.callUs',
     icon: CallIcon,
-    link: 'tel:+919876543210',
+    link: '__PHONE_LINK__',
     descriptionKey: 'categories.callUsDesc',
     iconColor: 'text-white',
     bgColor: RED,
@@ -143,7 +144,7 @@ const categories: Category[] = [
     id: 'whatsapp',
     nameKey: 'categories.whatsapp',
     icon: WhatsAppIcon,
-    link: 'https://wa.me/919876543210',
+    link: '__WHATSAPP_LINK__',
     descriptionKey: 'categories.whatsappDesc',
     iconColor: 'text-white',
     bgColor: 'bg-gradient-to-br from-[#25D366] to-[#128C7E]',
@@ -180,6 +181,16 @@ export function CategoriesSection() {
   const { t } = useTranslation();
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const { style } = useCategoryStyle();
+  const settings = useSiteSettings();
+
+  const phoneDigits = settings.phone_primary.replace(/\s+/g, '');
+  const resolvedCategories = useMemo(() =>
+    categories.map(cat => {
+      if (cat.link === '__PHONE_LINK__') return { ...cat, link: `tel:${phoneDigits}` };
+      if (cat.link === '__WHATSAPP_LINK__') return { ...cat, link: `https://wa.me/${settings.whatsapp_number}` };
+      return cat;
+    }), [phoneDigits, settings.whatsapp_number]
+  );
 
   const isPill = style === 'pill';
 
@@ -211,7 +222,7 @@ export function CategoriesSection() {
             : 'grid grid-cols-4 sm:flex sm:flex-wrap sm:justify-center gap-6 sm:gap-8 md:gap-10 lg:gap-12'
           }
         >
-          {categories.map((category, index) => {
+          {resolvedCategories.map((category, index) => {
             const commonProps = {
               id: category.id,
               name: t(category.nameKey),

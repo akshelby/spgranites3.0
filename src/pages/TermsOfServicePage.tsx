@@ -1,7 +1,10 @@
 import { MainLayout } from '@/components/layout';
 import { motion } from 'framer-motion';
+import { useSiteSettings } from '@/contexts/SiteSettingsContext';
 
 export default function TermsOfServicePage() {
+  const settings = useSiteSettings();
+
   return (
     <MainLayout>
       <section className="py-10 sm:py-14 lg:py-20 bg-background">
@@ -18,7 +21,7 @@ export default function TermsOfServicePage() {
             <div className="space-y-6 sm:space-y-8 text-sm sm:text-base text-foreground/85 leading-relaxed">
               <div>
                 <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-2">1. Acceptance of Terms</h2>
-                <p>By accessing and using the SP Granites website, you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, please do not use our website or services.</p>
+                <p>By accessing and using the {settings.company_name} website, you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, please do not use our website or services.</p>
               </div>
 
               <div>
@@ -33,7 +36,7 @@ export default function TermsOfServicePage() {
 
               <div>
                 <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-2">4. Shipping and Delivery</h2>
-                <p>Delivery times are estimates and may vary based on location and product availability. SP Granites is not responsible for delays caused by circumstances beyond our control. Risk of loss passes to the buyer upon delivery. Special handling charges may apply for large or heavy stone products.</p>
+                <p>Delivery times are estimates and may vary based on location and product availability. {settings.company_name} is not responsible for delays caused by circumstances beyond our control. Risk of loss passes to the buyer upon delivery. Special handling charges may apply for large or heavy stone products.</p>
               </div>
 
               <div>
@@ -48,21 +51,21 @@ export default function TermsOfServicePage() {
 
               <div>
                 <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-2">7. Intellectual Property</h2>
-                <p>All content on this website, including text, images, logos, and design elements, is the property of SP Granites and is protected by applicable intellectual property laws. Unauthorized use or reproduction is strictly prohibited.</p>
+                <p>All content on this website, including text, images, logos, and design elements, is the property of {settings.company_name} and is protected by applicable intellectual property laws. Unauthorized use or reproduction is strictly prohibited.</p>
               </div>
 
               <div>
                 <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-2">8. Limitation of Liability</h2>
-                <p>SP Granites shall not be liable for any indirect, incidental, or consequential damages arising from the use of our website or products. Our total liability shall not exceed the amount paid by you for the specific product or service in question.</p>
+                <p>{settings.company_name} shall not be liable for any indirect, incidental, or consequential damages arising from the use of our website or products. Our total liability shall not exceed the amount paid by you for the specific product or service in question.</p>
               </div>
 
               <div>
                 <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-2">9. Contact Information</h2>
                 <p>For questions about these Terms of Service, please contact us at:</p>
                 <ul className="mt-2 space-y-1">
-                  <li>Email: info@spgranites.com</li>
-                  <li>Phone: +91 98765 43210</li>
-                  <li>Address: 123 Stone Avenue, Industrial Area, Chennai, Tamil Nadu 600001</li>
+                  <li>Email: {settings.email_primary}</li>
+                  <li>Phone: {settings.phone_primary}</li>
+                  <li>Address: {settings.address_line1}, {settings.address_line2}</li>
                 </ul>
               </div>
             </div>

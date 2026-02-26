@@ -2,10 +2,13 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Phone } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useSiteSettings } from '@/contexts/SiteSettingsContext';
 
 
 export function CTASection() {
   const { t } = useTranslation();
+  const settings = useSiteSettings();
+  const phoneDigits = settings.phone_primary.replace(/\s+/g, '');
 
   return (
     <section className="py-8 sm:py-10 lg:py-14 bg-primary text-primary-foreground relative overflow-hidden" data-testid="cta-section">
@@ -40,7 +43,7 @@ export function CTASection() {
               </span>
             </Link>
             <a
-              href="tel:+919876543210"
+              href={`tel:${phoneDigits}`}
               className="cta-ribbon-btn cta-ribbon-btn-cta-outline group"
               data-testid="button-cta-call"
             >

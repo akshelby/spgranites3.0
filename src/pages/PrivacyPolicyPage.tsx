@@ -1,7 +1,10 @@
 import { MainLayout } from '@/components/layout';
 import { motion } from 'framer-motion';
+import { useSiteSettings } from '@/contexts/SiteSettingsContext';
 
 export default function PrivacyPolicyPage() {
+  const settings = useSiteSettings();
+
   return (
     <MainLayout>
       <section className="py-10 sm:py-14 lg:py-20 bg-background">
@@ -50,9 +53,9 @@ export default function PrivacyPolicyPage() {
                 <h2 className="text-lg sm:text-xl font-semibold text-foreground mb-2">7. Contact Us</h2>
                 <p>If you have questions about this Privacy Policy, please contact us at:</p>
                 <ul className="mt-2 space-y-1">
-                  <li>Email: info@spgranites.com</li>
-                  <li>Phone: +91 98765 43210</li>
-                  <li>Address: 123 Stone Avenue, Industrial Area, Chennai, Tamil Nadu 600001</li>
+                  <li>Email: {settings.email_primary}</li>
+                  <li>Phone: {settings.phone_primary}</li>
+                  <li>Address: {settings.address_line1}, {settings.address_line2}</li>
                 </ul>
               </div>
             </div>

@@ -50,7 +50,7 @@ Preferred communication style: Simple, everyday language.
   - `layout/` — Main layout wrapper, navbar, footer, floating action buttons
   - `visualizer/` — Interactive stone customizer with SVG room scenes
   - `ui/` — shadcn/ui primitives
-- `src/contexts/` — Cart (localStorage-persisted) and Wishlist (API-synced via server) contexts
+- `src/contexts/` — Cart (localStorage-persisted), Wishlist (API-synced via server), and SiteSettings (dynamic site-wide contact info) contexts
 - `src/hooks/` — Auth hook (server-based auth state), mobile detection, toast management
 - `src/lib/api.ts` — API client helper for making authenticated requests to the server
 - `src/types/database.ts` — TypeScript interfaces for all database entities
@@ -76,6 +76,7 @@ Preferred communication style: Simple, everyday language.
 - `estimation_enquiries` — Estimation requests
 - `conversations`, `messages` — Chat system
 - `site_visitors` — Analytics
+- `site_settings` — Key-value store for admin-configurable site settings (phone, email, address, hours, social links)
 - **Not yet created in Supabase**: `contact_numbers`, `leads`, `crm_notes`, `crm_followups` (routes handle gracefully with empty data)
 
 ### Key Features
@@ -109,6 +110,12 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+- **2026-02-26**: Admin Site Settings feature
+  - Added `site_settings` table in Supabase (key-value store for site-wide config)
+  - Created `SiteSettingsContext` + `useSiteSettings()` hook for app-wide dynamic contact details
+  - Admin can manage: phone numbers, WhatsApp number, emails, address, working hours, social media links, company name/tagline, Google Maps embed URL
+  - All components (Footer, WhatsAppButton, ContactPage, CTASection, CategoriesSection, TermsOfServicePage, PrivacyPolicyPage) now read contact info from settings context instead of hardcoded values
+  - Admin settings page at `/admin/settings` with grouped form fields
 - **2026-02-26**: Website improvements and performance optimization
   - Services page: Added contextual icons (Scissors for fabrication, Wrench for installation, etc.) with improved card layout (3-column grid, hover effects)
   - About page: Added gradient hero section, icons for Who We Are/Mission/Vision, icons for values cards, improved visual hierarchy

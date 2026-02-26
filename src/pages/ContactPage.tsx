@@ -20,6 +20,7 @@ import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { useSiteSettings } from '@/contexts/SiteSettingsContext';
 
 const contactSchema = z.object({
   name: z.string().min(2, 'Name is required'),
@@ -33,30 +34,34 @@ type ContactFormData = z.infer<typeof contactSchema>;
 export default function ContactPage() {
   usePageTitle('Contact Us');
   const { t } = useTranslation();
+  const settings = useSiteSettings();
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const phonePrimaryDigits = settings.phone_primary.replace(/\s+/g, '');
+  const phoneSecondaryDigits = settings.phone_secondary.replace(/\s+/g, '');
 
   const contactInfo = [
     {
       icon: MapPin,
       title: t('contact.visitUs'),
-      details: ['123 Stone Avenue, Industrial Area', 'Chennai, Tamil Nadu 600001'],
+      details: [settings.address_line1, settings.address_line2],
     },
     {
       icon: Phone,
       title: t('contact.callUs'),
-      details: ['+91 98765 43210', '+91 98765 43211'],
-      links: ['tel:+919876543210', 'tel:+919876543211'],
+      details: [settings.phone_primary, settings.phone_secondary],
+      links: [`tel:${phonePrimaryDigits}`, `tel:${phoneSecondaryDigits}`],
     },
     {
       icon: Mail,
       title: t('contact.emailUs'),
-      details: ['info@spgranites.com', 'sales@spgranites.com'],
-      links: ['mailto:info@spgranites.com', 'mailto:sales@spgranites.com'],
+      details: [settings.email_primary, settings.email_secondary],
+      links: [`mailto:${settings.email_primary}`, `mailto:${settings.email_secondary}`],
     },
     {
       icon: Clock,
       title: t('contact.workingHours'),
-      details: ['Mon - Sat: 9:00 AM - 7:00 PM', 'Sunday: Closed'],
+      details: [settings.working_hours_weekday, settings.working_hours_sunday],
     },
   ];
 
@@ -153,17 +158,19 @@ export default function ContactPage() {
               </div>
             ))}
 
-            <div className="mt-4 aspect-video rounded-lg overflow-hidden bg-muted">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3916.2649887468907!2d76.9558!3d11.0168!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTHCsDAxJzAwLjUiTiA3NsKwNTcnMjAuOSJF!5e0!3m2!1sen!2sin!4v1234567890"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            </div>
+            {settings.map_embed_url && (
+              <div className="mt-4 aspect-video rounded-lg overflow-hidden bg-muted">
+                <iframe
+                  src={settings.map_embed_url}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                />
+              </div>
+            )}
           </motion.div>
 
           <motion.div

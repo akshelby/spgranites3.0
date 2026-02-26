@@ -1,16 +1,18 @@
 import { Link } from 'react-router-dom';
 import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-
-const socialLinks = [
-  { name: 'Facebook', icon: Facebook, href: 'https://facebook.com' },
-  { name: 'Instagram', icon: Instagram, href: 'https://instagram.com' },
-  { name: 'Twitter', icon: Twitter, href: 'https://twitter.com' },
-  { name: 'YouTube', icon: Youtube, href: 'https://youtube.com' },
-];
+import { useSiteSettings } from '@/contexts/SiteSettingsContext';
 
 export function Footer() {
   const { t } = useTranslation();
+  const settings = useSiteSettings();
+
+  const socialLinks = [
+    { name: 'Facebook', icon: Facebook, href: settings.social_facebook },
+    { name: 'Instagram', icon: Instagram, href: settings.social_instagram },
+    { name: 'Twitter', icon: Twitter, href: settings.social_twitter },
+    { name: 'YouTube', icon: Youtube, href: settings.social_youtube },
+  ];
 
   const quickLinks = [
     { name: t('footer.about'), href: '/about' },
@@ -30,16 +32,18 @@ export function Footer() {
     { name: t('footer.staircases'), href: '/products?category=staircases' },
   ];
 
+  const phoneDigits = settings.phone_primary.replace(/\s+/g, '');
+
   return (
     <footer className="bg-charcoal text-white">
       <div className="container mx-auto px-4 py-8 sm:py-12 lg:py-16">
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
           <div className="space-y-3 sm:space-y-4 col-span-2 sm:col-span-1">
             <div className="flex items-center gap-3">
-              <img src="/images/sp-logo-dark.png" alt="SP Granites" className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
+              <img src="/images/sp-logo-dark.png" alt={settings.company_name} className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
               <div className="flex flex-col">
-                <h3 className="brand-name-white text-lg sm:text-xl leading-none">SP Granites</h3>
-                <span className="brand-tagline text-xs sm:text-sm text-red-400 font-medium tracking-widest uppercase mt-1">Premium Stone Works</span>
+                <h3 className="brand-name-white text-lg sm:text-xl leading-none">{settings.company_name}</h3>
+                <span className="brand-tagline text-xs sm:text-sm text-red-400 font-medium tracking-widest uppercase mt-1">{settings.company_tagline}</span>
                 <span className="brand-divider-white" />
               </div>
             </div>
@@ -100,26 +104,26 @@ export function Footer() {
               <li className="flex items-start gap-3">
                 <MapPin className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                 <span className="text-gray-400 text-sm">
-                  123 Stone Avenue, Industrial Area,<br />
-                  Chennai, Tamil Nadu 600001
+                  {settings.address_line1}<br />
+                  {settings.address_line2}
                 </span>
               </li>
               <li>
                 <a
-                  href="tel:+919876543210"
+                  href={`tel:${phoneDigits}`}
                   className="flex items-center gap-3 text-gray-400 hover:text-primary transition-colors text-sm"
                 >
                   <Phone className="h-5 w-5 text-primary" />
-                  +91 98765 43210
+                  {settings.phone_primary}
                 </a>
               </li>
               <li>
                 <a
-                  href="mailto:info@spgranites.com"
+                  href={`mailto:${settings.email_primary}`}
                   className="flex items-center gap-3 text-gray-400 hover:text-primary transition-colors text-sm"
                 >
                   <Mail className="h-5 w-5 text-primary" />
-                  info@spgranites.com
+                  {settings.email_primary}
                 </a>
               </li>
             </ul>
@@ -130,7 +134,7 @@ export function Footer() {
       <div className="border-t border-white/10">
         <div className="container mx-auto px-4 py-4 sm:py-6 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-4">
           <p className="text-gray-400 text-xs sm:text-sm">
-            © {new Date().getFullYear()} SP Granites. {t('footer.copyright')}
+            © {new Date().getFullYear()} {settings.company_name}. {t('footer.copyright')}
           </p>
           <div className="flex gap-6">
             <Link to="/privacy" className="text-gray-400 hover:text-white text-sm">

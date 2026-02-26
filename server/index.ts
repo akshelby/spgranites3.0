@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
 import { registerRoutes } from "./routes";
+import { initSiteSettingsTable } from "./supabase";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
@@ -53,6 +54,7 @@ process.on('unhandledRejection', (reason) => {
 });
 
 const port = parseInt(process.env.PORT || '5000', 10);
-app.listen(port, "0.0.0.0", () => {
+app.listen(port, "0.0.0.0", async () => {
   console.log(`API server running on port ${port}`);
+  await initSiteSettingsTable();
 });

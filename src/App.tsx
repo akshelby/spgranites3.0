@@ -8,6 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import { TabProvider } from "@/contexts/TabContext";
+import { SiteSettingsProvider } from "@/contexts/SiteSettingsContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { VisitorTracker } from "@/components/VisitorTracker";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -58,6 +59,7 @@ const AdminContactNumbers = lazy(() => import("./pages/admin/AdminContactNumbers
 const AdminCRMOverview = lazy(() => import("./pages/admin/AdminCRMOverview"));
 const AdminCustomers = lazy(() => import("./pages/admin/AdminCustomers"));
 const AdminLeads = lazy(() => import("./pages/admin/AdminLeads"));
+const AdminSiteSettings = lazy(() => import("./pages/admin/AdminSiteSettings"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -92,6 +94,7 @@ function AppContent() {
 
   return (
     <TooltipProvider>
+    <SiteSettingsProvider>
       <AuthProvider>
         <CartProvider>
           <WishlistProvider>
@@ -149,6 +152,7 @@ function AppContent() {
                 <Route path="/admin/crm" element={<ProtectedRoute requiredRole="admin"><AdminCRMOverview /></ProtectedRoute>} />
                 <Route path="/admin/crm/customers" element={<ProtectedRoute requiredRole="admin"><AdminCustomers /></ProtectedRoute>} />
                 <Route path="/admin/crm/leads" element={<ProtectedRoute requiredRole="admin"><AdminLeads /></ProtectedRoute>} />
+                <Route path="/admin/settings" element={<ProtectedRoute requiredRole="admin"><AdminSiteSettings /></ProtectedRoute>} />
 
                 {/* Catch-all */}
                 <Route path="*" element={<NotFound />} />
@@ -159,7 +163,9 @@ function AppContent() {
           </WishlistProvider>
         </CartProvider>
       </AuthProvider>
+    </SiteSettingsProvider>
     </TooltipProvider>
+
   );
 }
 
