@@ -154,15 +154,16 @@ export default function AdminSiteSettings() {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-sm text-muted-foreground">
-                The site settings table needs to be created in your Supabase database.
-                Click the button below to try automatic setup, or copy the SQL and run it manually in your Supabase SQL Editor.
+                The site settings table needs to be created in your Supabase database. Follow these steps:
               </p>
-              <Button onClick={handleSetup} disabled={settingUp}>
-                {settingUp ? 'Setting up...' : 'Auto Setup Table'}
-              </Button>
+              <ol className="text-sm text-muted-foreground list-decimal list-inside space-y-2 mt-2">
+                <li>Open your <a href="https://supabase.com/dashboard/project/fstyxfuyploifiouotni/sql/new" target="_blank" rel="noopener noreferrer" className="text-primary underline font-medium">Supabase SQL Editor</a></li>
+                <li>Copy the SQL below and paste it into the editor</li>
+                <li>Click "Run" to create the table</li>
+                <li>Come back here and click "I've Run the SQL" below</li>
+              </ol>
               {setupSql && (
                 <div className="mt-4">
-                  <p className="text-sm font-medium mb-2">Or run this SQL in your Supabase SQL Editor:</p>
                   <div className="relative">
                     <pre className="bg-muted p-4 rounded-md text-xs overflow-x-auto whitespace-pre-wrap">{setupSql}</pre>
                     <Button
@@ -177,11 +178,16 @@ export default function AdminSiteSettings() {
                       Copy
                     </Button>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    After running the SQL, refresh this page.
-                  </p>
                 </div>
               )}
+              <div className="mt-4 flex gap-3">
+                <Button onClick={() => { setLoading(true); checkAndFetchSettings(); }}>
+                  I've Run the SQL - Refresh
+                </Button>
+                <Button variant="outline" onClick={handleSetup} disabled={settingUp}>
+                  {settingUp ? 'Trying...' : 'Try Auto Setup'}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>
