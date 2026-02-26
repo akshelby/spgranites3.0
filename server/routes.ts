@@ -272,7 +272,8 @@ export function registerRoutes(app: Express) {
 
   app.post("/api/customer-reviews", async (req: Request, res: Response) => {
     try {
-      const { data, error } = await supabase.from('customer_reviews').insert(req.body).select().single();
+      const reviewData = { ...req.body, is_approved: false };
+      const { data, error } = await supabase.from('customer_reviews').insert(reviewData).select().single();
       if (error) throw error;
       res.json(data);
     } catch (error: any) {

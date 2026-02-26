@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { Star, ImagePlus, Video, X, Loader2, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,6 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { CustomerReview } from '@/types/database';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ReviewFormProps {
   editReview?: CustomerReview | null;
@@ -38,7 +39,7 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
         <p className="text-sm sm:text-base text-muted-foreground mb-3">
           Share your experience with SP Granites products and services
         </p>
-        <Link to="/auth?redirect=/testimonials">
+        <Link to="/auth?redirect=/">
           <Button className="bg-primary text-primary-foreground">
             <LogIn className="h-4 w-4 mr-1.5" />
             Sign In
@@ -99,8 +100,26 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
     setVideoUrl('');
   };
 
-  const uploadFile = async (_file: File, _folder: string): Promise<string | null> => {
-    return null;
+  const uploadFile = async (file: File, bucket: string): Promise<string | null> => {
+    try {
+      const ext = file.name.split('.').pop() || 'bin';
+      const fileName = `${user!.id}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+
+      const { error } = await supabase.storage
+        .from(bucket)
+        .upload(fileName, file, { cacheControl: '3600', upsert: false });
+
+      if (error) {
+        console.error('Upload error:', error);
+        return null;
+      }
+
+      const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(fileName);
+      return urlData.publicUrl;
+    } catch (err) {
+      console.error('Upload failed:', err);
+      return null;
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -119,7 +138,7 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
       let uploadedPhotos = [...photos];
       let uploadFailed = false;
       for (const photo of newPhotos) {
-        const url = await uploadFile(photo, 'photos');
+        const url = await uploadFile(photo, 'review-photos');
         if (url) {
           uploadedPhotos.push(url);
         } else {
@@ -129,7 +148,7 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
 
       let finalVideoUrl = videoUrl;
       if (newVideo) {
-        const url = await uploadFile(newVideo, 'videos');
+        const url = await uploadFile(newVideo, 'review-videos');
         if (url) {
           finalVideoUrl = url;
         } else {
@@ -157,7 +176,7 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
         toast.success('Review updated successfully!');
       } else {
         await api.post('/api/customer-reviews', reviewData);
-        toast.success('Review posted successfully!');
+        toast.success('Review submitted! It will appear after approval.');
       }
 
       setRating(5);
@@ -177,10 +196,22 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
     }
   };
 
+  const newPhotoUrls = useMemo(() => newPhotos.map(f => URL.createObjectURL(f)), [newPhotos]);
+  useEffect(() => {
+    return () => { newPhotoUrls.forEach(url => URL.revokeObjectURL(url)); };
+  }, [newPhotoUrls]);
+
+  const videoPreviewUrl = useMemo(() => newVideo ? URL.createObjectURL(newVideo) : null, [newVideo]);
+  useEffect(() => {
+    return () => { if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl); };
+  }, [videoPreviewUrl]);
+
   const allPhotoPreviews = [
     ...photos.map((url, i) => ({ type: 'existing' as const, url, index: i })),
-    ...newPhotos.map((file, i) => ({ type: 'new' as const, url: URL.createObjectURL(file), index: i })),
+    ...newPhotoUrls.map((url, i) => ({ type: 'new' as const, url, index: i })),
   ];
+
+  const finalVideoPreview = videoPreviewUrl || videoUrl || null;
 
   return (
     <form onSubmit={handleSubmit} className="bg-card border border-border rounded-xl p-4 sm:p-6">
@@ -189,29 +220,30 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
       </h3>
 
       <div className="space-y-3">
-        <div>
-          <label className="text-sm sm:text-base font-medium mb-1 block">Your Name</label>
-          <Input
-            value={customerName}
-            onChange={e => setCustomerName(e.target.value)}
-            placeholder="Enter your name"
-            className="text-sm sm:text-base"
-            required
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="text-sm font-medium mb-1 block">Your Name</label>
+            <Input
+              value={customerName}
+              onChange={e => setCustomerName(e.target.value)}
+              placeholder="Enter your name"
+              className="text-sm"
+              required
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium mb-1 block">City (optional)</label>
+            <Input
+              value={city}
+              onChange={e => setCity(e.target.value)}
+              placeholder="Enter your city"
+              className="text-sm"
+            />
+          </div>
         </div>
 
         <div>
-          <label className="text-sm sm:text-base font-medium mb-1 block">City (optional)</label>
-          <Input
-            value={city}
-            onChange={e => setCity(e.target.value)}
-            placeholder="Enter your city"
-            className="text-sm sm:text-base"
-          />
-        </div>
-
-        <div>
-          <label className="text-sm sm:text-base font-medium mb-1.5 block">Rating</label>
+          <label className="text-sm font-medium mb-1.5 block">Rating</label>
           <div className="flex gap-1">
             {[1, 2, 3, 4, 5].map(star => (
               <button
@@ -235,19 +267,19 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
         </div>
 
         <div>
-          <label className="text-sm sm:text-base font-medium mb-1 block">Your Review</label>
+          <label className="text-sm font-medium mb-1 block">Your Review</label>
           <Textarea
             value={reviewText}
             onChange={e => setReviewText(e.target.value)}
             placeholder="Share your experience with SP Granites..."
             rows={3}
-            className="text-sm sm:text-base resize-none"
+            className="text-sm resize-none"
             required
           />
         </div>
 
         <div>
-          <label className="text-sm sm:text-base font-medium mb-1.5 block">
+          <label className="text-sm font-medium mb-1.5 block">
             Photos ({photos.length + newPhotos.length}/5)
           </label>
           <div className="flex flex-wrap gap-2">
@@ -270,7 +302,7 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
                 className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg border-2 border-dashed border-border flex flex-col items-center justify-center text-muted-foreground hover:border-primary hover:text-primary transition-colors"
               >
                 <ImagePlus className="h-5 w-5" />
-                <span className="text-[10px] sm:text-xs mt-0.5">Add Photo</span>
+                <span className="text-[10px] sm:text-xs mt-0.5">Add</span>
               </button>
             )}
           </div>
@@ -285,14 +317,20 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
         </div>
 
         <div>
-          <label className="text-sm sm:text-base font-medium mb-1.5 block">Video (optional)</label>
-          {(videoUrl || newVideo) ? (
-            <div className="relative inline-flex items-center gap-2 bg-muted/50 px-3 py-2 rounded-lg border border-border">
-              <Video className="h-4 w-4 text-primary" />
-              <span className="text-sm sm:text-base truncate max-w-[200px]">
-                {newVideo ? newVideo.name : 'Video attached'}
-              </span>
-              <button type="button" onClick={removeVideo} className="text-muted-foreground hover:text-destructive">
+          <label className="text-sm font-medium mb-1.5 block">Video (optional, max 50MB)</label>
+          {finalVideoPreview ? (
+            <div className="relative rounded-lg overflow-hidden border border-border bg-black max-w-xs">
+              <video
+                src={finalVideoPreview}
+                className="w-full max-h-40 object-contain"
+                controls
+                preload="metadata"
+              />
+              <button
+                type="button"
+                onClick={removeVideo}
+                className="absolute top-1 right-1 bg-black/70 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+              >
                 <X className="h-3.5 w-3.5" />
               </button>
             </div>
@@ -303,7 +341,7 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
               className="flex items-center gap-2 px-3 py-2 rounded-lg border-2 border-dashed border-border text-muted-foreground hover:border-primary hover:text-primary transition-colors"
             >
               <Video className="h-4 w-4" />
-              <span className="text-sm sm:text-base">Add Video (max 50MB)</span>
+              <span className="text-sm">Add Video</span>
             </button>
           )}
           <input
@@ -317,7 +355,7 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
       </div>
 
       <div className="flex gap-2 mt-4">
-        <Button type="submit" disabled={submitting} className="text-sm sm:text-base">
+        <Button type="submit" disabled={submitting} className="text-sm">
           {submitting ? (
             <>
               <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
@@ -328,7 +366,7 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
           )}
         </Button>
         {onCancel && (
-          <Button type="button" variant="outline" onClick={onCancel} className="text-sm sm:text-base">
+          <Button type="button" variant="outline" onClick={onCancel} className="text-sm">
             Cancel
           </Button>
         )}

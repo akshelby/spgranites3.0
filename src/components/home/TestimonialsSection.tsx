@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Star, Quote } from 'lucide-react';
+import { useEffect, useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Star, Quote, PenLine, X, ChevronLeft, ChevronRight, ImageIcon, Play } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
-import { Testimonial } from '@/types/database';
+import { Testimonial, CustomerReview } from '@/types/database';
+import { ReviewForm } from '@/components/reviews/ReviewForm';
+import { Button } from '@/components/ui/button';
 
 const defaultTestimonials: Testimonial[] = [
   { id: '1', customer_name: 'Rajesh Kumar', company: 'Home Owner', designation: null, review_text: 'Excellent quality granite and professional installation. The team was punctual and the work was completed perfectly.', rating: 5, image_url: null, is_active: true, display_order: 1, created_at: '', updated_at: '' },
@@ -11,15 +13,72 @@ const defaultTestimonials: Testimonial[] = [
   { id: '3', customer_name: 'Anand Builders', company: 'Construction Company', designation: 'Project Manager', review_text: 'We have been working with SP Granites for over 5 years. Reliable, quality products, and excellent customer service.', rating: 5, image_url: null, is_active: true, display_order: 3, created_at: '', updated_at: '' },
 ];
 
+function MediaGallery({ photos, videoUrl }: { photos?: string[]; videoUrl?: string | null }) {
+  const [selectedMedia, setSelectedMedia] = useState<{ type: 'image' | 'video'; url: string } | null>(null);
+
+  const hasMedia = (photos && photos.length > 0) || videoUrl;
+  if (!hasMedia) return null;
+
+  return (
+    <>
+      <div className="flex gap-1.5 mb-2 flex-wrap">
+        {photos?.map((url, i) => (
+          <button
+            key={i}
+            type="button"
+            onClick={() => setSelectedMedia({ type: 'image', url })}
+            className="w-12 h-12 sm:w-14 sm:h-14 rounded-md overflow-hidden border border-border hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer"
+          >
+            <img src={url} alt="" className="w-full h-full object-cover" />
+          </button>
+        ))}
+        {videoUrl && (
+          <button
+            type="button"
+            onClick={() => setSelectedMedia({ type: 'video', url: videoUrl })}
+            className="w-12 h-12 sm:w-14 sm:h-14 rounded-md overflow-hidden border border-border hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer bg-black/80 flex items-center justify-center relative"
+          >
+            <Play className="h-5 w-5 text-white" />
+          </button>
+        )}
+      </div>
+
+      <AnimatePresence>
+        {selectedMedia && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+            onClick={() => setSelectedMedia(null)}
+          >
+            <button
+              onClick={() => setSelectedMedia(null)}
+              className="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-black/70 z-10"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <div className="max-w-3xl max-h-[80vh] w-full" onClick={e => e.stopPropagation()}>
+              {selectedMedia.type === 'image' ? (
+                <img src={selectedMedia.url} alt="" className="w-full h-full object-contain rounded-lg" />
+              ) : (
+                <video src={selectedMedia.url} controls autoPlay className="w-full max-h-[80vh] rounded-lg" />
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
 export function TestimonialsSection() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>(defaultTestimonials);
+  const [customerReviews, setCustomerReviews] = useState<CustomerReview[]>([]);
+  const [showReviewForm, setShowReviewForm] = useState(false);
   const { t } = useTranslation();
 
-  useEffect(() => {
-    fetchTestimonials();
-  }, []);
-
-  const fetchTestimonials = async () => {
+  const fetchTestimonials = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('testimonials')
@@ -34,6 +93,31 @@ export function TestimonialsSection() {
     } catch {
       setTestimonials(defaultTestimonials);
     }
+  }, []);
+
+  const fetchCustomerReviews = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('customer_reviews')
+        .select('*')
+        .eq('is_approved', true)
+        .order('created_at', { ascending: false })
+        .limit(6);
+      if (!error && Array.isArray(data)) {
+        setCustomerReviews(data as CustomerReview[]);
+      }
+    } catch {
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchTestimonials();
+    fetchCustomerReviews();
+  }, [fetchTestimonials, fetchCustomerReviews]);
+
+  const handleReviewSuccess = () => {
+    setShowReviewForm(false);
+    fetchCustomerReviews();
   };
 
   return (
@@ -116,6 +200,104 @@ export function TestimonialsSection() {
             </div>
           ))}
         </div>
+
+        {customerReviews.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mt-6 sm:mt-8"
+          >
+            <h4 className="text-base sm:text-lg font-display font-bold mb-3 sm:mb-4 text-center">
+              Customer Reviews
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-3 lg:gap-5">
+              {customerReviews.map((review) => (
+                <div
+                  key={review.id}
+                  className="bg-card p-3 sm:p-4 lg:p-6 rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col"
+                >
+                  <div className="flex gap-0.5 mb-1 sm:mb-2">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 ${
+                          i < review.rating
+                            ? 'text-yellow-500 fill-yellow-500'
+                            : 'text-muted'
+                        }`}
+                      />
+                    ))}
+                  </div>
+
+                  <p className="text-[10px] sm:text-xs lg:text-sm text-muted-foreground mb-2 sm:mb-3 line-clamp-4 flex-1">
+                    "{review.review_text}"
+                  </p>
+
+                  <MediaGallery photos={review.photos} videoUrl={review.video_url} />
+
+                  <div className="flex items-center gap-1.5 sm:gap-2.5 mt-auto pt-1.5 sm:pt-2 border-t border-border/40">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-[10px] sm:text-xs lg:text-sm">
+                      {review.customer_name.charAt(0)}
+                    </div>
+                    <div className="min-w-0">
+                      <h4 className="text-[10px] sm:text-xs lg:text-sm font-semibold truncate">{review.customer_name}</h4>
+                      {review.city && (
+                        <p className="text-[10px] sm:text-[10px] lg:text-xs text-muted-foreground truncate">
+                          {review.city}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-5 sm:mt-8 flex justify-center"
+        >
+          <Button
+            onClick={() => setShowReviewForm(!showReviewForm)}
+            variant={showReviewForm ? "outline" : "default"}
+            className="gap-2"
+          >
+            {showReviewForm ? (
+              <>
+                <X className="h-4 w-4" />
+                Close
+              </>
+            ) : (
+              <>
+                <PenLine className="h-4 w-4" />
+                Write a Review
+              </>
+            )}
+          </Button>
+        </motion.div>
+
+        <AnimatePresence>
+          {showReviewForm && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div className="max-w-2xl mx-auto mt-4 sm:mt-6">
+                <ReviewForm
+                  onSuccess={handleReviewSuccess}
+                  onCancel={() => setShowReviewForm(false)}
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </section>
   );
