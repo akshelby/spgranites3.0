@@ -31,7 +31,7 @@ const OrdersPage = lazy(() => import("./pages/OrdersPage"));
 const OrderDetailPage = lazy(() => import("./pages/OrderDetailPage"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const Auth = lazy(() => import("./pages/Auth"));
-const AuthCallback = lazy(() => import("./pages/AuthCallback"));
+import AuthCallback from "./pages/AuthCallback";
 const StoneVisualizerPage = lazy(() => import("./pages/StoneVisualizerPage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const PaymentPage = lazy(() => import("./pages/PaymentPage"));

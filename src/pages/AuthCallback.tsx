@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
@@ -6,11 +6,14 @@ import { Loader2 } from 'lucide-react';
 export default function AuthCallback() {
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  const handled = useRef(false);
 
   useEffect(() => {
+    if (handled.current) return;
+    handled.current = true;
+
     const handleCallback = async () => {
       try {
-        // Check for error in URL hash
         const hash = window.location.hash.substring(1);
         const hashParams = new URLSearchParams(hash);
         const errorDesc = hashParams.get('error_description');
@@ -19,7 +22,6 @@ export default function AuthCallback() {
           return;
         }
 
-        // Check for error in query params
         const searchParams = new URLSearchParams(window.location.search);
         const queryError = searchParams.get('error_description');
         if (queryError) {
@@ -27,30 +29,46 @@ export default function AuthCallback() {
           return;
         }
 
-        // Supabase automatically handles the OAuth token exchange
-        // via the URL hash. Just wait for the session to be set.
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(
+          searchParams.get('code') || ''
+        );
 
-        if (sessionError) {
-          setError(sessionError.message);
-          return;
-        }
+        if (exchangeError) {
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            navigate('/', { replace: true });
+            return;
+          }
 
-        if (session) {
-          navigate('/', { replace: true });
-        } else {
-          // Give Supabase a moment to process the hash
-          setTimeout(async () => {
+          if (hash && (hash.includes('access_token') || hash.includes('refresh_token'))) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
             const { data: { session: retrySession } } = await supabase.auth.getSession();
             if (retrySession) {
               navigate('/', { replace: true });
-            } else {
-              setError('No authentication session received. Please try again.');
+              return;
             }
-          }, 1500);
+          }
+
+          setError(exchangeError.message);
+          return;
+        }
+
+        if (data?.session) {
+          navigate('/', { replace: true });
+        } else {
+          setError('No session received. Please try signing in again.');
         }
       } catch (err: any) {
-        setError(err.message || 'Something went wrong');
+        const msg = err?.message || 'Something went wrong';
+        if (msg.includes('signal') || msg.includes('abort')) {
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          const { data: { session } } = await supabase.auth.getSession();
+          if (session) {
+            navigate('/', { replace: true });
+            return;
+          }
+        }
+        setError(msg);
       }
     };
 
