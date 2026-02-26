@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/hooks/useAuth';
 import { useSiteSettingsContext } from '@/contexts/SiteSettingsContext';
+import { supabase } from '@/integrations/supabase/client';
 import { SPLoader } from '@/components/ui/SPLoader';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Save, Phone, Mail, MapPin, Clock, Share2, Building2 } from 'lucide-react';
@@ -32,7 +32,6 @@ interface SettingsForm {
 
 export default function AdminSiteSettings() {
   const { toast } = useToast();
-  const { token } = useAuth();
   const { refetch: refetchGlobalSettings } = useSiteSettingsContext();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -71,11 +70,16 @@ export default function AdminSiteSettings() {
   const handleSave = async () => {
     setSaving(true);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const accessToken = session?.access_token;
+      if (!accessToken) {
+        throw new Error('You are not signed in. Please sign in again.');
+      }
       const res = await fetch('/api/admin/site-settings', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Bearer ${accessToken}`,
         },
         body: JSON.stringify(form),
       });
