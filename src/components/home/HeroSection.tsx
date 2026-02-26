@@ -94,7 +94,7 @@ export function HeroSection() {
               <h1 className="brand-name-hero text-5xl sm:text-6xl lg:text-7xl leading-none">SP Granites</h1>
               <div className="flex items-center justify-center gap-3 mt-1.5">
                 <span className="brand-divider !w-8" />
-                <span className="brand-tagline text-[10px] sm:text-xs text-muted-foreground/60">Premium Stone Works</span>
+                <span className="brand-tagline text-xs sm:text-sm text-muted-foreground tracking-[0.25em] uppercase font-medium">Premium Stone Works</span>
                 <span className="brand-divider !w-8" style={{background: 'linear-gradient(270deg, #dc2626, transparent)'}} />
               </div>
             </motion.div>
