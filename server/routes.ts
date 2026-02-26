@@ -21,9 +21,14 @@ async function getUserFromToken(token: string | undefined) {
   if (!token) return null;
   try {
     const { data: { user }, error } = await supabase.auth.getUser(token);
-    if (error || !user) return null;
+    if (error) {
+      console.error('[Auth] getUser error:', error.message);
+      return null;
+    }
+    if (!user) return null;
     return user;
-  } catch {
+  } catch (err: any) {
+    console.error('[Auth] getUser exception:', err?.message);
     return null;
   }
 }

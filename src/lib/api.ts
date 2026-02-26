@@ -1,19 +1,15 @@
 import { getUserFriendlyMessage, isAuthError } from './errorHandler';
+import { supabase } from '@/integrations/supabase/client';
 
-const TOKEN_KEY = "auth_token";
 const REQUEST_TIMEOUT = 15000;
 
 export function getToken(): string | null {
-  return localStorage.getItem(TOKEN_KEY);
+  return null;
 }
 
-export function setToken(token: string) {
-  localStorage.setItem(TOKEN_KEY, token);
-}
+export function setToken(_token: string) {}
 
-export function removeToken() {
-  localStorage.removeItem(TOKEN_KEY);
-}
+export function removeToken() {}
 
 class ApiError extends Error {
   public statusCode: number;
@@ -27,8 +23,17 @@ class ApiError extends Error {
   }
 }
 
+async function getSessionToken(): Promise<string | null> {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    return session?.access_token || null;
+  } catch {
+    return null;
+  }
+}
+
 async function request(url: string, options: RequestInit = {}) {
-  const token = getToken();
+  const token = await getSessionToken();
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...(options.headers as Record<string, string> || {}),

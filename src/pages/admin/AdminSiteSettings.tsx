@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useSiteSettingsContext } from '@/contexts/SiteSettingsContext';
-import { supabase } from '@/integrations/supabase/client';
+import { api } from '@/lib/api';
 import { SPLoader } from '@/components/ui/SPLoader';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Save, Phone, Mail, MapPin, Clock, Share2, Building2 } from 'lucide-react';
@@ -70,26 +70,9 @@ export default function AdminSiteSettings() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const accessToken = session?.access_token;
-      if (!accessToken) {
-        throw new Error('You are not signed in. Please sign in again.');
-      }
-      const res = await fetch('/api/admin/site-settings', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(form),
-      });
-      if (res.ok) {
-        toast({ title: 'Saved changes', duration: 3000 });
-        await refetchGlobalSettings();
-      } else {
-        const errBody = await res.json().catch(() => null);
-        throw new Error(errBody?.error || 'Failed to save. Please try again.');
-      }
+      await api.put('/api/admin/site-settings', form);
+      toast({ title: 'Saved changes', duration: 3000 });
+      await refetchGlobalSettings();
     } catch (err: any) {
       toast({ title: 'Error', description: err.message || 'Failed to save settings.', variant: 'destructive', duration: 5000 });
     }
