@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { useSiteSettingsContext } from '@/contexts/SiteSettingsContext';
 import { SPLoader } from '@/components/ui/SPLoader';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Save, Phone, Mail, MapPin, Clock, Share2, Building2 } from 'lucide-react';
 
 interface SettingsForm {
@@ -82,10 +83,11 @@ export default function AdminSiteSettings() {
         toast({ title: 'Saved changes', duration: 3000 });
         await refetchGlobalSettings();
       } else {
-        throw new Error('Failed to save');
+        const errBody = await res.json().catch(() => null);
+        throw new Error(errBody?.error || 'Failed to save. Please try again.');
       }
     } catch (err: any) {
-      toast({ title: 'Error', description: err.message || 'Failed to save settings.', variant: 'destructive' });
+      toast({ title: 'Error', description: err.message || 'Failed to save settings.', variant: 'destructive', duration: 5000 });
     }
     setSaving(false);
   };
@@ -209,7 +211,16 @@ export default function AdminSiteSettings() {
               </div>
               <div>
                 <label className="text-sm font-medium mb-1 block">Sunday / Holiday</label>
-                <Input value={form.working_hours_sunday} onChange={e => updateField('working_hours_sunday', e.target.value)} placeholder="Sunday: Closed" />
+                <Select value={form.working_hours_sunday} onValueChange={v => updateField('working_hours_sunday', v)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Sunday: Open">Open</SelectItem>
+                    <SelectItem value="Sunday: Closed">Closed</SelectItem>
+                    <SelectItem value="Sunday: By Appointment Only">By Appointment Only</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </CardContent>
