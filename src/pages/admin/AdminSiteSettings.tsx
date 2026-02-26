@@ -35,6 +35,9 @@ export default function AdminSiteSettings() {
   const { refetch: refetchGlobalSettings } = useSiteSettingsContext();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [tableExists, setTableExists] = useState(true);
+  const [setupSql, setSetupSql] = useState('');
+  const [settingUp, setSettingUp] = useState(false);
   const [form, setForm] = useState<SettingsForm>({
     phone_primary: '',
     phone_secondary: '',
@@ -55,16 +58,55 @@ export default function AdminSiteSettings() {
   });
 
   useEffect(() => {
-    fetchSettings();
+    checkAndFetchSettings();
   }, []);
 
-  const fetchSettings = async () => {
+  const checkAndFetchSettings = async () => {
+    try {
+      const statusRes = await fetch('/api/admin/site-settings/status', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      const statusData = await statusRes.json();
+      if (!statusData.tableExists) {
+        setTableExists(false);
+        setSetupSql(statusData.sql || '');
+        setLoading(false);
+        return;
+      }
+    } catch {}
+
     try {
       const res = await fetch('/api/site-settings');
       const data = await res.json();
       setForm(prev => ({ ...prev, ...data }));
     } catch {}
     setLoading(false);
+  };
+
+  const handleSetup = async () => {
+    setSettingUp(true);
+    try {
+      const res = await fetch('/api/admin/site-settings/setup', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast({ title: 'Table created', description: 'Site settings table has been set up.' });
+        setTableExists(true);
+        await checkAndFetchSettings();
+      } else {
+        setSetupSql(data.sql || '');
+        toast({
+          title: 'Manual setup required',
+          description: 'Please copy the SQL below and run it in your Supabase SQL Editor.',
+          variant: 'destructive',
+        });
+      }
+    } catch {
+      toast({ title: 'Error', description: 'Setup failed. Please try the manual SQL approach.', variant: 'destructive' });
+    }
+    setSettingUp(false);
   };
 
   const handleSave = async () => {
@@ -82,10 +124,12 @@ export default function AdminSiteSettings() {
         toast({ title: 'Settings saved', description: 'Site settings have been updated successfully.' });
         await refetchGlobalSettings();
       } else {
-        throw new Error('Failed to save');
+        const errData = await res.json().catch(() => null);
+        const details = errData?.details?.join(', ') || '';
+        throw new Error(details || 'Failed to save');
       }
-    } catch {
-      toast({ title: 'Error', description: 'Failed to save settings. Please try again.', variant: 'destructive' });
+    } catch (err: any) {
+      toast({ title: 'Error', description: err.message || 'Failed to save settings. Please try again.', variant: 'destructive' });
     }
     setSaving(false);
   };
@@ -95,6 +139,55 @@ export default function AdminSiteSettings() {
   };
 
   if (loading) return <AdminLayout><SPLoader size="lg" text="Loading settings..." fullPage /></AdminLayout>;
+
+  if (!tableExists) {
+    return (
+      <AdminLayout>
+        <PageHeader
+          title="Site Settings"
+          description="One-time setup required"
+        />
+        <div className="max-w-2xl">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Database Setup Required</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                The site settings table needs to be created in your Supabase database.
+                Click the button below to try automatic setup, or copy the SQL and run it manually in your Supabase SQL Editor.
+              </p>
+              <Button onClick={handleSetup} disabled={settingUp}>
+                {settingUp ? 'Setting up...' : 'Auto Setup Table'}
+              </Button>
+              {setupSql && (
+                <div className="mt-4">
+                  <p className="text-sm font-medium mb-2">Or run this SQL in your Supabase SQL Editor:</p>
+                  <div className="relative">
+                    <pre className="bg-muted p-4 rounded-md text-xs overflow-x-auto whitespace-pre-wrap">{setupSql}</pre>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="absolute top-2 right-2"
+                      onClick={() => {
+                        navigator.clipboard.writeText(setupSql);
+                        toast({ title: 'Copied', description: 'SQL copied to clipboard' });
+                      }}
+                    >
+                      Copy
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    After running the SQL, refresh this page.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>

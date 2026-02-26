@@ -1474,7 +1474,6 @@ If you don't know something specific (like exact prices or stock availability), 
     try {
       const { data, error } = await supabase.from('site_settings').select('key, value');
       if (error) {
-        // Table might not exist yet, return defaults
         return res.json(getDefaultSiteSettings());
       }
       const settings: Record<string, string> = {};
@@ -1493,21 +1492,55 @@ If you don't know something specific (like exact prices or stock availability), 
     }
   });
 
+  app.get("/api/admin/site-settings/status", requireAuth, requireAdmin, async (_req: Request, res: Response) => {
+    const { data, error } = await supabase.from('site_settings').select('key').limit(1);
+    if (error && (error.code === 'PGRST205' || error.code === '42P01')) {
+      return res.json({ tableExists: false, sql: SITE_SETTINGS_CREATE_SQL });
+    }
+    res.json({ tableExists: true });
+  });
+
+  app.post("/api/admin/site-settings/setup", requireAuth, requireAdmin, async (_req: Request, res: Response) => {
+    try {
+      const { error: checkError } = await supabase.from('site_settings').select('key').limit(1);
+      if (!checkError) {
+        return res.json({ success: true, message: 'Table already exists' });
+      }
+      const { error: rpcError } = await supabase.rpc('exec_sql', { sql: SITE_SETTINGS_CREATE_SQL });
+      if (!rpcError) {
+        return res.json({ success: true, message: 'Table created' });
+      }
+      return res.status(400).json({
+        success: false,
+        message: 'Could not auto-create the table. Please run the SQL below in your Supabase SQL Editor (supabase.com > SQL Editor):',
+        sql: SITE_SETTINGS_CREATE_SQL,
+      });
+    } catch (err: any) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  });
+
   app.put("/api/admin/site-settings", requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
       const settings = req.body as Record<string, string>;
       const defaults = getDefaultSiteSettings();
       const validKeys = Object.keys(defaults);
+      const errors: string[] = [];
 
       for (const [key, value] of Object.entries(settings)) {
         if (!validKeys.includes(key)) continue;
         const { error } = await supabase.from('site_settings').upsert(
-          { key, value: String(value) },
+          { key, value: String(value), updated_at: new Date().toISOString() },
           { onConflict: 'key' }
         );
         if (error) {
-          console.error(`Error saving setting ${key}:`, error);
+          console.error(`Error saving setting ${key}:`, error.message, error.code, error.details);
+          errors.push(`${key}: ${error.message}`);
         }
+      }
+      if (errors.length > 0) {
+        console.error("Site settings save errors:", errors);
+        return res.status(500).json({ error: "Failed to save some settings", details: errors });
       }
       res.json({ success: true });
     } catch (error: any) {
@@ -1516,6 +1549,15 @@ If you don't know something specific (like exact prices or stock availability), 
     }
   });
 }
+
+const SITE_SETTINGS_CREATE_SQL = `CREATE TABLE IF NOT EXISTS public.site_settings (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL DEFAULT '',
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Allow public read" ON public.site_settings FOR SELECT USING (true);
+CREATE POLICY "Allow service role full access" ON public.site_settings FOR ALL USING (true);`;
 
 function getDefaultSiteSettings(): Record<string, string> {
   return {
