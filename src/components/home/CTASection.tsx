@@ -25,9 +25,9 @@ export function CTASection() {
           viewport={{ once: true }}
           className="text-center max-w-3xl mx-auto"
         >
-          <h3 className="text-lg sm:text-2xl lg:text-3xl font-display font-bold mb-2 sm:mb-4 text-black" data-testid="text-cta-title">
+          <h2 className="text-lg sm:text-2xl lg:text-3xl font-display font-bold mb-2 sm:mb-4 text-black" data-testid="text-cta-title">
             {t('cta.title')}
-          </h3>
+          </h2>
           <p className="text-xs sm:text-sm lg:text-base opacity-85 mb-3 sm:mb-6">
             {t('cta.subtitle')}
           </p>
