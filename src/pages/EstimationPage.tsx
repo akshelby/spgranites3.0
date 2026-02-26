@@ -3,6 +3,7 @@ import { MainLayout } from '@/components/layout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Calculator, Gem, Ruler, Clock } from 'lucide-react';
 import { EstimationForm } from '@/components/estimation/EstimationForm';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 const features = [
   {
@@ -28,6 +29,7 @@ const features = [
 ];
 
 export default function EstimationPage() {
+  usePageTitle('Free Estimation');
   return (
     <MainLayout>
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">

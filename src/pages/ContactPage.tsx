@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { MainLayout } from '@/components/layout';
 import { Button } from '@/components/ui/button';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -30,6 +31,7 @@ const contactSchema = z.object({
 type ContactFormData = z.infer<typeof contactSchema>;
 
 export default function ContactPage() {
+  usePageTitle('Contact Us');
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
 

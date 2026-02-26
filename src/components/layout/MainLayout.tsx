@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { FloatingActionButton } from './FloatingActionButton';
+import { WhatsAppButton } from './WhatsAppButton';
 import { MiniCart } from '@/components/cart/MiniCart';
 import { TabBar } from './TabBar';
 import { AIChatPanel } from '@/components/ai/AIChatPanel';
@@ -33,6 +34,7 @@ export function MainLayout({ children, hideFooter = false }: MainLayoutProps) {
       </main>
       {!hideFooter && <Footer />}
       <AIChatPanel isOpen={isAIChatOpen} onClose={() => setIsAIChatOpen(false)} />
+      <WhatsAppButton />
       <FloatingActionButton isAIChatOpen={isAIChatOpen} onToggle={() => setIsAIChatOpen(prev => !prev)} />
       <MiniCart />
     </div>

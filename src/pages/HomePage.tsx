@@ -9,8 +9,10 @@ import { FeaturedProducts } from '@/components/home/FeaturedProducts';
 import { ServicesSection } from '@/components/home/ServicesSection';
 import { TestimonialsSection } from '@/components/home/TestimonialsSection';
 import { CTASection } from '@/components/home/CTASection';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function HomePage() {
+  usePageTitle();
   return (
     <MainLayout>
       <HeroSection />

@@ -7,8 +7,10 @@ import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { Catalog } from '@/types/database';
 import { useTranslation } from 'react-i18next';
+import { usePageTitle } from '@/hooks/usePageTitle';
 
 export default function CatalogsPage() {
+  usePageTitle('Catalogs');
   const { t } = useTranslation();
   const [catalogs, setCatalogs] = useState<Catalog[]>([]);
   const [loading, setLoading] = useState(true);

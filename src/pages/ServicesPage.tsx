@@ -5,8 +5,33 @@ import { SPLoader } from '@/components/ui/SPLoader';
 import { supabase } from '@/integrations/supabase/client';
 import { Service } from '@/types/database';
 import { useTranslation } from 'react-i18next';
+import { Scissors, Wrench, Sparkles, Palette, Truck, Hammer, HardHat, Ruler, Settings } from 'lucide-react';
+import { usePageTitle } from '@/hooks/usePageTitle';
+
+const serviceIconMap: Record<string, React.ElementType> = {
+  'fabrication': Scissors,
+  'cutting': Scissors,
+  'installation': Wrench,
+  'polishing': Sparkles,
+  'restoration': Sparkles,
+  'design': Palette,
+  'consultation': Palette,
+  'delivery': Truck,
+  'construction': HardHat,
+  'measurement': Ruler,
+  'repair': Hammer,
+};
+
+function getServiceIcon(name: string): React.ElementType {
+  const lower = name.toLowerCase();
+  for (const [keyword, icon] of Object.entries(serviceIconMap)) {
+    if (lower.includes(keyword)) return icon;
+  }
+  return Settings;
+}
 
 export default function ServicesPage() {
+  usePageTitle('Our Services');
   const { t } = useTranslation();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,7 +55,7 @@ export default function ServicesPage() {
   return (
     <MainLayout>
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6">
-        <div className="text-center mb-4 sm:mb-8">
+        <div className="text-center mb-6 sm:mb-10">
           <motion.span
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -64,40 +89,51 @@ export default function ServicesPage() {
             <p className="text-sm text-muted-foreground">{t('services.noServices')}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-            {services.map((service, index) => (
-              <motion.div
-                key={service.id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                className="group bg-card rounded-lg border border-border overflow-hidden hover-elevate transition-all"
-                data-testid={`card-service-${service.id}`}
-              >
-                {service.image_url && (
-                  <div className="aspect-[16/9] overflow-hidden">
-                    <img
-                      src={service.image_url}
-                      alt={service.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                <div className="p-3 sm:p-4">
-                  <h3 className="text-sm sm:text-base font-semibold mb-1">
-                    {service.name}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 mb-1">
-                    {service.short_description}
-                  </p>
-                  {service.description && (
-                    <p className="text-xs text-muted-foreground line-clamp-2">
-                      {service.description}
-                    </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            {services.map((service, index) => {
+              const Icon = getServiceIcon(service.name);
+              return (
+                <motion.div
+                  key={service.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.08 }}
+                  className="group bg-card rounded-xl border border-border overflow-hidden hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300"
+                  data-testid={`card-service-${service.id}`}
+                >
+                  {service.image_url && (
+                    <div className="aspect-[16/9] overflow-hidden">
+                      <img
+                        src={service.image_url}
+                        alt={service.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                    </div>
                   )}
-                </div>
-              </motion.div>
-            ))}
+                  <div className="p-4 sm:p-5">
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                        <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-sm sm:text-base font-semibold mb-1 group-hover:text-primary transition-colors">
+                          {service.name}
+                        </h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
+                          {service.short_description}
+                        </p>
+                      </div>
+                    </div>
+                    {service.description && (
+                      <p className="text-xs text-muted-foreground mt-3 leading-relaxed line-clamp-3 border-t border-border/50 pt-3">
+                        {service.description}
+                      </p>
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         )}
       </div>

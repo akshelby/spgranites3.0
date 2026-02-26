@@ -109,6 +109,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+- **2026-02-26**: Website improvements and performance optimization
+  - Services page: Added contextual icons (Scissors for fabrication, Wrench for installation, etc.) with improved card layout (3-column grid, hover effects)
+  - About page: Added gradient hero section, icons for Who We Are/Mission/Vision, icons for values cards, improved visual hierarchy
+  - WhatsApp button: Enabled floating WhatsApp chat button on all pages (positioned above AI assistant FAB)
+  - Image optimization: Converted product images from PNG (1.7-2.3MB) to WebP (~170-350KB), ~85% size reduction
+  - SEO: Added `usePageTitle` hook for per-page document titles (Home, Products, Services, About, Contact, Estimation, Catalogs)
+  - Route lazy loading: All pages except HomePage use React.lazy() for code splitting
 - **2026-02-23**: Migrated server to use Supabase as database backend
   - Server now uses `@supabase/supabase-js` with service role key instead of Drizzle ORM + Replit PostgreSQL
   - Authentication uses Supabase Auth (server-side) — signup creates Supabase Auth user, signin returns Supabase JWT

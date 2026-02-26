@@ -6,6 +6,7 @@ import { MainLayout } from '@/components/layout';
 import { SPLoader } from '@/components/ui/SPLoader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import {
   Select,
   SelectContent,
@@ -25,6 +26,7 @@ import { toast } from 'sonner';
 import { resolveProductImage, defaultProductImage } from '@/lib/productImages';
 
 export default function ProductsPage() {
+  usePageTitle('Products');
   const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);

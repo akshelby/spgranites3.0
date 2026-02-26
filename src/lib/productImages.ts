@@ -1,17 +1,17 @@
-import blackGraniteImg from '@/assets/products/black-granite.jpg';
-import absoluteBlackImg from '@/assets/products/absolute-black-granite.jpg';
-import brownGraniteImg from '@/assets/products/brown-granite.jpg';
-import greenGraniteImg from '@/assets/products/green-granite.jpg';
-import bluePearlImg from '@/assets/products/blue-pearl.jpg';
-import redGraniteImg from '@/assets/products/red-granite.jpg';
-import greyGraniteImg from '@/assets/products/grey-granite.jpg';
-import kashmirWhiteImg from '@/assets/products/kashmir-white-granite.jpg';
-import steelGreyImg from '@/assets/products/steel-grey-granite.jpg';
-import imperialRedImg from '@/assets/products/imperial-red-granite.jpg';
-import greenGalaxyImg from '@/assets/products/green-galaxy-granite.jpg';
-import brownPearlImg from '@/assets/products/brown-pearl-granite.jpg';
-import blueGalaxyImg from '@/assets/products/blue-galaxy-granite.jpg';
-import forestGreenImg from '@/assets/products/forest-green-granite.jpg';
+import blackGraniteImg from '@/assets/products/black-granite.webp';
+import absoluteBlackImg from '@/assets/products/absolute-black-granite.webp';
+import brownGraniteImg from '@/assets/products/brown-granite.webp';
+import greenGraniteImg from '@/assets/products/green-granite.webp';
+import bluePearlImg from '@/assets/products/blue-pearl.webp';
+import redGraniteImg from '@/assets/products/red-granite.webp';
+import greyGraniteImg from '@/assets/products/grey-granite.webp';
+import kashmirWhiteImg from '@/assets/products/kashmir-white-granite.webp';
+import steelGreyImg from '@/assets/products/steel-grey-granite.webp';
+import imperialRedImg from '@/assets/products/imperial-red-granite.webp';
+import greenGalaxyImg from '@/assets/products/green-galaxy-granite.webp';
+import brownPearlImg from '@/assets/products/brown-pearl-granite.webp';
+import blueGalaxyImg from '@/assets/products/blue-galaxy-granite.webp';
+import forestGreenImg from '@/assets/products/forest-green-granite.webp';
 
 export const productImageMap: Record<string, string> = {
   'black-galaxy-granite': blackGraniteImg,
