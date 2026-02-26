@@ -76,8 +76,8 @@ Preferred communication style: Simple, everyday language.
 - `estimation_enquiries` — Estimation requests
 - `conversations`, `messages` — Chat system
 - `site_visitors` — Analytics
-- `site_settings` — Key-value store for admin-configurable site settings (phone, email, address, hours, social links)
 - **Not yet created in Supabase**: `contact_numbers`, `leads`, `crm_notes`, `crm_followups` (routes handle gracefully with empty data)
+- **Site Settings**: Stored in local JSON file (`data/site-settings.json`) instead of Supabase table, since Supabase REST API doesn't support DDL for table creation. Settings are read/written atomically with defaults fallback.
 
 ### Key Features
 
@@ -111,7 +111,7 @@ Preferred communication style: Simple, everyday language.
 ## Recent Changes
 
 - **2026-02-26**: Admin Site Settings feature
-  - Added `site_settings` table in Supabase (key-value store for site-wide config)
+  - Site settings stored in local JSON file (`data/site-settings.json`) with atomic writes
   - Created `SiteSettingsContext` + `useSiteSettings()` hook for app-wide dynamic contact details
   - Admin can manage: phone numbers, WhatsApp number, emails, address, working hours, social media links, company name/tagline, Google Maps embed URL
   - All components (Footer, WhatsAppButton, ContactPage, CTASection, CategoriesSection, TermsOfServicePage, PrivacyPolicyPage) now read contact info from settings context instead of hardcoded values

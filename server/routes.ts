@@ -1,6 +1,8 @@
 import { Express, Request, Response, NextFunction } from "express";
 import { supabase } from "./supabase";
 import OpenAI from "openai";
+import fs from "fs";
+import path from "path";
 
 let _openai: OpenAI | null = null;
 function getOpenAI(): OpenAI {
@@ -1472,76 +1474,26 @@ If you don't know something specific (like exact prices or stock availability), 
   // ── Site Settings (public read, admin write) ──
   app.get("/api/site-settings", async (_req: Request, res: Response) => {
     try {
-      const { data, error } = await supabase.from('site_settings').select('key, value');
-      if (error) {
-        return res.json(getDefaultSiteSettings());
-      }
-      const settings: Record<string, string> = {};
-      const defaults = getDefaultSiteSettings();
-      for (const [k, v] of Object.entries(defaults)) {
-        settings[k] = v;
-      }
-      if (data) {
-        for (const row of data) {
-          settings[row.key] = row.value;
-        }
-      }
-      res.json(settings);
+      res.json(loadSiteSettings());
     } catch {
       res.json(getDefaultSiteSettings());
     }
   });
 
-  app.get("/api/admin/site-settings/status", requireAuth, requireAdmin, async (_req: Request, res: Response) => {
-    const { data, error } = await supabase.from('site_settings').select('key').limit(1);
-    if (error && (error.code === 'PGRST205' || error.code === '42P01')) {
-      return res.json({ tableExists: false, sql: SITE_SETTINGS_CREATE_SQL });
-    }
-    res.json({ tableExists: true });
-  });
-
-  app.post("/api/admin/site-settings/setup", requireAuth, requireAdmin, async (_req: Request, res: Response) => {
-    try {
-      const { error: checkError } = await supabase.from('site_settings').select('key').limit(1);
-      if (!checkError) {
-        return res.json({ success: true, message: 'Table already exists' });
-      }
-      const { error: rpcError } = await supabase.rpc('exec_sql', { sql: SITE_SETTINGS_CREATE_SQL });
-      if (!rpcError) {
-        return res.json({ success: true, message: 'Table created' });
-      }
-      return res.status(400).json({
-        success: false,
-        message: 'Could not auto-create the table. Please run the SQL below in your Supabase SQL Editor (supabase.com > SQL Editor):',
-        sql: SITE_SETTINGS_CREATE_SQL,
-      });
-    } catch (err: any) {
-      res.status(500).json({ success: false, message: err.message });
-    }
-  });
-
   app.put("/api/admin/site-settings", requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
-      const settings = req.body as Record<string, string>;
+      const incoming = req.body as Record<string, string>;
       const defaults = getDefaultSiteSettings();
       const validKeys = Object.keys(defaults);
-      const errors: string[] = [];
+      const current = loadSiteSettings();
 
-      for (const [key, value] of Object.entries(settings)) {
-        if (!validKeys.includes(key)) continue;
-        const { error } = await supabase.from('site_settings').upsert(
-          { key, value: String(value), updated_at: new Date().toISOString() },
-          { onConflict: 'key' }
-        );
-        if (error) {
-          console.error(`Error saving setting ${key}:`, error.message, error.code, error.details);
-          errors.push(`${key}: ${error.message}`);
+      for (const [key, value] of Object.entries(incoming)) {
+        if (validKeys.includes(key)) {
+          current[key] = String(value);
         }
       }
-      if (errors.length > 0) {
-        console.error("Site settings save errors:", errors);
-        return res.status(500).json({ error: "Failed to save some settings", details: errors });
-      }
+
+      saveSiteSettings(current);
       res.json({ success: true });
     } catch (error: any) {
       console.error("Error saving site settings:", error);
@@ -1549,15 +1501,6 @@ If you don't know something specific (like exact prices or stock availability), 
     }
   });
 }
-
-const SITE_SETTINGS_CREATE_SQL = `CREATE TABLE IF NOT EXISTS public.site_settings (
-  key TEXT PRIMARY KEY,
-  value TEXT NOT NULL DEFAULT '',
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Allow public read" ON public.site_settings FOR SELECT USING (true);
-CREATE POLICY "Allow service role full access" ON public.site_settings FOR ALL USING (true);`;
 
 function getDefaultSiteSettings(): Record<string, string> {
   return {
@@ -1578,4 +1521,30 @@ function getDefaultSiteSettings(): Record<string, string> {
     company_tagline: 'Premium Stone Works',
     map_embed_url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3916.2649!2d76.9558!3d11.0168!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTHCsDAxJzAwLjUiTiA3NsKwNTcnMjAuOSJF!5e0!3m2!1sen!2sin!4v1',
   };
+}
+
+const SETTINGS_FILE = path.join(process.cwd(), 'data', 'site-settings.json');
+
+function loadSiteSettings(): Record<string, string> {
+  const defaults = getDefaultSiteSettings();
+  try {
+    if (fs.existsSync(SETTINGS_FILE)) {
+      const raw = fs.readFileSync(SETTINGS_FILE, 'utf-8');
+      const saved = JSON.parse(raw);
+      return { ...defaults, ...saved };
+    }
+  } catch (err) {
+    console.error("Error loading site settings file:", err);
+  }
+  return defaults;
+}
+
+function saveSiteSettings(settings: Record<string, string>): void {
+  const dir = path.dirname(SETTINGS_FILE);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  const tmpFile = SETTINGS_FILE + '.tmp';
+  fs.writeFileSync(tmpFile, JSON.stringify(settings, null, 2), 'utf-8');
+  fs.renameSync(tmpFile, SETTINGS_FILE);
 }
