@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Star, ImagePlus, Video, X, Loader2, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -96,6 +96,10 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
   };
 
   const removeVideo = () => {
+    if (videoUrlRef.current) {
+      URL.revokeObjectURL(videoUrlRef.current);
+      videoUrlRef.current = null;
+    }
     setNewVideo(null);
     setVideoUrl('');
   };
@@ -195,22 +199,54 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
     }
   };
 
-  const newPhotoUrls = useMemo(() => newPhotos.map(f => URL.createObjectURL(f)), [newPhotos]);
-  useEffect(() => {
-    return () => { newPhotoUrls.forEach(url => URL.revokeObjectURL(url)); };
-  }, [newPhotoUrls]);
+  const photoUrlsRef = useRef<Map<File, string>>(new Map());
+  const videoUrlRef = useRef<string | null>(null);
 
-  const videoPreviewUrl = useMemo(() => newVideo ? URL.createObjectURL(newVideo) : null, [newVideo]);
+  const getPhotoUrl = (file: File) => {
+    if (!photoUrlsRef.current.has(file)) {
+      photoUrlsRef.current.set(file, URL.createObjectURL(file));
+    }
+    return photoUrlsRef.current.get(file)!;
+  };
+
   useEffect(() => {
-    return () => { if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl); };
-  }, [videoPreviewUrl]);
+    const currentMap = photoUrlsRef.current;
+    const activeFiles = new Set(newPhotos);
+    currentMap.forEach((url, file) => {
+      if (!activeFiles.has(file)) {
+        URL.revokeObjectURL(url);
+        currentMap.delete(file);
+      }
+    });
+  }, [newPhotos]);
+
+  useEffect(() => {
+    return () => {
+      photoUrlsRef.current.forEach(url => URL.revokeObjectURL(url));
+      if (videoUrlRef.current) URL.revokeObjectURL(videoUrlRef.current);
+    };
+  }, []);
+
+  const getVideoPreviewUrl = () => {
+    if (newVideo) {
+      if (!videoUrlRef.current) {
+        videoUrlRef.current = URL.createObjectURL(newVideo);
+      }
+      return videoUrlRef.current;
+    }
+    if (videoUrlRef.current) {
+      URL.revokeObjectURL(videoUrlRef.current);
+      videoUrlRef.current = null;
+    }
+    return videoUrl || null;
+  };
 
   const allPhotoPreviews = [
     ...photos.map((url, i) => ({ type: 'existing' as const, url, index: i })),
-    ...newPhotoUrls.map((url, i) => ({ type: 'new' as const, url, index: i })),
+    ...newPhotos.map((file, i) => ({ type: 'new' as const, url: getPhotoUrl(file), index: i })),
   ];
 
-  const finalVideoPreview = videoPreviewUrl || videoUrl || null;
+  const finalVideoPreview = getVideoPreviewUrl();
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); handleSubmit(e); }} className="bg-card border border-border rounded-xl p-4 sm:p-6">
