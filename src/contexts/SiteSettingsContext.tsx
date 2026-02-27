@@ -54,9 +54,13 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
   const fetchSettings = useCallback(async () => {
     try {
       const res = await fetch('/api/site-settings');
+      if (!res.ok) return;
       const data = await res.json();
-      setSettings(prev => ({ ...prev, ...data }));
-    } catch {}
+      if (data && typeof data === 'object') {
+        setSettings(prev => ({ ...prev, ...data }));
+      }
+    } catch {
+    }
   }, []);
 
   useEffect(() => {

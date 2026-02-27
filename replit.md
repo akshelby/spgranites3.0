@@ -76,8 +76,8 @@ Preferred communication style: Simple, everyday language.
 - `estimation_enquiries` — Estimation requests
 - `conversations`, `messages` — Chat system
 - `site_visitors` — Analytics
+- `site_settings` — Key-value store for site-wide settings (phone, email, address, social links, etc.)
 - **Not yet created in Supabase**: `contact_numbers`, `leads`, `crm_notes`, `crm_followups` (routes handle gracefully with empty data)
-- **Site Settings**: Stored in local JSON file (`data/site-settings.json`) instead of Supabase table, since Supabase REST API doesn't support DDL for table creation. Settings are read/written atomically with defaults fallback.
 
 ### Key Features
 
@@ -110,8 +110,16 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+- **2026-02-27**: Migrated site settings from local JSON file to Supabase `site_settings` table (key-value store)
+  - `site_settings` table in Supabase with key TEXT PRIMARY KEY, value TEXT
+  - Server reads/writes settings via Supabase client instead of filesystem
+  - Removed `fs` and `path` imports from server/routes.ts
+  - OrderDetailPage invoice PDF now uses dynamic settings from useSiteSettings()
+  - Migration SQL at `supabase-migrations/create_site_settings.sql`
+- **2026-02-27**: Fixed MediaGallery lightbox rendering inside review cards instead of fullscreen
+  - Used React Portal (createPortal to document.body) to escape CSS containment traps
+  - Added swipe navigation, prev/next arrows, thumbnail strip, image counter
 - **2026-02-26**: Admin Site Settings feature
-  - Site settings stored in local JSON file (`data/site-settings.json`) with atomic writes
   - Created `SiteSettingsContext` + `useSiteSettings()` hook for app-wide dynamic contact details
   - Admin can manage: phone numbers, WhatsApp number, emails, address, working hours, social media links, company name/tagline, Google Maps embed URL
   - All components (Footer, WhatsAppButton, ContactPage, CTASection, CategoriesSection, TermsOfServicePage, PrivacyPolicyPage) now read contact info from settings context instead of hardcoded values
