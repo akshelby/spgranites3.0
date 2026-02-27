@@ -101,7 +101,6 @@ export function TestimonialsSection() {
       const { data, error } = await supabase
         .from('customer_reviews')
         .select('*')
-        .eq('is_approved', true)
         .order('created_at', { ascending: false })
         .limit(6);
       if (!error && Array.isArray(data)) {
