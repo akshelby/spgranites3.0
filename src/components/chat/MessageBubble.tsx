@@ -152,17 +152,17 @@ export function MessageBubble({ message, isAdminView = false }: MessageBubblePro
   const isOutgoing = isAdminView ? isStaff : !isStaff;
 
   return (
-    <div className={cn("flex w-full px-3 mb-[2px]", isOutgoing ? "justify-end" : "justify-start")}>
+    <div className={cn("flex w-full px-2 sm:px-3 mb-[2px]", isOutgoing ? "justify-end" : "justify-start")}>
       <div
         className={cn(
-          "relative max-w-[80%] rounded-lg px-2.5 pt-1.5 pb-1 shadow-sm flex flex-col",
+          "relative max-w-[85%] sm:max-w-[75%] rounded-lg px-2.5 pt-1.5 pb-1 shadow-sm flex flex-col overflow-hidden",
           isOutgoing
             ? "bg-[#005C4B] text-[#E9EDEF] rounded-tr-none"
             : "bg-[#202C33] text-[#E9EDEF] rounded-tl-none"
         )}
       >
         {message.media_url && message.media_type === 'image' && (
-          <div className="mb-1.5 max-w-[280px]">
+          <div className="mb-1.5 max-w-full sm:max-w-[280px]">
             <img
               src={message.media_url}
               alt="Shared image"
@@ -173,7 +173,7 @@ export function MessageBubble({ message, isAdminView = false }: MessageBubblePro
         )}
 
         {message.media_url && message.media_type === 'video' && (
-          <div className="mb-1.5 max-w-[280px]">
+          <div className="mb-1.5 max-w-full sm:max-w-[280px]">
             <video
               src={message.media_url}
               className="rounded-lg w-full h-auto aspect-video"
@@ -187,7 +187,7 @@ export function MessageBubble({ message, isAdminView = false }: MessageBubblePro
         )}
 
         {message.content_text && (
-          <p className="text-[14px] leading-[19px] whitespace-pre-wrap break-words">{message.content_text}
+          <p className="text-[14px] leading-[19px] whitespace-pre-wrap break-words overflow-wrap-anywhere">{message.content_text}
             <span className="inline-block w-[70px]" />
           </p>
         )}
