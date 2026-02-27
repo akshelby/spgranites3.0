@@ -1,6 +1,6 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, Quote, PenLine, X, Play, Calendar, Eye } from 'lucide-react';
+import { Star, Quote, PenLine, X, Play, Calendar, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Testimonial, CustomerReview } from '@/types/database';
@@ -15,19 +15,57 @@ const defaultTestimonials: Testimonial[] = [
 ];
 
 function MediaGallery({ photos, videoUrl }: { photos?: string[]; videoUrl?: string | null }) {
-  const [selectedMedia, setSelectedMedia] = useState<{ type: 'image' | 'video'; url: string } | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
-  const hasMedia = (photos && photos.length > 0) || videoUrl;
-  if (!hasMedia) return null;
+  const allMedia: { type: 'image' | 'video'; url: string }[] = [
+    ...(photos || []).map(url => ({ type: 'image' as const, url })),
+    ...(videoUrl ? [{ type: 'video' as const, url: videoUrl }] : []),
+  ];
+
+  if (allMedia.length === 0) return null;
+
+  const goNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (selectedIndex !== null && selectedIndex < allMedia.length - 1) {
+      setSelectedIndex(selectedIndex + 1);
+    }
+  };
+
+  const goPrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (selectedIndex !== null && selectedIndex > 0) {
+      setSelectedIndex(selectedIndex - 1);
+    }
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    touchEndX.current = e.changedTouches[0].clientX;
+    const diff = touchStartX.current - touchEndX.current;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0 && selectedIndex !== null && selectedIndex < allMedia.length - 1) {
+        setSelectedIndex(selectedIndex + 1);
+      } else if (diff < 0 && selectedIndex !== null && selectedIndex > 0) {
+        setSelectedIndex(selectedIndex - 1);
+      }
+    }
+  };
+
+  const current = selectedIndex !== null ? allMedia[selectedIndex] : null;
 
   return (
     <>
       <div className="flex gap-1.5 mb-2 flex-wrap">
-        {photos?.map((url, i) => (
+        {(photos || []).map((url, i) => (
           <button
             key={i}
             type="button"
-            onClick={() => setSelectedMedia({ type: 'image', url })}
+            onClick={() => setSelectedIndex(i)}
             className="w-12 h-12 sm:w-14 sm:h-14 rounded-md overflow-hidden border border-border hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer"
           >
             <img src={url} alt="" className="w-full h-full object-cover" />
@@ -36,7 +74,7 @@ function MediaGallery({ photos, videoUrl }: { photos?: string[]; videoUrl?: stri
         {videoUrl && (
           <button
             type="button"
-            onClick={() => setSelectedMedia({ type: 'video', url: videoUrl })}
+            onClick={() => setSelectedIndex(allMedia.length - 1)}
             className="w-12 h-12 sm:w-14 sm:h-14 rounded-md overflow-hidden border border-border hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer bg-black/80 flex items-center justify-center relative"
           >
             <Play className="h-5 w-5 text-white" />
@@ -45,25 +83,60 @@ function MediaGallery({ photos, videoUrl }: { photos?: string[]; videoUrl?: stri
       </div>
 
       <AnimatePresence>
-        {selectedMedia && (
+        {current && selectedIndex !== null && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
-            onClick={() => setSelectedMedia(null)}
+            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+            onClick={() => setSelectedIndex(null)}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
           >
             <button
-              onClick={() => setSelectedMedia(null)}
-              className="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-black/70 z-10"
+              onClick={(e) => { e.stopPropagation(); setSelectedIndex(null); }}
+              className="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-white/20 z-10"
             >
               <X className="h-5 w-5" />
             </button>
+
+            {allMedia.length > 1 && (
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white/70 text-xs sm:text-sm z-10">
+                {selectedIndex + 1} / {allMedia.length}
+              </div>
+            )}
+
+            {selectedIndex > 0 && (
+              <button
+                onClick={goPrev}
+                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 text-white bg-black/50 rounded-full p-2 sm:p-3 hover:bg-white/20 z-10 transition-colors"
+              >
+                <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
+              </button>
+            )}
+
+            {selectedIndex < allMedia.length - 1 && (
+              <button
+                onClick={goNext}
+                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 text-white bg-black/50 rounded-full p-2 sm:p-3 hover:bg-white/20 z-10 transition-colors"
+              >
+                <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
+              </button>
+            )}
+
             <div className="max-w-3xl max-h-[80vh] w-full" onClick={e => e.stopPropagation()}>
-              {selectedMedia.type === 'image' ? (
-                <img src={selectedMedia.url} alt="" className="w-full h-full object-contain rounded-lg" />
+              {current.type === 'image' ? (
+                <motion.img
+                  key={current.url}
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.2 }}
+                  src={current.url}
+                  alt=""
+                  className="w-full h-full object-contain rounded-lg max-h-[80vh]"
+                />
               ) : (
-                <video src={selectedMedia.url} controls autoPlay className="w-full max-h-[80vh] rounded-lg" />
+                <video src={current.url} controls autoPlay className="w-full max-h-[80vh] rounded-lg" />
               )}
             </div>
           </motion.div>
