@@ -88,54 +88,78 @@ function MediaGallery({ photos, videoUrl }: { photos?: string[]; videoUrl?: stri
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/95 flex flex-col"
             onClick={() => setSelectedIndex(null)}
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            <button
-              onClick={(e) => { e.stopPropagation(); setSelectedIndex(null); }}
-              className="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-white/20 z-10"
-            >
-              <X className="h-5 w-5" />
-            </button>
+            <div className="flex items-center justify-between px-4 py-3 shrink-0">
+              <div className="text-white/70 text-sm font-medium">
+                {allMedia.length > 1 ? `${selectedIndex + 1} / ${allMedia.length}` : ''}
+              </div>
+              <button
+                onClick={(e) => { e.stopPropagation(); setSelectedIndex(null); }}
+                className="text-white bg-white/10 rounded-full p-2 hover:bg-white/20"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 flex items-center justify-center relative min-h-0 px-2 sm:px-14">
+              {selectedIndex > 0 && (
+                <button
+                  onClick={goPrev}
+                  className="absolute left-1 sm:left-3 top-1/2 -translate-y-1/2 text-white bg-white/10 rounded-full p-2 sm:p-3 hover:bg-white/20 z-10"
+                >
+                  <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
+                </button>
+              )}
+
+              {selectedIndex < allMedia.length - 1 && (
+                <button
+                  onClick={goNext}
+                  className="absolute right-1 sm:right-3 top-1/2 -translate-y-1/2 text-white bg-white/10 rounded-full p-2 sm:p-3 hover:bg-white/20 z-10"
+                >
+                  <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
+                </button>
+              )}
+
+              <div className="w-full h-full flex items-center justify-center" onClick={e => e.stopPropagation()}>
+                {current.type === 'image' ? (
+                  <img
+                    key={current.url}
+                    src={current.url}
+                    alt=""
+                    className="max-w-full max-h-full object-contain"
+                  />
+                ) : (
+                  <video src={current.url} controls autoPlay className="max-w-full max-h-full object-contain" />
+                )}
+              </div>
+            </div>
 
             {allMedia.length > 1 && (
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 text-white/70 text-xs sm:text-sm z-10">
-                {selectedIndex + 1} / {allMedia.length}
+              <div className="shrink-0 px-4 py-3 flex justify-center gap-2 overflow-x-auto" onClick={e => e.stopPropagation()}>
+                {allMedia.map((media, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => setSelectedIndex(i)}
+                    className={`w-12 h-12 sm:w-14 sm:h-14 rounded-md overflow-hidden border-2 shrink-0 ${
+                      i === selectedIndex ? 'border-white ring-1 ring-white/50' : 'border-white/20 opacity-60 hover:opacity-100'
+                    }`}
+                  >
+                    {media.type === 'image' ? (
+                      <img src={media.url} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-white/10 flex items-center justify-center">
+                        <Play className="h-4 w-4 text-white" />
+                      </div>
+                    )}
+                  </button>
+                ))}
               </div>
             )}
-
-            {selectedIndex > 0 && (
-              <button
-                onClick={goPrev}
-                className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 text-white bg-black/50 rounded-full p-2 sm:p-3 hover:bg-white/20 z-10 transition-colors"
-              >
-                <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
-              </button>
-            )}
-
-            {selectedIndex < allMedia.length - 1 && (
-              <button
-                onClick={goNext}
-                className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 text-white bg-black/50 rounded-full p-2 sm:p-3 hover:bg-white/20 z-10 transition-colors"
-              >
-                <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
-              </button>
-            )}
-
-            <div className="max-w-3xl max-h-[80vh] w-full" onClick={e => e.stopPropagation()}>
-              {current.type === 'image' ? (
-                <img
-                  key={current.url}
-                  src={current.url}
-                  alt=""
-                  className="w-full h-full object-contain rounded-lg max-h-[80vh]"
-                />
-              ) : (
-                <video src={current.url} controls autoPlay className="w-full max-h-[80vh] rounded-lg" />
-              )}
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
