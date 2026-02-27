@@ -123,7 +123,6 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
     if (!customerName.trim()) {
       toast.error('Please enter your name');
       return;
@@ -214,7 +213,7 @@ export function ReviewForm({ editReview, onSuccess, onCancel }: ReviewFormProps)
   const finalVideoPreview = videoPreviewUrl || videoUrl || null;
 
   return (
-    <form onSubmit={handleSubmit} className="bg-card border border-border rounded-xl p-4 sm:p-6">
+    <form onSubmit={(e) => { e.preventDefault(); e.stopPropagation(); handleSubmit(e); }} className="bg-card border border-border rounded-xl p-4 sm:p-6">
       <h3 className="text-base sm:text-lg font-semibold mb-3">
         {editReview ? 'Edit Your Review' : 'Write a Review'}
       </h3>
