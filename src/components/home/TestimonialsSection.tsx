@@ -126,11 +126,8 @@ function MediaGallery({ photos, videoUrl }: { photos?: string[]; videoUrl?: stri
 
             <div className="max-w-3xl max-h-[80vh] w-full" onClick={e => e.stopPropagation()}>
               {current.type === 'image' ? (
-                <motion.img
+                <img
                   key={current.url}
-                  initial={{ opacity: 0, x: 30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.2 }}
                   src={current.url}
                   alt=""
                   className="w-full h-full object-contain rounded-lg max-h-[80vh]"
