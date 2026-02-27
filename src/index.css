@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+[id^="__repl"] {
+  display: none !important;
+}
+
 /* Prevent layout shift when overlays hide scrollbar */
 html {
   scrollbar-gutter: stable;
