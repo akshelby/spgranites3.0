@@ -114,6 +114,17 @@ export function TestimonialsSection() {
   useEffect(() => {
     fetchTestimonials();
     fetchCustomerReviews();
+
+    const channel = supabase
+      .channel('customer_reviews_realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'customer_reviews' }, () => {
+        fetchCustomerReviews();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [fetchTestimonials, fetchCustomerReviews]);
 
   const handleReviewSuccess = () => {
