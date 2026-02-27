@@ -1,11 +1,12 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, Quote, PenLine, X, ChevronLeft, ChevronRight, ImageIcon, Play } from 'lucide-react';
+import { Star, Quote, PenLine, X, Play, Calendar } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Testimonial, CustomerReview } from '@/types/database';
 import { ReviewForm } from '@/components/reviews/ReviewForm';
 import { Button } from '@/components/ui/button';
+import { format } from 'date-fns';
 
 const defaultTestimonials: Testimonial[] = [
   { id: '1', customer_name: 'Rajesh Kumar', company: 'Home Owner', designation: null, review_text: 'Excellent quality granite and professional installation. The team was punctual and the work was completed perfectly.', rating: 5, image_url: null, is_active: true, display_order: 1, created_at: '', updated_at: '' },
@@ -138,8 +139,60 @@ export function TestimonialsSection() {
           </p>
         </motion.div>
 
+        {customerReviews.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-3 lg:gap-5 mb-4 sm:mb-6">
+            {customerReviews.map((review) => (
+              <div
+                key={review.id}
+                className="bg-card p-3 sm:p-4 lg:p-6 rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col"
+              >
+                <div className="flex items-center justify-between mb-1 sm:mb-2">
+                  <div className="flex gap-0.5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 ${
+                          i < review.rating
+                            ? 'text-yellow-500 fill-yellow-500'
+                            : 'text-muted'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  {review.created_at && (
+                    <span className="flex items-center gap-1 text-[9px] sm:text-[10px] text-muted-foreground/70">
+                      <Calendar className="h-2.5 w-2.5" />
+                      {format(new Date(review.created_at), 'MMM d, yyyy')}
+                    </span>
+                  )}
+                </div>
+
+                <p className="text-[10px] sm:text-xs lg:text-sm text-muted-foreground mb-2 sm:mb-3 line-clamp-4 flex-1">
+                  "{review.review_text}"
+                </p>
+
+                <MediaGallery photos={review.photos} videoUrl={review.video_url} />
+
+                <div className="flex items-center gap-1.5 sm:gap-2.5 mt-auto pt-1.5 sm:pt-2 border-t border-border/40">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-[10px] sm:text-xs lg:text-sm">
+                    {review.customer_name.charAt(0)}
+                  </div>
+                  <div className="min-w-0">
+                    <h4 className="text-[10px] sm:text-xs lg:text-sm font-semibold truncate">{review.customer_name}</h4>
+                    {review.city && (
+                      <p className="text-[10px] sm:text-[10px] lg:text-xs text-muted-foreground truncate">
+                        {review.city}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-3 lg:gap-5">
-          {testimonials.map((testimonial, index) => (
+          {testimonials.map((testimonial) => (
             <div
               key={testimonial.id}
               className="bg-card p-3 sm:p-4 lg:p-6 rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col"
@@ -158,17 +211,25 @@ export function TestimonialsSection() {
                 </div>
               )}
 
-              <div className="flex gap-0.5 mb-1 sm:mb-2">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 ${
-                      i < testimonial.rating
-                        ? 'text-yellow-500 fill-yellow-500'
-                        : 'text-muted'
-                    }`}
-                  />
-                ))}
+              <div className="flex items-center justify-between mb-1 sm:mb-2">
+                <div className="flex gap-0.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 ${
+                        i < testimonial.rating
+                          ? 'text-yellow-500 fill-yellow-500'
+                          : 'text-muted'
+                      }`}
+                    />
+                  ))}
+                </div>
+                {testimonial.created_at && (
+                  <span className="flex items-center gap-1 text-[9px] sm:text-[10px] text-muted-foreground/70">
+                    <Calendar className="h-2.5 w-2.5" />
+                    {format(new Date(testimonial.created_at), 'MMM d, yyyy')}
+                  </span>
+                )}
               </div>
 
               <p className="text-[10px] sm:text-xs lg:text-sm text-muted-foreground mb-2 sm:mb-3 line-clamp-3 sm:line-clamp-4 lg:line-clamp-none flex-1">
@@ -200,60 +261,6 @@ export function TestimonialsSection() {
             </div>
           ))}
         </div>
-
-        {customerReviews.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mt-6 sm:mt-8"
-          >
-            <h4 className="text-base sm:text-lg font-display font-bold mb-3 sm:mb-4 text-center">
-              Customer Reviews
-            </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-3 lg:gap-5">
-              {customerReviews.map((review) => (
-                <div
-                  key={review.id}
-                  className="bg-card p-3 sm:p-4 lg:p-6 rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col"
-                >
-                  <div className="flex gap-0.5 mb-1 sm:mb-2">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-2.5 w-2.5 sm:h-3 sm:w-3 lg:h-3.5 lg:w-3.5 ${
-                          i < review.rating
-                            ? 'text-yellow-500 fill-yellow-500'
-                            : 'text-muted'
-                        }`}
-                      />
-                    ))}
-                  </div>
-
-                  <p className="text-[10px] sm:text-xs lg:text-sm text-muted-foreground mb-2 sm:mb-3 line-clamp-4 flex-1">
-                    "{review.review_text}"
-                  </p>
-
-                  <MediaGallery photos={review.photos} videoUrl={review.video_url} />
-
-                  <div className="flex items-center gap-1.5 sm:gap-2.5 mt-auto pt-1.5 sm:pt-2 border-t border-border/40">
-                    <div className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-[10px] sm:text-xs lg:text-sm">
-                      {review.customer_name.charAt(0)}
-                    </div>
-                    <div className="min-w-0">
-                      <h4 className="text-[10px] sm:text-xs lg:text-sm font-semibold truncate">{review.customer_name}</h4>
-                      {review.city && (
-                        <p className="text-[10px] sm:text-[10px] lg:text-xs text-muted-foreground truncate">
-                          {review.city}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
 
         <motion.div
           initial={{ opacity: 0, y: 15 }}
