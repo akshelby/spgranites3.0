@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { api } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
-import { Trash2, Star, Image, Video, Eye } from 'lucide-react';
+import { Trash2, Star, Image, Video, Eye, CheckCircle, XCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import {
   AlertDialog,
@@ -73,6 +73,16 @@ export default function AdminReviews() {
     setDeleteId(null);
   };
 
+  const toggleApproval = async (review: Review) => {
+    try {
+      await api.put(`/api/admin/customer-reviews/${review.id}`, { is_approved: !review.is_approved });
+      toast({ title: review.is_approved ? 'Review hidden from public' : 'Review approved and visible' });
+      fetchReviews();
+    } catch (error: any) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  };
+
   const columns = [
     {
       key: 'customer_name',
@@ -129,6 +139,15 @@ export default function AdminReviews() {
       ),
     },
     {
+      key: 'status',
+      header: 'Status',
+      render: (review: Review) => (
+        <Badge variant={review.is_approved ? 'default' : 'secondary'} className={review.is_approved ? 'bg-green-600' : ''}>
+          {review.is_approved ? 'Approved' : 'Pending'}
+        </Badge>
+      ),
+    },
+    {
       key: 'created_at',
       header: 'Date',
       render: (review: Review) => (
@@ -140,9 +159,21 @@ export default function AdminReviews() {
     {
       key: 'actions',
       header: '',
-      className: 'w-24',
+      className: 'w-32',
       render: (review: Review) => (
         <div className="flex gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => toggleApproval(review)}
+            title={review.is_approved ? 'Hide review' : 'Approve review'}
+          >
+            {review.is_approved ? (
+              <XCircle className="h-4 w-4 text-amber-500" />
+            ) : (
+              <CheckCircle className="h-4 w-4 text-green-500" />
+            )}
+          </Button>
           <Button variant="ghost" size="icon" onClick={() => setPreviewReview(review)} title="Preview review">
             <Eye className="h-4 w-4 text-muted-foreground" />
           </Button>

@@ -817,6 +817,16 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  app.get("/api/admin/reviews", requireAuth, requireAdmin, async (_req: Request, res: Response) => {
+    try {
+      const { data: customerReviews, error } = await supabase.from('customer_reviews').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      res.json({ customerReviews: customerReviews || [] });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   app.put("/api/admin/customer-reviews/:id", requireAuth, requireAdmin, async (req: Request, res: Response) => {
     try {
       const { data, error } = await supabase.from('customer_reviews').update({ ...req.body, updated_at: new Date().toISOString() }).eq('id', req.params.id).select().single();
