@@ -148,7 +148,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem(key);
       }
     });
-    window.location.href = '/auth';
+    window.location.href = '/';
   };
 
   const refreshAuth = async () => {
