@@ -215,33 +215,33 @@ export default function AdminChat() {
 
   return (
     <AdminLayout>
-      <div className="space-y-3 sm:space-y-4">
-        <div className="flex gap-2 sm:gap-4 overflow-x-auto pb-1 -mx-1 px-1 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-3">
-          <div className="bg-card rounded-xl border p-3 sm:p-4 flex items-center gap-2.5 sm:gap-3 min-w-[140px] shrink-0 sm:shrink sm:min-w-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+      <div className="space-y-3 sm:space-y-4 overflow-x-hidden">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4">
+          <div className="bg-card rounded-xl border p-2.5 sm:p-4 flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
               <Users className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
             </div>
-            <div>
-              <p className="text-xl sm:text-2xl font-bold leading-tight">{stats.total}</p>
-              <p className="text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap">Total Chats</p>
+            <div className="min-w-0">
+              <p className="text-lg sm:text-2xl font-bold leading-tight">{stats.total}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Total</p>
             </div>
           </div>
-          <div className="bg-card rounded-xl border p-3 sm:p-4 flex items-center gap-2.5 sm:gap-3 min-w-[140px] shrink-0 sm:shrink sm:min-w-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-orange-500/10 flex items-center justify-center shrink-0">
+          <div className="bg-card rounded-xl border p-2.5 sm:p-4 flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-orange-500/10 flex items-center justify-center shrink-0">
               <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500" />
             </div>
-            <div>
-              <p className="text-xl sm:text-2xl font-bold text-orange-600 leading-tight">{stats.open}</p>
-              <p className="text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap">Open</p>
+            <div className="min-w-0">
+              <p className="text-lg sm:text-2xl font-bold text-orange-600 leading-tight">{stats.open}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Open</p>
             </div>
           </div>
-          <div className="bg-card rounded-xl border p-3 sm:p-4 flex items-center gap-2.5 sm:gap-3 min-w-[140px] shrink-0 sm:shrink sm:min-w-0">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
+          <div className="bg-card rounded-xl border p-2.5 sm:p-4 flex items-center gap-2 sm:gap-3">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-green-500/10 flex items-center justify-center shrink-0">
               <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" />
             </div>
-            <div>
-              <p className="text-xl sm:text-2xl font-bold text-green-600 leading-tight">{stats.closed}</p>
-              <p className="text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap">Resolved</p>
+            <div className="min-w-0">
+              <p className="text-lg sm:text-2xl font-bold text-green-600 leading-tight">{stats.closed}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground truncate">Resolved</p>
             </div>
           </div>
         </div>
