@@ -304,43 +304,45 @@ export function TestimonialsSection() {
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mt-5 sm:mt-8 flex justify-center gap-3"
+          className="mt-5 sm:mt-8 flex justify-center gap-4 sm:gap-5"
         >
-          <Button
+          <button
             onClick={() => { setShowReviewForm(!showReviewForm); if (!showReviewForm) setShowMyReviews(false); }}
-            variant={showReviewForm ? "outline" : "default"}
-            className="gap-2"
+            className={`cta-ribbon-btn ${showReviewForm ? 'cta-ribbon-btn-outline' : 'cta-ribbon-btn-red'}`}
           >
-            {showReviewForm ? (
-              <>
-                <X className="h-4 w-4" />
-                Close
-              </>
-            ) : (
-              <>
-                <PenLine className="h-4 w-4" />
-                Write a Review
-              </>
-            )}
-          </Button>
-          {currentUser && myReviews.length > 0 && (
-            <Button
-              onClick={() => { setShowMyReviews(!showMyReviews); if (!showMyReviews) setShowReviewForm(false); }}
-              variant={showMyReviews ? "outline" : "secondary"}
-              className="gap-2"
-            >
-              {showMyReviews ? (
+            <span className="cta-ribbon-btn-inner">
+              {showReviewForm ? (
                 <>
-                  <X className="h-4 w-4" />
+                  <X className="h-4 w-4 mr-1.5" />
                   Close
                 </>
               ) : (
                 <>
-                  <Eye className="h-4 w-4" />
-                  My Reviews ({myReviews.length})
+                  <PenLine className="h-4 w-4 mr-1.5" />
+                  Write a Review
                 </>
               )}
-            </Button>
+            </span>
+          </button>
+          {currentUser && myReviews.length > 0 && (
+            <button
+              onClick={() => { setShowMyReviews(!showMyReviews); if (!showMyReviews) setShowReviewForm(false); }}
+              className={`cta-ribbon-btn ${showMyReviews ? 'cta-ribbon-btn-outline' : 'cta-ribbon-btn-dark'}`}
+            >
+              <span className="cta-ribbon-btn-inner">
+                {showMyReviews ? (
+                  <>
+                    <X className="h-4 w-4 mr-1.5" />
+                    Close
+                  </>
+                ) : (
+                  <>
+                    <Eye className="h-4 w-4 mr-1.5" />
+                    My Reviews ({myReviews.length})
+                  </>
+                )}
+              </span>
+            </button>
           )}
         </motion.div>
 
