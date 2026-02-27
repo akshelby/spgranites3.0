@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, Quote, PenLine, X, Play, Calendar, Eye, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -82,87 +83,91 @@ function MediaGallery({ photos, videoUrl }: { photos?: string[]; videoUrl?: stri
         )}
       </div>
 
-      <AnimatePresence>
-        {current && selectedIndex !== null && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/95 flex flex-col"
-            onClick={() => setSelectedIndex(null)}
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
-          >
-            <div className="flex items-center justify-between px-4 py-3 shrink-0">
-              <div className="text-white/70 text-sm font-medium">
-                {allMedia.length > 1 ? `${selectedIndex + 1} / ${allMedia.length}` : ''}
-              </div>
-              <button
-                onClick={(e) => { e.stopPropagation(); setSelectedIndex(null); }}
-                className="text-white bg-white/10 rounded-full p-2 hover:bg-white/20"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="flex-1 flex items-center justify-center relative min-h-0 px-2 sm:px-14">
-              {selectedIndex > 0 && (
+      {createPortal(
+        <AnimatePresence>
+          {current && selectedIndex !== null && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[9999] bg-black/95 flex flex-col"
+              style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+              onClick={() => setSelectedIndex(null)}
+              onTouchStart={handleTouchStart}
+              onTouchEnd={handleTouchEnd}
+            >
+              <div className="flex items-center justify-between px-4 py-3 shrink-0">
+                <div className="text-white/70 text-sm font-medium">
+                  {allMedia.length > 1 ? `${selectedIndex + 1} / ${allMedia.length}` : ''}
+                </div>
                 <button
-                  onClick={goPrev}
-                  className="absolute left-1 sm:left-3 top-1/2 -translate-y-1/2 text-white bg-white/10 rounded-full p-2 sm:p-3 hover:bg-white/20 z-10"
+                  onClick={(e) => { e.stopPropagation(); setSelectedIndex(null); }}
+                  className="text-white bg-white/10 rounded-full p-2 hover:bg-white/20"
                 >
-                  <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
+                  <X className="h-5 w-5" />
                 </button>
-              )}
-
-              {selectedIndex < allMedia.length - 1 && (
-                <button
-                  onClick={goNext}
-                  className="absolute right-1 sm:right-3 top-1/2 -translate-y-1/2 text-white bg-white/10 rounded-full p-2 sm:p-3 hover:bg-white/20 z-10"
-                >
-                  <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
-                </button>
-              )}
-
-              <div className="w-full h-full flex items-center justify-center" onClick={e => e.stopPropagation()}>
-                {current.type === 'image' ? (
-                  <img
-                    key={current.url}
-                    src={current.url}
-                    alt=""
-                    className="max-w-full max-h-full object-contain"
-                  />
-                ) : (
-                  <video src={current.url} controls autoPlay className="max-w-full max-h-full object-contain" />
-                )}
               </div>
-            </div>
 
-            {allMedia.length > 1 && (
-              <div className="shrink-0 px-4 py-3 flex justify-center gap-2 overflow-x-auto" onClick={e => e.stopPropagation()}>
-                {allMedia.map((media, i) => (
+              <div className="flex-1 flex items-center justify-center relative min-h-0 px-12 sm:px-16">
+                {selectedIndex > 0 && (
                   <button
-                    key={i}
-                    type="button"
-                    onClick={() => setSelectedIndex(i)}
-                    className={`w-12 h-12 sm:w-14 sm:h-14 rounded-md overflow-hidden border-2 shrink-0 ${
-                      i === selectedIndex ? 'border-white ring-1 ring-white/50' : 'border-white/20 opacity-60 hover:opacity-100'
-                    }`}
+                    onClick={goPrev}
+                    className="absolute left-1 sm:left-3 top-1/2 -translate-y-1/2 text-white bg-white/10 rounded-full p-2 sm:p-3 hover:bg-white/20 z-10"
                   >
-                    {media.type === 'image' ? (
-                      <img src={media.url} alt="" className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full bg-white/10 flex items-center justify-center">
-                        <Play className="h-4 w-4 text-white" />
-                      </div>
-                    )}
+                    <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
                   </button>
-                ))}
+                )}
+
+                {selectedIndex < allMedia.length - 1 && (
+                  <button
+                    onClick={goNext}
+                    className="absolute right-1 sm:right-3 top-1/2 -translate-y-1/2 text-white bg-white/10 rounded-full p-2 sm:p-3 hover:bg-white/20 z-10"
+                  >
+                    <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
+                  </button>
+                )}
+
+                <div className="w-full h-full flex items-center justify-center" onClick={e => e.stopPropagation()}>
+                  {current.type === 'image' ? (
+                    <img
+                      key={current.url}
+                      src={current.url}
+                      alt=""
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  ) : (
+                    <video src={current.url} controls autoPlay className="max-w-full max-h-full object-contain" />
+                  )}
+                </div>
               </div>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+
+              {allMedia.length > 1 && (
+                <div className="shrink-0 px-4 py-3 flex justify-center gap-2 overflow-x-auto" onClick={e => e.stopPropagation()}>
+                  {allMedia.map((media, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => setSelectedIndex(i)}
+                      className={`w-12 h-12 sm:w-14 sm:h-14 rounded-md overflow-hidden border-2 shrink-0 ${
+                        i === selectedIndex ? 'border-white ring-1 ring-white/50' : 'border-white/20 opacity-60 hover:opacity-100'
+                      }`}
+                    >
+                      {media.type === 'image' ? (
+                        <img src={media.url} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-white/10 flex items-center justify-center">
+                          <Play className="h-4 w-4 text-white" />
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </>
   );
 }

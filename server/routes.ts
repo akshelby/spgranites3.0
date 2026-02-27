@@ -1,8 +1,6 @@
 import { Express, Request, Response, NextFunction } from "express";
 import { supabase } from "./supabase";
 import OpenAI from "openai";
-import fs from "fs";
-import path from "path";
 
 let _openai: OpenAI | null = null;
 function getOpenAI(): OpenAI {
@@ -1490,7 +1488,8 @@ If you don't know something specific (like exact prices or stock availability), 
   // ── Site Settings (public read, admin write) ──
   app.get("/api/site-settings", async (_req: Request, res: Response) => {
     try {
-      res.json(loadSiteSettings());
+      const settings = await loadSiteSettings();
+      res.json(settings);
     } catch {
       res.json(getDefaultSiteSettings());
     }
@@ -1501,15 +1500,21 @@ If you don't know something specific (like exact prices or stock availability), 
       const incoming = req.body as Record<string, string>;
       const defaults = getDefaultSiteSettings();
       const validKeys = Object.keys(defaults);
-      const current = loadSiteSettings();
 
+      const upserts: { key: string; value: string }[] = [];
       for (const [key, value] of Object.entries(incoming)) {
         if (validKeys.includes(key)) {
-          current[key] = String(value);
+          upserts.push({ key, value: String(value) });
         }
       }
 
-      saveSiteSettings(current);
+      if (upserts.length > 0) {
+        const { error } = await supabase
+          .from('site_settings')
+          .upsert(upserts, { onConflict: 'key' });
+        if (error) throw error;
+      }
+
       res.json({ success: true });
     } catch (error: any) {
       console.error("Error saving site settings:", error);
@@ -1539,28 +1544,45 @@ function getDefaultSiteSettings(): Record<string, string> {
   };
 }
 
-const SETTINGS_FILE = path.join(process.cwd(), 'data', 'site-settings.json');
-
-function loadSiteSettings(): Record<string, string> {
+async function loadSiteSettings(): Promise<Record<string, string>> {
   const defaults = getDefaultSiteSettings();
   try {
-    if (fs.existsSync(SETTINGS_FILE)) {
-      const raw = fs.readFileSync(SETTINGS_FILE, 'utf-8');
-      const saved = JSON.parse(raw);
+    const { data, error } = await supabase
+      .from('site_settings')
+      .select('key, value');
+    if (error) throw error;
+    if (data && data.length > 0) {
+      const saved: Record<string, string> = {};
+      for (const row of data) {
+        saved[row.key] = row.value;
+      }
       return { ...defaults, ...saved };
     }
   } catch (err) {
-    console.error("Error loading site settings file:", err);
+    console.error("Error loading site settings from Supabase:", err);
   }
   return defaults;
 }
 
-function saveSiteSettings(settings: Record<string, string>): void {
-  const dir = path.dirname(SETTINGS_FILE);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+async function ensureSiteSettingsTable(): Promise<void> {
+  try {
+    const { data, error } = await supabase.from('site_settings').select('key').limit(1);
+    if (error) {
+      console.warn('[Site Settings] Table not found in Supabase. Using defaults.');
+      console.warn('[Site Settings] Run the SQL in supabase-migrations/create_site_settings.sql to create it.');
+    } else {
+      console.log('[Site Settings] Table ready,', data?.length ?? 0, 'rows found.');
+      if (!data || data.length === 0) {
+        const defaults = getDefaultSiteSettings();
+        const rows = Object.entries(defaults).map(([key, value]) => ({ key, value }));
+        const { error: seedError } = await supabase.from('site_settings').upsert(rows, { onConflict: 'key' });
+        if (seedError) console.warn('[Site Settings] Failed to seed defaults:', seedError.message);
+        else console.log('[Site Settings] Seeded with default values.');
+      }
+    }
+  } catch (err) {
+    console.error('[Site Settings] Error:', err);
   }
-  const tmpFile = SETTINGS_FILE + '.tmp';
-  fs.writeFileSync(tmpFile, JSON.stringify(settings, null, 2), 'utf-8');
-  fs.renameSync(tmpFile, SETTINGS_FILE);
 }
+
+ensureSiteSettingsTable();

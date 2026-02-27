@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useTranslation } from 'react-i18next';
+import { useSiteSettings } from '@/contexts/SiteSettingsContext';
 
 const statusColors: Record<string, string> = {
   pending: 'bg-warning text-warning-foreground',
@@ -32,6 +33,7 @@ export default function OrderDetailPage() {
   const { t } = useTranslation();
   const { orderId } = useParams();
   const { user } = useAuth();
+  const siteSettings = useSiteSettings();
   const [order, setOrder] = useState<Order | null>(null);
   const [items, setItems] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -83,14 +85,14 @@ export default function OrderDetailPage() {
 
     doc.setFontSize(20);
     doc.setFont('helvetica', 'bold');
-    doc.text('SP Granites', 14, 22);
+    doc.text(siteSettings.company_name, 14, 22);
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(100);
-    doc.text('Premium Stone Works', 14, 28);
-    doc.text('123 Stone Avenue, Industrial Area', 14, 33);
-    doc.text('Chennai, Tamil Nadu 600001', 14, 38);
-    doc.text('Phone: +91 98765 43210', 14, 43);
+    doc.text(siteSettings.company_tagline, 14, 28);
+    doc.text(siteSettings.address_line1, 14, 33);
+    doc.text(siteSettings.address_line2, 14, 38);
+    doc.text(`Phone: ${siteSettings.phone_primary}`, 14, 43);
 
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
