@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Star, Quote, PenLine, X, Play, Calendar } from 'lucide-react';
+import { Star, Quote, PenLine, X, Play, Calendar, Eye } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Testimonial, CustomerReview } from '@/types/database';
@@ -76,7 +76,10 @@ function MediaGallery({ photos, videoUrl }: { photos?: string[]; videoUrl?: stri
 export function TestimonialsSection() {
   const [testimonials, setTestimonials] = useState<Testimonial[]>(defaultTestimonials);
   const [customerReviews, setCustomerReviews] = useState<CustomerReview[]>([]);
+  const [myReviews, setMyReviews] = useState<CustomerReview[]>([]);
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [showMyReviews, setShowMyReviews] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const { t } = useTranslation();
 
   const fetchTestimonials = useCallback(async () => {
@@ -110,25 +113,50 @@ export function TestimonialsSection() {
     }
   }, []);
 
+  const fetchMyReviews = useCallback(async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('customer_reviews')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      if (!error && Array.isArray(data)) {
+        setMyReviews(data as CustomerReview[]);
+      }
+    } catch {
+    }
+  }, []);
+
   useEffect(() => {
     fetchTestimonials();
     fetchCustomerReviews();
+
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user) {
+        setCurrentUser(data.user);
+        fetchMyReviews(data.user.id);
+      }
+    });
 
     const channel = supabase
       .channel('customer_reviews_realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'customer_reviews' }, () => {
         fetchCustomerReviews();
+        supabase.auth.getUser().then(({ data }) => {
+          if (data?.user) fetchMyReviews(data.user.id);
+        });
       })
       .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [fetchTestimonials, fetchCustomerReviews]);
+  }, [fetchTestimonials, fetchCustomerReviews, fetchMyReviews]);
 
   const handleReviewSuccess = () => {
     setShowReviewForm(false);
     fetchCustomerReviews();
+    if (currentUser) fetchMyReviews(currentUser.id);
   };
 
   return (
@@ -276,10 +304,10 @@ export function TestimonialsSection() {
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mt-5 sm:mt-8 flex justify-center"
+          className="mt-5 sm:mt-8 flex justify-center gap-3"
         >
           <Button
-            onClick={() => setShowReviewForm(!showReviewForm)}
+            onClick={() => { setShowReviewForm(!showReviewForm); if (!showReviewForm) setShowMyReviews(false); }}
             variant={showReviewForm ? "outline" : "default"}
             className="gap-2"
           >
@@ -295,7 +323,82 @@ export function TestimonialsSection() {
               </>
             )}
           </Button>
+          {currentUser && myReviews.length > 0 && (
+            <Button
+              onClick={() => { setShowMyReviews(!showMyReviews); if (!showMyReviews) setShowReviewForm(false); }}
+              variant={showMyReviews ? "outline" : "secondary"}
+              className="gap-2"
+            >
+              {showMyReviews ? (
+                <>
+                  <X className="h-4 w-4" />
+                  Close
+                </>
+              ) : (
+                <>
+                  <Eye className="h-4 w-4" />
+                  My Reviews ({myReviews.length})
+                </>
+              )}
+            </Button>
+          )}
         </motion.div>
+
+        <AnimatePresence>
+          {showMyReviews && myReviews.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div className="max-w-4xl mx-auto mt-4 sm:mt-6">
+                <h4 className="text-base sm:text-lg font-display font-bold mb-3 text-center">My Reviews</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {myReviews.map((review) => (
+                    <div
+                      key={review.id}
+                      className="bg-card p-3 sm:p-4 rounded-2xl border border-primary/30 shadow-soft relative flex flex-col"
+                    >
+                      <div className="flex items-center justify-between mb-1 sm:mb-2">
+                        <div className="flex gap-0.5">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`h-3 w-3 ${
+                                i < review.rating ? 'text-yellow-500 fill-yellow-500' : 'text-muted'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        {review.created_at && (
+                          <span className="flex items-center gap-1 text-[10px] text-muted-foreground/70">
+                            <Calendar className="h-2.5 w-2.5" />
+                            {format(new Date(review.created_at), 'MMM d, yyyy')}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs sm:text-sm text-muted-foreground mb-2 flex-1">
+                        "{review.review_text}"
+                      </p>
+                      <MediaGallery photos={review.photos} videoUrl={review.video_url} />
+                      <div className="flex items-center gap-1.5 mt-auto pt-1.5 border-t border-border/40">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-[10px]">
+                          {review.customer_name.charAt(0)}
+                        </div>
+                        <div className="min-w-0">
+                          <span className="text-xs font-semibold">{review.customer_name}</span>
+                          {review.city && <span className="text-[10px] text-muted-foreground ml-1.5">{review.city}</span>}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <AnimatePresence>
           {showReviewForm && (
