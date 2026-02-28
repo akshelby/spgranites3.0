@@ -18,6 +18,7 @@ import { Message, Conversation } from "@/components/chat/types";
 import { MessageBubble } from "@/components/chat/MessageBubble";
 import { DateDivider } from "@/components/chat/DateDivider";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ConversationStats {
   total: number;
@@ -140,35 +141,37 @@ export default function AdminChat() {
   const handleSendMedia = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !selectedConversation) return;
+    e.target.value = "";
     setIsSending(true);
     try {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        const dataUrl = reader.result as string;
-        const mediaType = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : 'audio';
-        try {
-          await api.post('/api/messages', {
-            conversation_id: selectedConversation.id,
-            ref_id: selectedConversation.ref_id,
-            sender_type: 'staff',
-            sender_name: 'Support Team',
-            media_url: dataUrl,
-            media_type: mediaType,
-          });
-          fetchMessages();
-        } catch (err) {
-          console.error('Error sending media:', err);
-          toast({ title: "Error", description: "Failed to send media.", variant: "destructive" });
-        }
-        setIsSending(false);
-        e.target.value = "";
-      };
-      reader.readAsDataURL(file);
+      const mediaType = file.type.startsWith('image/') ? 'image' : file.type.startsWith('video/') ? 'video' : 'audio';
+      const ext = file.name.split('.').pop() || 'bin';
+      const filePath = `admin/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('chat-media')
+        .upload(filePath, file, { contentType: file.type, upsert: false });
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from('chat-media')
+        .getPublicUrl(filePath);
+
+      await api.post('/api/messages', {
+        conversation_id: selectedConversation.id,
+        ref_id: selectedConversation.ref_id,
+        sender_type: 'staff',
+        sender_name: 'Support Team',
+        media_url: urlData.publicUrl,
+        media_type: mediaType,
+      });
+      fetchMessages();
     } catch (err) {
       console.error('Error sending media:', err);
       toast({ title: "Error", description: "Failed to send media.", variant: "destructive" });
+    } finally {
       setIsSending(false);
-      e.target.value = "";
     }
   };
 

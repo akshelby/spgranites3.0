@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { api } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { Message } from "@/components/chat/types";
 import { MessageBubble } from "@/components/chat/MessageBubble";
 import { DateDivider } from "@/components/chat/DateDivider";
@@ -293,19 +294,27 @@ export default function ChatPage() {
   const handleSendMedia = async (file: File, type: 'image' | 'video' | 'audio') => {
     if (!refId || !conversationId) return;
     try {
-      const reader = new FileReader();
-      reader.onload = async () => {
-        const dataUrl = reader.result as string;
-        await api.post('/api/messages', {
-          conversation_id: conversationId,
-          ref_id: refId,
-          sender_type: 'customer',
-          media_url: dataUrl,
-          media_type: type,
-        });
-        fetchMessages(false);
-      };
-      reader.readAsDataURL(file);
+      const ext = file.name.split('.').pop() || 'bin';
+      const filePath = `customer/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('chat-media')
+        .upload(filePath, file, { contentType: file.type, upsert: false });
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from('chat-media')
+        .getPublicUrl(filePath);
+
+      await api.post('/api/messages', {
+        conversation_id: conversationId,
+        ref_id: refId,
+        sender_type: 'customer',
+        media_url: urlData.publicUrl,
+        media_type: type,
+      });
+      fetchMessages(false);
     } catch {
       toast({ title: "Error", description: "Failed to send media.", variant: "destructive" });
     }
