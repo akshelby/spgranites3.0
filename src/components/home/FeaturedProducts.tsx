@@ -175,7 +175,7 @@ export function FeaturedProducts() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="flex-shrink-0 w-[160px] sm:w-[200px] lg:w-[240px] group bg-card rounded-2xl overflow-hidden border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 cursor-pointer"
+              className="flex-shrink-0 w-[200px] sm:w-[250px] lg:w-[280px] group bg-card rounded-2xl overflow-hidden border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 cursor-pointer"
               data-testid={`card-product-${product.id}`}
               onClick={() => window.location.href = `/products/${product.slug}`}
             >
