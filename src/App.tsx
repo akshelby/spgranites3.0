@@ -60,6 +60,8 @@ const AdminCRMOverview = lazy(() => import("./pages/admin/AdminCRMOverview"));
 const AdminCustomers = lazy(() => import("./pages/admin/AdminCustomers"));
 const AdminLeads = lazy(() => import("./pages/admin/AdminLeads"));
 const AdminSiteSettings = lazy(() => import("./pages/admin/AdminSiteSettings"));
+const CompletedWorksPage = lazy(() => import("./pages/CompletedWorksPage"));
+const AdminCompletedWorks = lazy(() => import("./pages/admin/AdminCompletedWorks"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -116,6 +118,7 @@ function AppContent() {
                 <Route path="/estimation" element={<EstimationPage />} />
                 <Route path="/visualizer" element={<StoneVisualizerPage />} />
                 <Route path="/about" element={<AboutPage />} />
+                <Route path="/completed-works" element={<CompletedWorksPage />} />
                 <Route path="/chat" element={<ChatPage />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
@@ -152,6 +155,7 @@ function AppContent() {
                 <Route path="/admin/crm" element={<ProtectedRoute requiredRole="admin"><AdminCRMOverview /></ProtectedRoute>} />
                 <Route path="/admin/crm/customers" element={<ProtectedRoute requiredRole="admin"><AdminCustomers /></ProtectedRoute>} />
                 <Route path="/admin/crm/leads" element={<ProtectedRoute requiredRole="admin"><AdminLeads /></ProtectedRoute>} />
+                <Route path="/admin/completed-works" element={<ProtectedRoute requiredRole="admin"><AdminCompletedWorks /></ProtectedRoute>} />
                 <Route path="/admin/settings" element={<ProtectedRoute requiredRole="admin"><AdminSiteSettings /></ProtectedRoute>} />
 
                 {/* Catch-all */}

@@ -77,7 +77,8 @@ Preferred communication style: Simple, everyday language.
 - `conversations`, `messages` — Chat system
 - `site_visitors` — Analytics
 - `site_settings` — Key-value store for site-wide settings (phone, email, address, social links, etc.)
-- **Not yet created in Supabase**: `contact_numbers`, `leads`, `crm_notes`, `crm_followups` (routes handle gracefully with empty data)
+- `completed_works` — Showcase of completed granite/stone installations (media, stone type, category, customer details, location)
+- **Not yet created in Supabase**: `contact_numbers`, `leads`, `crm_notes`, `crm_followups`, `completed_works` (routes handle gracefully with empty data)
 
 ### Key Features
 
@@ -93,6 +94,7 @@ Preferred communication style: Simple, everyday language.
 10. **Stone Visualizer** — Interactive tool for customizing stone selections
 11. **AI Assistant** — OpenAI-powered customer support chatbot with streaming responses
 12. **CRM System** — Lead management, notes, follow-ups (requires table creation in Supabase)
+13. **Completed Works Gallery** — Showcase of completed granite installations with photos/videos, stone type, category, customer details (phone masked), and location
 
 ### Dev Server Configuration
 
@@ -110,6 +112,13 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+- **2026-03-03**: Added "Our Completed Works" gallery feature
+  - New public page at `/completed-works` with responsive grid, stone type/category filters, phone masking, detail modal
+  - Admin page at `/admin/completed-works` for CRUD operations with media upload to Supabase Storage
+  - Navigation link "Our Works" added to main navbar
+  - Admin sidebar link "Completed Works" added
+  - Migration SQL at `supabase-migrations/create_completed_works.sql` (needs to be run in Supabase dashboard)
+  - Storage bucket `completed-works` for media uploads
 - **2026-02-27**: Migrated site settings from local JSON file to Supabase `site_settings` table (key-value store)
   - `site_settings` table in Supabase with key TEXT PRIMARY KEY, value TEXT
   - Server reads/writes settings via Supabase client instead of filesystem

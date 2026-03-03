@@ -1521,6 +1521,58 @@ If you don't know something specific (like exact prices or stock availability), 
       res.status(500).json({ error: "Failed to save settings" });
     }
   });
+
+  // ===== COMPLETED WORKS (PUBLIC) =====
+  app.get("/api/completed-works", async (_req: Request, res: Response) => {
+    try {
+      const { data, error } = await supabase.from('completed_works').select('*').eq('is_active', true).order('completion_date', { ascending: false });
+      if (error) throw error;
+      res.json(data);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // ===== COMPLETED WORKS (ADMIN) =====
+  app.get("/api/admin/completed-works", requireAuth, requireAdmin, async (_req: Request, res: Response) => {
+    try {
+      const { data, error } = await supabase.from('completed_works').select('*').order('created_at', { ascending: false });
+      if (error) throw error;
+      res.json(data);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/admin/completed-works", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const { data, error } = await supabase.from('completed_works').insert(req.body).select().single();
+      if (error) throw error;
+      res.json(data);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.put("/api/admin/completed-works/:id", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const { data, error } = await supabase.from('completed_works').update(req.body).eq('id', req.params.id).select().single();
+      if (error) throw error;
+      res.json(data);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.delete("/api/admin/completed-works/:id", requireAuth, requireAdmin, async (req: Request, res: Response) => {
+    try {
+      const { error } = await supabase.from('completed_works').delete().eq('id', req.params.id);
+      if (error) throw error;
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
 }
 
 function getDefaultSiteSettings(): Record<string, string> {

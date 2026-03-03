@@ -39,6 +39,7 @@ export function Navbar() {
     { name: t('nav.estimation'), href: '/estimation' },
     { name: t('nav.catalogs'), href: '/catalogs' },
     { name: t('footer.about'), href: '/about' },
+    { name: 'Our Works', href: '/completed-works' },
     { name: t('nav.contact'), href: '/contact' },
     { name: t('nav.visualizer'), href: '/visualizer' },
   ];

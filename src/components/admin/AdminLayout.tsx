@@ -38,6 +38,7 @@ import {
   Phone,
   UserPlus,
   Handshake,
+  Hammer,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -55,6 +56,7 @@ const menuItems = [
   { icon: MessageCircle, label: 'Live Chat', href: '/admin/chat' },
   { icon: Star, label: 'Reviews', href: '/admin/reviews' },
   { icon: Quote, label: 'Testimonials', href: '/admin/testimonials' },
+  { icon: Hammer, label: 'Completed Works', href: '/admin/completed-works' },
   { icon: Wrench, label: 'Services', href: '/admin/services' },
   { icon: FileText, label: 'Catalogs', href: '/admin/catalogs' },
   { icon: Image, label: 'Banners', href: '/admin/banners' },
