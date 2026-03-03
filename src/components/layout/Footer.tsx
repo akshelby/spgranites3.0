@@ -111,9 +111,9 @@ export function Footer() {
               <li>
                 <a
                   href={`tel:${phoneDigits}`}
-                  className="flex items-center gap-3 text-gray-400 hover:text-primary transition-colors text-sm"
+                  className="flex items-center gap-3 text-gray-400 hover:text-primary transition-colors text-sm whitespace-nowrap"
                 >
-                  <Phone className="h-5 w-5 text-primary" />
+                  <Phone className="h-5 w-5 text-primary shrink-0" />
                   {settings.phone_primary}
                 </a>
               </li>
