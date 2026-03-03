@@ -179,12 +179,12 @@ export function CompletedWorksSection() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="text-center mt-6"
         >
-          <Link to="/completed-works">
-            <Button variant="outline" size="lg" className="group">
-              View All
-              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </Link>
+          <Button asChild size="default" className="hover-slide border-2 border-transparent">
+            <Link to="/completed-works">
+              View All Works
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Link>
+          </Button>
         </motion.div>
       </div>
     </section>
