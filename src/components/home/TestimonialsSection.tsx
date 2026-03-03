@@ -67,7 +67,7 @@ function MediaGallery({ photos, videoUrl }: { photos?: string[]; videoUrl?: stri
             key={i}
             type="button"
             onClick={() => setSelectedIndex(i)}
-            className="w-12 h-12 sm:w-14 sm:h-14 rounded-md overflow-hidden border border-border hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer"
+            className="w-16 h-16 sm:w-20 sm:h-20 rounded-md overflow-hidden border border-border hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer"
           >
             <img src={url} alt="" className="w-full h-full object-cover" />
           </button>
@@ -76,7 +76,7 @@ function MediaGallery({ photos, videoUrl }: { photos?: string[]; videoUrl?: stri
           <button
             type="button"
             onClick={() => setSelectedIndex(allMedia.length - 1)}
-            className="w-12 h-12 sm:w-14 sm:h-14 rounded-md overflow-hidden border border-border hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer bg-black/80 flex items-center justify-center relative"
+            className="w-16 h-16 sm:w-20 sm:h-20 rounded-md overflow-hidden border border-border hover:ring-2 hover:ring-primary/50 transition-all cursor-pointer bg-black/80 flex items-center justify-center relative"
           >
             <Play className="h-5 w-5 text-white" />
           </button>
@@ -277,11 +277,14 @@ export function TestimonialsSection() {
         </motion.div>
 
         {customerReviews.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-3 lg:gap-5 mb-4 sm:mb-6">
+          <div
+            className="flex gap-4 overflow-x-auto scroll-smooth px-4 md:px-8 pb-4 mb-4 sm:mb-6 -mx-4 md:-mx-8"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+          >
             {customerReviews.map((review) => (
               <div
                 key={review.id}
-                className="bg-card p-3 sm:p-4 lg:p-6 rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col"
+                className="flex-shrink-0 w-[280px] sm:w-[320px] lg:w-[360px] bg-card p-3 sm:p-4 lg:p-6 rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col"
               >
                 <div className="flex items-center justify-between mb-1 sm:mb-2">
                   <div className="flex gap-0.5">
@@ -328,11 +331,14 @@ export function TestimonialsSection() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-3 lg:gap-5">
+        <div
+          className="flex gap-4 overflow-x-auto scroll-smooth px-4 md:px-8 pb-4 -mx-4 md:-mx-8"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+        >
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.id}
-              className="bg-card p-3 sm:p-4 lg:p-6 rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col"
+              className="flex-shrink-0 w-[280px] sm:w-[320px] lg:w-[360px] bg-card p-3 sm:p-4 lg:p-6 rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col"
               data-testid={`testimonial-card-${testimonial.id}`}
             >
               <Quote className="absolute top-2 right-2 h-3.5 w-3.5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-primary/15" />
