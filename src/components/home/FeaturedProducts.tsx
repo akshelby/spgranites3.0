@@ -179,7 +179,7 @@ export function FeaturedProducts() {
               data-testid={`card-product-${product.id}`}
               onClick={() => window.location.href = `/products/${product.slug}`}
             >
-              <div className="relative aspect-[4/3] overflow-hidden">
+              <div className="relative aspect-[3/3] overflow-hidden">
                 <img
                   src={getProductImage(product)}
                   alt={product.name}
