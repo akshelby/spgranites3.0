@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ShoppingCart, Heart } from 'lucide-react';
+import { ArrowRight, ShoppingCart, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -28,6 +28,35 @@ export function FeaturedProducts() {
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const { user } = useAuth();
   const { t } = useTranslation();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  const checkScroll = () => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 10);
+    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 10);
+  };
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    checkScroll();
+    el.addEventListener('scroll', checkScroll, { passive: true });
+    window.addEventListener('resize', checkScroll);
+    return () => {
+      el.removeEventListener('scroll', checkScroll);
+      window.removeEventListener('resize', checkScroll);
+    };
+  }, [products]);
+
+  const scrollBy = (direction: 'left' | 'right') => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const cardWidth = el.querySelector('div')?.offsetWidth || 200;
+    el.scrollBy({ left: direction === 'left' ? -cardWidth - 12 : cardWidth + 12, behavior: 'smooth' });
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -114,20 +143,43 @@ export function FeaturedProducts() {
             {t('featured.subtitle')}
           </p>
         </motion.div>
+      </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-2.5 sm:gap-3 lg:gap-5 xl:gap-6">
+      <div className="relative group/scroll">
+        {canScrollLeft && (
+          <button
+            onClick={() => scrollBy('left')}
+            className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-background/90 border border-border shadow-lg flex items-center justify-center hover:bg-background transition-all opacity-0 group-hover/scroll:opacity-100"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+        )}
+        {canScrollRight && (
+          <button
+            onClick={() => scrollBy('right')}
+            className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-background/90 border border-border shadow-lg flex items-center justify-center hover:bg-background transition-all opacity-0 group-hover/scroll:opacity-100"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        )}
+
+        <div
+          ref={scrollRef}
+          className="flex gap-3 sm:gap-4 overflow-x-auto scroll-smooth px-4 md:px-8 pb-4"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+        >
           {products.map((product, index) => (
             <motion.div
               key={product.id}
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-20px' }}
-              transition={{ duration: 0.3, delay: index * 0.03 }}
-              className="group bg-card rounded-2xl overflow-hidden border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 cursor-pointer"
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
+              className="flex-shrink-0 w-[160px] sm:w-[200px] lg:w-[240px] group bg-card rounded-2xl overflow-hidden border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 cursor-pointer"
               data-testid={`card-product-${product.id}`}
               onClick={() => window.location.href = `/products/${product.slug}`}
             >
-              <div className="relative aspect-[4/3] lg:aspect-[3/2] overflow-hidden">
+              <div className="relative aspect-[4/3] overflow-hidden">
                 <img
                   src={getProductImage(product)}
                   alt={product.name}
@@ -153,36 +205,26 @@ export function FeaturedProducts() {
                   </button>
                 )}
               </div>
-              <div className="p-2 sm:p-3 lg:p-4">
+              <div className="p-2 sm:p-3">
                 <h3 className="text-[11px] sm:text-xs lg:text-sm font-semibold line-clamp-1" data-testid={`text-product-name-${product.id}`}>
                   {product.name}
                 </h3>
                 <div className="flex items-center justify-between gap-1 mt-1 sm:mt-2">
                   <div>
-                    <span className="text-xs sm:text-sm lg:text-base font-bold text-foreground" data-testid={`text-price-${product.id}`}>
+                    <span className="text-xs sm:text-sm font-bold text-foreground" data-testid={`text-price-${product.id}`}>
                       {formatPrice(product.price)}
                     </span>
                     {product.compare_price && product.compare_price > product.price && (
-                      <span className="text-[11px] sm:text-[11px] lg:text-xs text-muted-foreground line-through ml-1">
+                      <span className="text-[10px] sm:text-[11px] text-muted-foreground line-through ml-1">
                         {formatPrice(product.compare_price)}
                       </span>
                     )}
                   </div>
                   <Button
-                    size="default"
-                    variant="outline"
-                    onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
-                    className="hidden lg:inline-flex text-xs border-red-500 text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950"
-                    data-testid={`button-add-cart-desktop-${product.id}`}
-                  >
-                    <ShoppingCart className="h-3.5 w-3.5 mr-1.5" />
-                    {t('featured.addToCart')}
-                  </Button>
-                  <Button
                     size="icon"
                     variant="outline"
                     onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
-                    className="lg:hidden border-red-500 text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950"
+                    className="h-7 w-7 sm:h-8 sm:w-8 border-red-500 text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950"
                     data-testid={`button-add-cart-${product.id}`}
                   >
                     <ShoppingCart className="h-3.5 w-3.5" />
@@ -192,12 +234,14 @@ export function FeaturedProducts() {
             </motion.div>
           ))}
         </div>
+      </div>
 
+      <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="text-center mt-6 sm:mt-10"
+          className="text-center mt-6 sm:mt-8"
         >
           <Button asChild size="default" className="hover-slide border-2 border-transparent" data-testid="button-view-all-products">
             <Link to="/products">
