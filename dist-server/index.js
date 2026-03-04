@@ -4,7 +4,7 @@ import cors from "cors";
 
 // server/supabase.ts
 import { createClient } from "@supabase/supabase-js";
-var supabaseUrl = process.env.SUPABASE_URL;
+var supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || "https://fstyxfuyploifiouotni.supabase.co";
 var supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 if (!supabaseUrl || !supabaseServiceRoleKey) {
   throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set");
@@ -18,18 +18,29 @@ var supabase = createClient(supabaseUrl, supabaseServiceRoleKey, {
 
 // server/routes.ts
 import OpenAI from "openai";
-var openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL
-});
+var _openai = null;
+function getOpenAI() {
+  if (!_openai) {
+    _openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+      baseURL: process.env.OPENAI_BASE_URL
+    });
+  }
+  return _openai;
+}
 var ADMIN_EMAILS = ["akshelby9999@gmail.com", "srajith9999@gmail.com"];
 async function getUserFromToken(token) {
   if (!token) return null;
   try {
     const { data: { user }, error } = await supabase.auth.getUser(token);
-    if (error || !user) return null;
+    if (error) {
+      console.error("[Auth] getUser error:", error.message);
+      return null;
+    }
+    if (!user) return null;
     return user;
-  } catch {
+  } catch (err) {
+    console.error("[Auth] getUser exception:", err?.message);
     return null;
   }
 }
@@ -225,7 +236,7 @@ function registerRoutes(app2) {
   });
   app2.get("/api/customer-reviews", async (_req, res) => {
     try {
-      const { data, error } = await supabase.from("customer_reviews").select("*").eq("is_approved", true).order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("customer_reviews").select("*").order("created_at", { ascending: false });
       if (error) throw error;
       res.json(data);
     } catch (error) {
@@ -234,7 +245,8 @@ function registerRoutes(app2) {
   });
   app2.post("/api/customer-reviews", async (req, res) => {
     try {
-      const { data, error } = await supabase.from("customer_reviews").insert(req.body).select().single();
+      const reviewData = { ...req.body, is_approved: true };
+      const { data, error } = await supabase.from("customer_reviews").insert(reviewData).select().single();
       if (error) throw error;
       res.json(data);
     } catch (error) {
@@ -704,6 +716,15 @@ function registerRoutes(app2) {
       const { data, error } = await supabase.from("product_reviews").update({ ...req.body, updated_at: (/* @__PURE__ */ new Date()).toISOString() }).eq("id", req.params.id).select().single();
       if (error) throw error;
       res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  app2.get("/api/admin/reviews", requireAuth, requireAdmin, async (_req, res) => {
+    try {
+      const { data: customerReviews, error } = await supabase.from("customer_reviews").select("*").order("created_at", { ascending: false });
+      if (error) throw error;
+      res.json({ customerReviews: customerReviews || [] });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -1264,7 +1285,7 @@ If you don't know something specific (like exact prices or stock availability), 
       res.setHeader("Content-Type", "text/event-stream");
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
-      const stream = await openai.chat.completions.create({
+      const stream = await getOpenAI().chat.completions.create({
         model: "gpt-5-nano",
         messages: [
           { role: "system", content: systemPrompt },
@@ -1297,7 +1318,139 @@ If you don't know something specific (like exact prices or stock availability), 
       }
     }
   });
+  app2.get("/api/site-settings", async (_req, res) => {
+    try {
+      const settings = await loadSiteSettings();
+      res.json(settings);
+    } catch {
+      res.json(getDefaultSiteSettings());
+    }
+  });
+  app2.put("/api/admin/site-settings", requireAuth, requireAdmin, async (req, res) => {
+    try {
+      const incoming = req.body;
+      const defaults = getDefaultSiteSettings();
+      const validKeys = Object.keys(defaults);
+      const upserts = [];
+      for (const [key, value] of Object.entries(incoming)) {
+        if (validKeys.includes(key)) {
+          upserts.push({ key, value: String(value) });
+        }
+      }
+      if (upserts.length > 0) {
+        const { error } = await supabase.from("site_settings").upsert(upserts, { onConflict: "key" });
+        if (error) throw error;
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error saving site settings:", error);
+      res.status(500).json({ error: "Failed to save settings" });
+    }
+  });
+  app2.get("/api/completed-works", async (_req, res) => {
+    try {
+      const { data, error } = await supabase.from("completed_works").select("*").eq("is_active", true).order("completion_date", { ascending: false });
+      if (error) throw error;
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  app2.get("/api/admin/completed-works", requireAuth, requireAdmin, async (_req, res) => {
+    try {
+      const { data, error } = await supabase.from("completed_works").select("*").order("created_at", { ascending: false });
+      if (error) throw error;
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  app2.post("/api/admin/completed-works", requireAuth, requireAdmin, async (req, res) => {
+    try {
+      const { data, error } = await supabase.from("completed_works").insert(req.body).select().single();
+      if (error) throw error;
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  app2.put("/api/admin/completed-works/:id", requireAuth, requireAdmin, async (req, res) => {
+    try {
+      const { data, error } = await supabase.from("completed_works").update(req.body).eq("id", req.params.id).select().single();
+      if (error) throw error;
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+  app2.delete("/api/admin/completed-works/:id", requireAuth, requireAdmin, async (req, res) => {
+    try {
+      const { error } = await supabase.from("completed_works").delete().eq("id", req.params.id);
+      if (error) throw error;
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
 }
+function getDefaultSiteSettings() {
+  return {
+    phone_primary: "+91 98765 43210",
+    phone_secondary: "+91 98765 43211",
+    whatsapp_number: "919876543210",
+    email_primary: "info@spgranites.com",
+    email_secondary: "sales@spgranites.com",
+    address_line1: "123 Stone Avenue, Industrial Area",
+    address_line2: "Chennai, Tamil Nadu 600001",
+    working_hours_weekday: "Mon - Sat: 9:00 AM - 7:00 PM",
+    working_hours_sunday: "Sunday: Closed",
+    social_facebook: "https://facebook.com",
+    social_instagram: "https://instagram.com",
+    social_twitter: "https://twitter.com",
+    social_youtube: "https://youtube.com",
+    company_name: "SP Granites",
+    company_tagline: "Premium Stone Works",
+    map_embed_url: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3916.2649!2d76.9558!3d11.0168!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTHCsDAxJzAwLjUiTiA3NsKwNTcnMjAuOSJF!5e0!3m2!1sen!2sin!4v1"
+  };
+}
+async function loadSiteSettings() {
+  const defaults = getDefaultSiteSettings();
+  try {
+    const { data, error } = await supabase.from("site_settings").select("key, value");
+    if (error) throw error;
+    if (data && data.length > 0) {
+      const saved = {};
+      for (const row of data) {
+        saved[row.key] = row.value;
+      }
+      return { ...defaults, ...saved };
+    }
+  } catch (err) {
+    console.error("Error loading site settings from Supabase:", err);
+  }
+  return defaults;
+}
+async function ensureSiteSettingsTable() {
+  try {
+    const { data, error } = await supabase.from("site_settings").select("key").limit(1);
+    if (error) {
+      console.warn("[Site Settings] Table not found in Supabase. Using defaults.");
+      console.warn("[Site Settings] Run the SQL in supabase-migrations/create_site_settings.sql to create it.");
+    } else {
+      console.log("[Site Settings] Table ready,", data?.length ?? 0, "rows found.");
+      if (!data || data.length === 0) {
+        const defaults = getDefaultSiteSettings();
+        const rows = Object.entries(defaults).map(([key, value]) => ({ key, value }));
+        const { error: seedError } = await supabase.from("site_settings").upsert(rows, { onConflict: "key" });
+        if (seedError) console.warn("[Site Settings] Failed to seed defaults:", seedError.message);
+        else console.log("[Site Settings] Seeded with default values.");
+      }
+    }
+  } catch (err) {
+    console.error("[Site Settings] Error:", err);
+  }
+}
+ensureSiteSettingsTable();
 
 // server/index.ts
 import path from "path";
@@ -1316,10 +1469,18 @@ app.use((err, _req, res, next) => {
 });
 var distPath = path.resolve(__dirname, "../dist");
 var hasDistFolder = fs.existsSync(path.join(distPath, "index.html"));
+app.get("/health", (_req, res) => {
+  res.status(200).json({ status: "ok" });
+});
 if (hasDistFolder) {
   app.use(express.static(distPath));
 }
 registerRoutes(app);
+if (hasDistFolder) {
+  app.get("/{*splat}", (_req, res) => {
+    res.sendFile(path.join(distPath, "index.html"));
+  });
+}
 app.use((err, _req, res, _next) => {
   const statusCode = err.statusCode || 500;
   const message = statusCode === 500 ? "Internal server error" : err.message;
@@ -1329,11 +1490,6 @@ app.use((err, _req, res, _next) => {
   }
   res.status(statusCode).json({ error: message });
 });
-if (hasDistFolder) {
-  app.get("/{*splat}", (_req, res) => {
-    res.sendFile(path.join(distPath, "index.html"));
-  });
-}
 process.on("uncaughtException", (error) => {
   console.error("[Uncaught Exception]:", error);
 });

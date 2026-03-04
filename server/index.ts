@@ -22,11 +22,21 @@ app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
 const distPath = path.resolve(__dirname, "../dist");
 const hasDistFolder = fs.existsSync(path.join(distPath, "index.html"));
 
+app.get("/health", (_req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 if (hasDistFolder) {
   app.use(express.static(distPath));
 }
 
 registerRoutes(app);
+
+if (hasDistFolder) {
+  app.get("/{*splat}", (_req, res) => {
+    res.sendFile(path.join(distPath, "index.html"));
+  });
+}
 
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   const statusCode = (err as any).statusCode || 500;
@@ -37,12 +47,6 @@ app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   }
   res.status(statusCode).json({ error: message });
 });
-
-if (hasDistFolder) {
-  app.get("/{*splat}", (_req, res) => {
-    res.sendFile(path.join(distPath, "index.html"));
-  });
-}
 
 process.on('uncaughtException', (error) => {
   console.error('[Uncaught Exception]:', error);
