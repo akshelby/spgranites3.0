@@ -1458,7 +1458,15 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 var __filename = fileURLToPath(import.meta.url);
 var __dirname = path.dirname(__filename);
+var distPath = path.resolve(__dirname, "../dist");
+var hasDistFolder = fs.existsSync(path.join(distPath, "index.html"));
 var app = express();
+app.get("/health", (_req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+if (hasDistFolder) {
+  app.use(express.static(distPath));
+}
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 app.use((err, _req, res, next) => {
@@ -1467,14 +1475,10 @@ app.use((err, _req, res, next) => {
   }
   next(err);
 });
-var distPath = path.resolve(__dirname, "../dist");
-var hasDistFolder = fs.existsSync(path.join(distPath, "index.html"));
-app.get("/health", (_req, res) => {
-  res.status(200).json({ status: "ok" });
+var port = parseInt(process.env.PORT || "5000", 10);
+var server = app.listen(port, "0.0.0.0", () => {
+  console.log(`API server running on port ${port}`);
 });
-if (hasDistFolder) {
-  app.use(express.static(distPath));
-}
 registerRoutes(app);
 if (hasDistFolder) {
   app.get("/{*splat}", (_req, res) => {
@@ -1495,8 +1499,4 @@ process.on("uncaughtException", (error) => {
 });
 process.on("unhandledRejection", (reason) => {
   console.error("[Unhandled Rejection]:", reason);
-});
-var port = parseInt(process.env.PORT || "5000", 10);
-app.listen(port, "0.0.0.0", () => {
-  console.log(`API server running on port ${port}`);
 });

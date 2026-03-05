@@ -8,7 +8,19 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const distPath = path.resolve(__dirname, "../dist");
+const hasDistFolder = fs.existsSync(path.join(distPath, "index.html"));
+
 const app = express();
+
+app.get("/health", (_req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
+if (hasDistFolder) {
+  app.use(express.static(distPath));
+}
+
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 
@@ -19,16 +31,10 @@ app.use((err: Error, _req: Request, res: Response, next: NextFunction) => {
   next(err);
 });
 
-const distPath = path.resolve(__dirname, "../dist");
-const hasDistFolder = fs.existsSync(path.join(distPath, "index.html"));
-
-app.get("/health", (_req, res) => {
-  res.status(200).json({ status: "ok" });
+const port = parseInt(process.env.PORT || '5000', 10);
+const server = app.listen(port, "0.0.0.0", () => {
+  console.log(`API server running on port ${port}`);
 });
-
-if (hasDistFolder) {
-  app.use(express.static(distPath));
-}
 
 registerRoutes(app);
 
@@ -54,9 +60,4 @@ process.on('uncaughtException', (error) => {
 
 process.on('unhandledRejection', (reason) => {
   console.error('[Unhandled Rejection]:', reason);
-});
-
-const port = parseInt(process.env.PORT || '5000', 10);
-app.listen(port, "0.0.0.0", () => {
-  console.log(`API server running on port ${port}`);
 });
