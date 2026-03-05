@@ -1063,19 +1063,34 @@ function registerRoutes(app2) {
     try {
       const { count: productCount } = await supabase.from("products").select("*", { count: "exact", head: true });
       const { count: orderCount } = await supabase.from("orders").select("*", { count: "exact", head: true });
+      const { count: pendingOrderCount } = await supabase.from("orders").select("*", { count: "exact", head: true }).eq("status", "pending");
       const { count: userCount } = await supabase.from("profiles").select("*", { count: "exact", head: true });
-      const { count: enquiryCount } = await supabase.from("enquiries").select("*", { count: "exact", head: true }).eq("is_read", false);
-      const { count: estimationCount } = await supabase.from("estimation_enquiries").select("*", { count: "exact", head: true }).eq("status", "new");
-      const { data: recentOrders } = await supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(5);
+      const { count: enquiryCount } = await supabase.from("enquiries").select("*", { count: "exact", head: true });
       const { count: visitorCount } = await supabase.from("site_visitors").select("*", { count: "exact", head: true });
+      const { data: allOrders } = await supabase.from("orders").select("total_amount");
+      const totalRevenue = (allOrders || []).reduce((sum, o) => sum + (Number(o.total_amount) || 0), 0);
+      const { data: reviews } = await supabase.from("reviews").select("rating");
+      const avgRating = reviews && reviews.length > 0 ? Math.round(reviews.reduce((sum, r) => sum + (Number(r.rating) || 0), 0) / reviews.length * 10) / 10 : 0;
+      const now = /* @__PURE__ */ new Date();
+      const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1e3);
+      const twoWeeksAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1e3);
+      const { count: thisWeekOrders } = await supabase.from("orders").select("*", { count: "exact", head: true }).gte("created_at", oneWeekAgo.toISOString());
+      const { count: lastWeekOrders } = await supabase.from("orders").select("*", { count: "exact", head: true }).gte("created_at", twoWeeksAgo.toISOString()).lt("created_at", oneWeekAgo.toISOString());
+      const growthPercent = lastWeekOrders && lastWeekOrders > 0 ? Math.round(((thisWeekOrders || 0) - lastWeekOrders) / lastWeekOrders * 100) : 0;
+      const { data: recentOrders } = await supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(5);
+      const { data: recentEnquiries } = await supabase.from("enquiries").select("*").order("created_at", { ascending: false }).limit(5);
       res.json({
-        products: productCount || 0,
-        orders: orderCount || 0,
-        users: userCount || 0,
-        unreadEnquiries: enquiryCount || 0,
-        newEstimations: estimationCount || 0,
-        visitors: visitorCount || 0,
-        recentOrders: recentOrders || []
+        totalProducts: productCount || 0,
+        totalOrders: orderCount || 0,
+        pendingOrders: pendingOrderCount || 0,
+        totalUsers: userCount || 0,
+        totalEnquiries: enquiryCount || 0,
+        totalVisitors: visitorCount || 0,
+        totalRevenue,
+        avgRating,
+        growthPercent,
+        recentOrders: recentOrders || [],
+        recentEnquiries: recentEnquiries || []
       });
     } catch (error) {
       res.status(500).json({ error: error.message });
