@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, Heart, Minus, Plus, ChevronRight, Star, Send } from 'lucide-react';
+import { ShoppingCart, Heart, Minus, Plus, ChevronRight, Star, Send, ArrowRight } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { SPLoader } from '@/components/ui/SPLoader';
 import { Button } from '@/components/ui/button';
