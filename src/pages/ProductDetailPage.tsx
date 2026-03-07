@@ -381,9 +381,9 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-            {/* Quantity + Add to Cart */}
-            <div className="flex flex-wrap items-center gap-3 mb-6">
-              <div className="flex items-center border border-border rounded-lg overflow-hidden">
+            {/* Quantity + Add to Cart — MKBHD style */}
+            <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center border border-border rounded-none overflow-hidden">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   className="px-3 py-2.5 hover:bg-muted transition-colors"
@@ -403,27 +403,31 @@ export default function ProductDetailPage() {
                 </button>
               </div>
 
-              <Button
-                size="lg"
+              <button
                 onClick={handleAddToCart}
                 disabled={!inStock}
                 className={cn(
-                  'flex-1 text-sm font-semibold uppercase tracking-wide h-11',
-                  !inStock && 'opacity-60'
+                  'h-11 px-12 text-sm font-semibold uppercase tracking-wider transition-colors',
+                  inStock
+                    ? 'bg-foreground text-background hover:bg-foreground/90'
+                    : 'bg-muted text-muted-foreground cursor-not-allowed'
                 )}
+                style={{ clipPath: 'none' }}
                 data-testid="button-add-to-cart"
               >
                 {inStock ? (
-                  <>
-                    <ShoppingCart className="h-4 w-4 mr-2" />
+                  <span className="flex items-center gap-2">
+                    <ShoppingCart className="h-4 w-4" />
                     {t('products.addToCart')}
-                  </>
+                  </span>
                 ) : (
                   t('products.outOfStock')
                 )}
-              </Button>
+              </button>
+            </div>
 
-              {user && (
+            {user && (
+              <div className="mb-6">
                 <Button
                   variant="outline"
                   size="icon"
@@ -438,8 +442,8 @@ export default function ProductDetailPage() {
                     )}
                   />
                 </Button>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Accordion Details */}
             <Accordion type="multiple" className="w-full border-t border-border">
