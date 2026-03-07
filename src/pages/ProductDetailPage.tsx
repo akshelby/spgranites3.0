@@ -1,12 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ShoppingCart, Heart, Minus, Plus, ChevronLeft, Star, Check, Send } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ShoppingCart, Heart, Minus, Plus, ChevronRight, Star, Send } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { SPLoader } from '@/components/ui/SPLoader';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
 import { supabase } from '@/integrations/supabase/client';
 import { Product } from '@/types/database';
 import { useCart } from '@/contexts/CartContext';
@@ -55,7 +60,6 @@ export default function ProductDetailPage() {
     setLoading(true);
     setError(null);
     try {
-      // Fetch product by slug or id
       const { data, error: fetchError } = await supabase
         .from('products')
         .select('*, category:product_categories(*)')
@@ -66,15 +70,14 @@ export default function ProductDetailPage() {
 
       if (data) {
         setProduct(data as any);
+        if (data.category_id) fetchRelatedProducts(data.category_id, data.id);
 
-        // Fetch reviews separately
         const { data: reviewsData } = await supabase
           .from('product_reviews')
           .select('*')
           .eq('product_id', data.id)
           .order('created_at', { ascending: false });
 
-        // Fetch profile info for each review
         const reviewsWithProfiles: ProductReview[] = [];
         if (reviewsData) {
           for (const r of reviewsData) {
@@ -96,20 +99,16 @@ export default function ProductDetailPage() {
     setLoading(false);
   };
 
-  const fetchRelatedProducts = async (categoryId: string) => {
+  const fetchRelatedProducts = async (categoryId: string, currentId: string) => {
     try {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('products')
         .select('*')
         .eq('category_id', categoryId)
-        .limit(4);
-
-      if (error) {
-        console.error('Failed to load related products:', error);
-      } else {
-        setRelatedProducts(data as any);
-      }
-    } catch (err: any) {
+        .neq('id', currentId)
+        .limit(3);
+      if (data) setRelatedProducts(data as any);
+    } catch (err) {
       console.error('Failed to load related products:', err);
     }
   };
@@ -222,40 +221,40 @@ export default function ProductDetailPage() {
       })
     : [resolvedMainImage];
 
+  const inStock = product.stock_quantity > 0;
+
   return (
     <MainLayout>
-      <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-6">
-        <Link
-          to="/products"
-          className="inline-flex items-center gap-1 text-xs sm:text-sm text-muted-foreground hover:text-foreground mb-3 sm:mb-5"
-          data-testid="link-back-products"
-        >
-          <ChevronLeft className="h-3.5 w-3.5" />
-          {t('products.backToProducts')}
-        </Link>
+      <div className="container mx-auto px-3 sm:px-4 lg:px-8 py-3 sm:py-6">
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">
+          <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
+          <ChevronRight className="h-3 w-3" />
+          <Link to="/products" className="hover:text-foreground transition-colors">Store</Link>
+          <ChevronRight className="h-3 w-3" />
+          <span className="text-foreground font-medium truncate max-w-[200px]">{product.name}</span>
+        </nav>
 
-        <div className="grid md:grid-cols-2 gap-4 sm:gap-8 lg:gap-12">
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-12">
+          {/* LEFT: Image Gallery — vertical thumbnails + main image */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="flex gap-3 sm:gap-4"
           >
-            <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-2 sm:mb-3">
-              <img
-                src={images[selectedImage]}
-                alt={product.name}
-                className="w-full h-full object-cover"
-                data-testid="img-product-main"
-              />
-            </div>
+            {/* Vertical Thumbnails */}
             {images.length > 1 && (
-              <div className="flex gap-1.5 sm:gap-2 overflow-x-auto">
+              <div className="hidden sm:flex flex-col gap-2 w-16 lg:w-20 shrink-0">
                 {images.map((img, i) => (
                   <button
                     key={i}
                     onClick={() => setSelectedImage(i)}
                     className={cn(
-                      'w-14 h-14 sm:w-16 sm:h-16 rounded-md overflow-hidden border-2 shrink-0',
-                      selectedImage === i ? 'border-primary' : 'border-transparent'
+                      'aspect-square rounded-md overflow-hidden border-2 transition-all duration-200',
+                      selectedImage === i
+                        ? 'border-primary ring-1 ring-primary/30'
+                        : 'border-border hover:border-muted-foreground/40'
                     )}
                     data-testid={`button-thumb-${i}`}
                   >
@@ -268,101 +267,169 @@ export default function ProductDetailPage() {
                 ))}
               </div>
             )}
-          </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-          >
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold mb-1.5 sm:mb-2" data-testid="text-product-name">
-              {product.name}
-            </h1>
-            
-            <div className="flex items-center gap-3 mb-2 sm:mb-3">
-              <div className="flex items-center gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className={cn(
-                      'h-3.5 w-3.5',
-                      i < Math.round(avgRating) ? 'text-primary fill-primary' : 'text-muted'
-                    )}
+            {/* Main Image */}
+            <div className="flex-1 relative">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={selectedImage}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="aspect-[3/4] sm:aspect-square lg:aspect-[3/4] rounded-lg overflow-hidden bg-muted"
+                >
+                  <img
+                    src={images[selectedImage]}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                    data-testid="img-product-main"
                   />
-                ))}
-                <span className="text-xs text-muted-foreground ml-1.5">
-                  ({reviews.length} {reviews.length === 1 ? t('products.review') : t('products.reviews')})
-                </span>
-              </div>
-              {product.stock_quantity > 0 ? (
-                <span className="flex items-center gap-0.5 text-xs text-success" data-testid="status-in-stock">
-                  <Check className="h-3.5 w-3.5" />
-                  {t('products.inStock')}
-                </span>
-              ) : (
-                <span className="text-xs text-destructive" data-testid="status-out-stock">{t('products.outOfStock')}</span>
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Mobile horizontal thumbnails */}
+              {images.length > 1 && (
+                <div className="flex sm:hidden gap-1.5 mt-2 overflow-x-auto pb-1">
+                  {images.map((img, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setSelectedImage(i)}
+                      className={cn(
+                        'w-14 h-14 rounded-md overflow-hidden border-2 shrink-0',
+                        selectedImage === i ? 'border-primary' : 'border-border'
+                      )}
+                    >
+                      <img src={img} alt={`${product.name} ${i + 1}`} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
               )}
             </div>
+          </motion.div>
 
-            <div className="flex items-baseline gap-2 mb-3 sm:mb-4">
-              <span className="text-2xl sm:text-3xl font-bold text-primary" data-testid="text-product-price">
+          {/* RIGHT: Product Info */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="flex flex-col"
+          >
+            {/* Product Name */}
+            <h1
+              className="font-display text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight mb-3"
+              data-testid="text-product-name"
+            >
+              {product.name}
+            </h1>
+
+            {/* Price */}
+            <div className="flex items-baseline gap-3 mb-4">
+              <span className="text-lg sm:text-xl font-medium text-foreground" data-testid="text-product-price">
                 {formatPrice(product.price)}
               </span>
               {product.compare_price && product.compare_price > product.price && (
                 <>
-                  <span className="text-base sm:text-lg text-muted-foreground line-through">
+                  <span className="text-sm text-muted-foreground line-through">
                     {formatPrice(product.compare_price)}
                   </span>
-                  <span className="px-1.5 py-0.5 bg-destructive text-destructive-foreground text-xs font-medium rounded">
-                    {Math.round((1 - product.price / product.compare_price) * 100)}% {t('common.off')}
+                  <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded-full">
+                    {Math.round((1 - product.price / product.compare_price) * 100)}% OFF
                   </span>
                 </>
               )}
             </div>
 
-            <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-5 line-clamp-3" data-testid="text-product-desc">
+            {/* Description */}
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4" data-testid="text-product-desc">
               {product.short_description || product.description}
             </p>
 
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-              <div className="flex items-center border border-border rounded-md">
-                <Button
-                  variant="ghost"
-                  size="icon"
+            {/* Bullet features from specifications */}
+            {product.specifications && Object.keys(product.specifications).length > 0 && (
+              <ul className="space-y-1.5 mb-6 text-sm text-foreground">
+                {Object.entries(product.specifications).slice(0, 4).map(([key, value]) => (
+                  <li key={key} className="flex items-start gap-2">
+                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-foreground shrink-0" />
+                    <span>{key}: {value}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {/* Rating */}
+            {reviews.length > 0 && (
+              <div className="flex items-center gap-2 mb-5">
+                <div className="flex items-center gap-0.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className={cn(
+                        'h-4 w-4',
+                        i < Math.round(avgRating) ? 'text-primary fill-primary' : 'text-muted'
+                      )}
+                    />
+                  ))}
+                </div>
+                <span className="text-xs text-muted-foreground">
+                  ({reviews.length} {reviews.length === 1 ? t('products.review') : t('products.reviews')})
+                </span>
+              </div>
+            )}
+
+            {/* Quantity + Add to Cart */}
+            <div className="flex flex-wrap items-center gap-3 mb-6">
+              <div className="flex items-center border border-border rounded-lg overflow-hidden">
+                <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="px-3 py-2.5 hover:bg-muted transition-colors"
                   data-testid="button-qty-minus"
                 >
-                  <Minus className="h-3.5 w-3.5" />
-                </Button>
-                <span className="w-8 text-center text-sm font-medium" data-testid="text-quantity">{quantity}</span>
-                <Button
-                  variant="ghost"
-                  size="icon"
+                  <Minus className="h-4 w-4" />
+                </button>
+                <span className="w-10 text-center text-sm font-medium border-x border-border py-2.5" data-testid="text-quantity">
+                  {quantity}
+                </span>
+                <button
                   onClick={() => setQuantity(quantity + 1)}
+                  className="px-3 py-2.5 hover:bg-muted transition-colors"
                   data-testid="button-qty-plus"
                 >
-                  <Plus className="h-3.5 w-3.5" />
-                </Button>
+                  <Plus className="h-4 w-4" />
+                </button>
               </div>
+
               <Button
-                size="default"
+                size="lg"
                 onClick={handleAddToCart}
-                disabled={product.stock_quantity === 0}
-                className="flex-1 sm:flex-none text-sm"
+                disabled={!inStock}
+                className={cn(
+                  'flex-1 text-sm font-semibold uppercase tracking-wide h-11',
+                  !inStock && 'opacity-60'
+                )}
                 data-testid="button-add-to-cart"
               >
-                <ShoppingCart className="h-4 w-4 mr-1.5" />
-                {t('products.addToCart')}
+                {inStock ? (
+                  <>
+                    <ShoppingCart className="h-4 w-4 mr-2" />
+                    {t('products.addToCart')}
+                  </>
+                ) : (
+                  t('products.outOfStock')
+                )}
               </Button>
+
               {user && (
                 <Button
                   variant="outline"
                   size="icon"
+                  className="h-11 w-11 shrink-0"
                   onClick={handleWishlistToggle}
                   data-testid="button-wishlist-toggle"
                 >
                   <Heart
                     className={cn(
-                      'h-4 w-4',
+                      'h-5 w-5 transition-colors',
                       isInWishlist(product.id) && 'fill-destructive text-destructive'
                     )}
                   />
@@ -370,138 +437,171 @@ export default function ProductDetailPage() {
               )}
             </div>
 
-            <Tabs defaultValue="description">
-              <TabsList>
-                <TabsTrigger value="description" className="text-xs sm:text-sm" data-testid="tab-description">{t('products.description')}</TabsTrigger>
-                <TabsTrigger value="specifications" className="text-xs sm:text-sm" data-testid="tab-specifications">{t('products.specifications')}</TabsTrigger>
-                <TabsTrigger value="reviews" className="text-xs sm:text-sm" data-testid="tab-reviews">
-                  {t('products.reviews')} ({reviews.length})
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value="description" className="mt-3">
-                <p className="text-xs sm:text-sm text-muted-foreground whitespace-pre-wrap">
-                  {product.description || t('products.noDescription')}
-                </p>
-              </TabsContent>
-              <TabsContent value="specifications" className="mt-3">
-                {product.specifications && Object.keys(product.specifications).length > 0 ? (
-                  <table className="w-full text-sm">
-                    <tbody>
-                      {Object.entries(product.specifications).map(([key, value]) => (
-                        <tr key={key} className="border-b border-border">
-                          <td className="py-1.5 font-medium text-xs sm:text-sm">{key}</td>
-                          <td className="py-1.5 text-muted-foreground text-xs sm:text-sm">{value}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                ) : (
-                  <p className="text-xs sm:text-sm text-muted-foreground">{t('products.noSpecifications')}</p>
-                )}
-              </TabsContent>
-              <TabsContent value="reviews" className="mt-3 space-y-4">
-                {user && (
-                  <div className="bg-muted/30 border border-border rounded-lg p-3 sm:p-4" data-testid="form-review">
-                    <h4 className="text-sm font-semibold mb-2">{t('products.writeReview')}</h4>
-                    <div className="flex items-center gap-1 mb-2">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <button
-                          key={i}
-                          type="button"
-                          onClick={() => setReviewRating(i + 1)}
-                          onMouseEnter={() => setHoverRating(i + 1)}
-                          onMouseLeave={() => setHoverRating(0)}
-                          data-testid={`button-star-${i + 1}`}
-                        >
-                          <Star
-                            className={cn(
-                              'h-5 w-5 transition-colors',
-                              i < (hoverRating || reviewRating)
-                                ? 'text-primary fill-primary'
-                                : 'text-muted'
-                            )}
-                          />
-                        </button>
-                      ))}
-                      <span className="text-xs text-muted-foreground ml-1">
-                        {reviewRating}/5
-                      </span>
-                    </div>
-                    <Textarea
-                      value={reviewText}
-                      onChange={(e) => setReviewText(e.target.value)}
-                      placeholder={t('products.reviewPlaceholder')}
-                      rows={3}
-                      className="mb-2 text-sm"
-                      data-testid="input-review-text"
-                    />
-                    <Button
-                      size="sm"
-                      onClick={handleSubmitReview}
-                      disabled={submittingReview}
-                      data-testid="button-submit-review"
-                    >
-                      <Send className="h-3.5 w-3.5 mr-1" />
-                      {submittingReview ? t('products.submitting') : t('products.submitReview')}
-                    </Button>
-                  </div>
-                )}
-                {!user && (
-                  <p className="text-xs sm:text-sm text-muted-foreground">
-                    <Link to="/auth" className="underline font-medium" data-testid="link-login-review">{t('products.signInToReview')}</Link> {t('products.signInToReviewText')}
+            {/* Accordion Details */}
+            <Accordion type="multiple" className="w-full border-t border-border">
+              <AccordionItem value="details">
+                <AccordionTrigger className="text-sm font-semibold py-4">
+                  More details
+                </AccordionTrigger>
+                <AccordionContent className="pb-4">
+                  <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                    {product.description || t('products.noDescription')}
                   </p>
-                )}
-                {reviews.length > 0 ? (
-                  <div className="space-y-3">
-                    {reviews.map((review) => (
-                      <div
-                        key={review.id}
-                        className="border-b border-border pb-3 last:border-0"
-                        data-testid={`review-${review.id}`}
+                  {product.specifications && Object.keys(product.specifications).length > 0 && (
+                    <ul className="mt-3 space-y-1 text-sm text-muted-foreground">
+                      {Object.entries(product.specifications).map(([key, value]) => (
+                        <li key={key} className="flex items-start gap-2">
+                          <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-muted-foreground/50 shrink-0" />
+                          <span>{key}: {value}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="reviews">
+                <AccordionTrigger className="text-sm font-semibold py-4">
+                  {t('products.reviews')} ({reviews.length})
+                </AccordionTrigger>
+                <AccordionContent className="pb-4 space-y-4">
+                  {user && (
+                    <div className="bg-muted/30 border border-border rounded-lg p-3 sm:p-4" data-testid="form-review">
+                      <h4 className="text-sm font-semibold mb-2">{t('products.writeReview')}</h4>
+                      <div className="flex items-center gap-1 mb-2">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => setReviewRating(i + 1)}
+                            onMouseEnter={() => setHoverRating(i + 1)}
+                            onMouseLeave={() => setHoverRating(0)}
+                            data-testid={`button-star-${i + 1}`}
+                          >
+                            <Star
+                              className={cn(
+                                'h-5 w-5 transition-colors',
+                                i < (hoverRating || reviewRating)
+                                  ? 'text-primary fill-primary'
+                                  : 'text-muted'
+                              )}
+                            />
+                          </button>
+                        ))}
+                        <span className="text-xs text-muted-foreground ml-1">{reviewRating}/5</span>
+                      </div>
+                      <Textarea
+                        value={reviewText}
+                        onChange={(e) => setReviewText(e.target.value)}
+                        placeholder={t('products.reviewPlaceholder')}
+                        rows={3}
+                        className="mb-2 text-sm"
+                        data-testid="input-review-text"
+                      />
+                      <Button
+                        size="sm"
+                        onClick={handleSubmitReview}
+                        disabled={submittingReview}
+                        data-testid="button-submit-review"
                       >
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-xs font-semibold">
-                              {(review.profiles?.display_name || review.profiles?.full_name || 'U').charAt(0).toUpperCase()}
-                            </div>
-                            <div>
-                              <p className="text-xs sm:text-sm font-medium">
-                                {review.profiles?.display_name || review.profiles?.full_name || 'Customer'}
-                              </p>
-                              <div className="flex items-center gap-1">
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                  <Star
-                                    key={i}
-                                    className={cn(
-                                      'h-3 w-3',
-                                      i < review.rating ? 'text-primary fill-primary' : 'text-muted'
-                                    )}
-                                  />
-                                ))}
+                        <Send className="h-3.5 w-3.5 mr-1" />
+                        {submittingReview ? t('products.submitting') : t('products.submitReview')}
+                      </Button>
+                    </div>
+                  )}
+                  {!user && (
+                    <p className="text-sm text-muted-foreground">
+                      <Link to="/auth" className="underline font-medium">{t('products.signInToReview')}</Link> {t('products.signInToReviewText')}
+                    </p>
+                  )}
+                  {reviews.length > 0 ? (
+                    <div className="space-y-3">
+                      {reviews.map((review) => (
+                        <div key={review.id} className="border-b border-border pb-3 last:border-0">
+                          <div className="flex items-center justify-between mb-1">
+                            <div className="flex items-center gap-2">
+                              <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-xs font-semibold">
+                                {(review.profiles?.display_name || review.profiles?.full_name || 'U').charAt(0).toUpperCase()}
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium">
+                                  {review.profiles?.display_name || review.profiles?.full_name || 'Customer'}
+                                </p>
+                                <div className="flex items-center gap-0.5">
+                                  {Array.from({ length: 5 }).map((_, i) => (
+                                    <Star
+                                      key={i}
+                                      className={cn(
+                                        'h-3 w-3',
+                                        i < review.rating ? 'text-primary fill-primary' : 'text-muted'
+                                      )}
+                                    />
+                                  ))}
+                                </div>
                               </div>
                             </div>
+                            <span className="text-[10px] text-muted-foreground">
+                              {format(new Date(review.created_at), 'dd MMM yyyy')}
+                            </span>
                           </div>
-                          <span className="text-[10px] text-muted-foreground">
-                            {format(new Date(review.created_at), 'dd MMM yyyy')}
-                          </span>
+                          {review.review_text && (
+                            <p className="text-sm text-muted-foreground mt-1 ml-9">{review.review_text}</p>
+                          )}
                         </div>
-                        {review.review_text && (
-                          <p className="text-xs sm:text-sm text-muted-foreground mt-1 ml-9">
-                            {review.review_text}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs sm:text-sm text-muted-foreground py-4 text-center">
-                    {t('products.noReviews')}
-                  </p>
-                )}
-              </TabsContent>
-            </Tabs>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground py-2 text-center">{t('products.noReviews')}</p>
+                  )}
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="quality">
+                <AccordionTrigger className="text-sm font-semibold py-4">
+                  Quality guarantee & returns
+                </AccordionTrigger>
+                <AccordionContent className="pb-4">
+                  <ul className="space-y-2 text-sm text-muted-foreground">
+                    <li className="flex items-start gap-2">
+                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-muted-foreground/50 shrink-0" />
+                      Quality is guaranteed. If there is a visible quality issue, we'll replace or refund it.
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-muted-foreground/50 shrink-0" />
+                      Custom orders may have slight natural stone variations which add to their unique beauty.
+                    </li>
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </motion.div>
         </div>
+
+        {/* Related Products — "You may also like" */}
+        {relatedProducts.length > 0 && (
+          <section className="mt-12 sm:mt-16">
+            <h2 className="text-xl sm:text-2xl font-bold mb-6">You may also like</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
+              {relatedProducts.map((rp) => (
+                <Link
+                  key={rp.id}
+                  to={`/products/${rp.slug || rp.id}`}
+                  className="group"
+                >
+                  <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-2">
+                    <img
+                      src={resolveProductImage(rp)}
+                      alt={rp.name}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
+                  <h3 className="text-sm font-semibold lowercase">{rp.name}</h3>
+                  <p className="text-sm text-muted-foreground">{formatPrice(rp.price)}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </MainLayout>
   );
