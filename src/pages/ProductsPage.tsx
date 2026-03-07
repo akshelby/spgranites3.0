@@ -270,7 +270,7 @@ export default function ProductsPage() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="mt-1.5 text-[10px] sm:text-xs px-6 border-red-500 text-red-600 hover-slide"
+                    className="mt-1.5 self-start w-auto text-[10px] sm:text-xs px-6 border-red-500 text-red-600 hover-slide"
                     onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
                     data-testid={`button-add-cart-${product.id}`}
                   >
