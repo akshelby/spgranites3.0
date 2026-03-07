@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Sparkles, X } from 'lucide-react';
+import { WhatsAppButton } from './WhatsAppButton';
 
 interface FloatingActionButtonProps {
   isAIChatOpen: boolean;
@@ -8,10 +9,12 @@ interface FloatingActionButtonProps {
 
 export function FloatingActionButton({ isAIChatOpen, onToggle }: FloatingActionButtonProps) {
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3">
+      <WhatsAppButton />
+
       <motion.button
         onClick={onToggle}
-        className={`ai-assistant-btn relative w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${isAIChatOpen ? 'ai-chat-active' : ''}`}
+        className={`ai-assistant-btn relative w-11 h-11 rounded-full flex items-center justify-center shadow-lg ${isAIChatOpen ? 'ai-chat-active' : ''}`}
         whileTap={{ scale: 0.97 }}
         whileHover={{ scale: 1.05 }}
         transition={{ duration: 0.2 }}

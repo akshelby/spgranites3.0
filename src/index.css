@@ -644,7 +644,7 @@ section {
 }
 .ai-glow-ring {
   position: absolute;
-  inset: -4px;
+  inset: -3px;
   border-radius: 9999px;
   background: conic-gradient(from 0deg, #7c3aed, #06b6d4, #8b5cf6, #ec4899, #7c3aed);
   opacity: 0.6;
@@ -654,8 +654,8 @@ section {
 .ai-glow-ring-delay {
   animation: ai-spin 3s linear infinite reverse, ai-pulse-ring 2s ease-in-out infinite 1s;
   opacity: 0.3;
-  inset: -8px;
-  filter: blur(6px);
+  inset: -6px;
+  filter: blur(4px);
 }
 @keyframes ai-spin {
   to { transform: rotate(360deg); }

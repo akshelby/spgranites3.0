@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSiteSettings } from '@/contexts/SiteSettingsContext';
 
@@ -11,7 +10,7 @@ export function WhatsAppButton() {
   const whatsappUrl = `https://wa.me/${settings.whatsapp_number}?text=${message}`;
 
   return (
-    <div className="fixed bottom-16 right-6 z-40">
+    <div className="relative">
       <AnimatePresence>
         {showTooltip && (
           <motion.div
@@ -30,7 +29,7 @@ export function WhatsAppButton() {
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center justify-center w-10 h-10 rounded-full bg-[#25D366] text-white shadow-lg hover:shadow-xl transition-shadow"
+        className="flex items-center justify-center w-11 h-11 rounded-full bg-[#25D366] text-white shadow-lg hover:shadow-xl transition-shadow"
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.97 }}
         onMouseEnter={() => setShowTooltip(true)}
