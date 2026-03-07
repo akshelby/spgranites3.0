@@ -296,7 +296,7 @@ export default function ProductDetailPage() {
             {/* Main Image */}
             <div className="flex-1 relative">
               <div
-                className="aspect-[3/4] sm:aspect-square lg:aspect-[3/4] rounded-lg overflow-hidden bg-muted cursor-zoom-in"
+                className="aspect-[4/5] sm:aspect-square lg:aspect-[3/4] rounded-lg overflow-hidden bg-muted cursor-zoom-in max-h-[60vh] sm:max-h-none"
                   onMouseMove={(e) => {
                     const rect = e.currentTarget.getBoundingClientRect();
                     const x = ((e.clientX - rect.left) / rect.width) * 100;
