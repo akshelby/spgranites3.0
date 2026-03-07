@@ -297,8 +297,7 @@ export default function ProductDetailPage() {
                     style={zoomStyle}
                     data-testid="img-product-main"
                   />
-                </motion.div>
-              </AnimatePresence>
+              </div>
 
               {/* Mobile horizontal thumbnails */}
               {images.length > 1 && (
