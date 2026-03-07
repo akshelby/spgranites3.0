@@ -292,7 +292,7 @@ export default function ProductDetailPage() {
                     const rect = e.currentTarget.getBoundingClientRect();
                     const x = ((e.clientX - rect.left) / rect.width) * 100;
                     const y = ((e.clientY - rect.top) / rect.height) * 100;
-                    setZoomStyle({ transformOrigin: `${x}% ${y}%`, transform: 'scale(2)' });
+                    setZoomStyle({ transformOrigin: `${x}% ${y}%`, transform: 'scale(2.5)' });
                   }}
                   onMouseLeave={() => setZoomStyle({})}
                 >
