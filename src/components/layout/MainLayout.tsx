@@ -33,8 +33,12 @@ export function MainLayout({ children, hideFooter = false }: MainLayoutProps) {
         {children}
       </main>
       {!hideFooter && <Footer />}
-      <AIChatPanel isOpen={isAIChatOpen} onClose={() => setIsAIChatOpen(false)} />
-      <FloatingActionButton isAIChatOpen={isAIChatOpen} onToggle={() => setIsAIChatOpen(prev => !prev)} />
+      {pathname === '/' && (
+        <>
+          <AIChatPanel isOpen={isAIChatOpen} onClose={() => setIsAIChatOpen(false)} />
+          <FloatingActionButton isAIChatOpen={isAIChatOpen} onToggle={() => setIsAIChatOpen(prev => !prev)} />
+        </>
+      )}
       <MiniCart />
     </div>
   );
