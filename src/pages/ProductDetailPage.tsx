@@ -237,7 +237,7 @@ export default function ProductDetailPage() {
           {t('products.backToProducts')}
         </Link>
 
-        <div className="grid md:grid-cols-2 gap-4 sm:gap-8 lg:gap-12">
+        <div className="grid md:grid-cols-[55%_1fr] gap-4 sm:gap-8 lg:gap-12">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -265,7 +265,7 @@ export default function ProductDetailPage() {
               </div>
             )}
             <div
-              className="flex-1 aspect-square rounded-lg overflow-hidden bg-muted cursor-zoom-in"
+              className="flex-1 aspect-[4/5] rounded-lg overflow-hidden bg-muted cursor-zoom-in"
               onMouseMove={(e) => {
                 const rect = e.currentTarget.getBoundingClientRect();
                 const x = ((e.clientX - rect.left) / rect.width) * 100;
