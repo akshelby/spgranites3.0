@@ -410,27 +410,25 @@ export default function ProductDetailPage() {
                 </button>
               </div>
 
-              <button
+              <Button
+                size="lg"
                 onClick={handleAddToCart}
                 disabled={!inStock}
                 className={cn(
-                  'h-11 px-12 text-sm font-semibold uppercase tracking-wider transition-colors',
-                  inStock
-                    ? 'bg-foreground text-background hover:bg-foreground/90'
-                    : 'bg-muted text-muted-foreground cursor-not-allowed'
+                  'h-11 px-12 text-sm',
+                  !inStock && 'opacity-60'
                 )}
-                style={{ clipPath: 'none' }}
                 data-testid="button-add-to-cart"
               >
                 {inStock ? (
-                  <span className="flex items-center gap-2">
-                    <ShoppingCart className="h-4 w-4" />
+                  <>
+                    <ShoppingCart className="h-4 w-4 mr-2" />
                     {t('products.addToCart')}
-                  </span>
+                  </>
                 ) : (
                   t('products.outOfStock')
                 )}
-              </button>
+              </Button>
             </div>
 
             {user && (
