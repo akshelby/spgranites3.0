@@ -131,7 +131,7 @@ export function MiniCart() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6"
+                            className="h-7 w-7 hover:bg-primary/10 hover:text-primary transition-colors"
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
                             data-testid={`button-minicart-minus-${item.productId}`}
                           >
@@ -143,7 +143,7 @@ export function MiniCart() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6"
+                            className="h-7 w-7 hover:bg-primary/10 hover:text-primary transition-colors"
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
                             data-testid={`button-minicart-plus-${item.productId}`}
                           >
@@ -153,7 +153,7 @@ export function MiniCart() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6 ml-auto text-destructive"
+                          className="h-7 w-7 ml-auto text-destructive hover:bg-destructive/10 hover:text-destructive transition-colors"
                           onClick={() => removeFromCart(item.id)}
                           data-testid={`button-minicart-remove-${item.productId}`}
                         >
