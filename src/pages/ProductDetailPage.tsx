@@ -111,7 +111,7 @@ export default function ProductDetailPage() {
         .select('*')
         .eq('category_id', categoryId)
         .neq('id', currentId)
-        .limit(3);
+        .limit(10);
       if (data) setRelatedProducts(data as any);
     } catch (err) {
       console.error('Failed to load related products:', err);
