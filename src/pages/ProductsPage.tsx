@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Filter, Grid, List, ShoppingCart, Heart, Search } from 'lucide-react';
+import { Filter, Grid, List, ShoppingCart, Heart, Search, Minus, Plus } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { SPLoader } from '@/components/ui/SPLoader';
 import { Button } from '@/components/ui/button';
