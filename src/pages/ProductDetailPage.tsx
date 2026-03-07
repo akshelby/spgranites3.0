@@ -415,7 +415,7 @@ export default function ProductDetailPage() {
                 onClick={handleAddToCart}
                 disabled={!inStock}
                 className={cn(
-                  'h-11 px-12 text-sm hover-slide',
+                  'h-11 px-12 text-sm border-2 border-transparent hover-slide',
                   !inStock && 'opacity-60'
                 )}
                 data-testid="button-add-to-cart"
