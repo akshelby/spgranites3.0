@@ -57,13 +57,9 @@ export function CategoryItem({
     <div className="flex flex-col items-center gap-2.5 sm:gap-3">
       <motion.div
         className="relative cursor-pointer"
-        whileHover={{ y: -4, scale: 1.06 }}
-        whileTap={{ y: 1, scale: 0.94 }}
-        transition={{ type: 'spring', stiffness: 420, damping: 18 }}
-        {...(prominent ? {
-          animate: { scale: [1, 1.05, 1] },
-          transition: { duration: 2.4, repeat: Infinity, repeatType: 'reverse' as const, ease: 'easeInOut' },
-        } : {})}
+        whileHover={{ y: -2 }}
+        whileTap={{ y: 0 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
       >
         {/* Circle ring */}
         <div

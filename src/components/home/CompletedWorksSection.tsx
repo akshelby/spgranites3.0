@@ -122,7 +122,7 @@ export function CompletedWorksSection() {
                   <div className="relative w-full h-full">
                     <video
                       src={work.media_url || ''}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                       muted
                       playsInline
                     />
@@ -136,7 +136,7 @@ export function CompletedWorksSection() {
                   <img
                     src={work.media_url || ''}
                     alt={work.stone_type || 'Completed work'}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                     loading="lazy"
                   />
                 )}

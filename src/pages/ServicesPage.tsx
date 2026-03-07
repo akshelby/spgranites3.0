@@ -106,7 +106,7 @@ export default function ServicesPage() {
                       <img
                         src={service.image_url}
                         alt={service.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                         loading="lazy"
                       />
                     </div>

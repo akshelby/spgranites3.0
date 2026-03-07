@@ -12,8 +12,8 @@ export function FloatingActionButton({ isAIChatOpen, onToggle }: FloatingActionB
       <motion.button
         onClick={onToggle}
         className={`ai-assistant-btn relative w-14 h-14 rounded-full flex items-center justify-center shadow-lg ${isAIChatOpen ? 'ai-chat-active' : ''}`}
-        whileTap={{ scale: 0.9 }}
-        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.97 }}
+        whileHover={{ scale: 1.05 }}
         transition={{ duration: 0.2 }}
         title="AI Assistant"
       >

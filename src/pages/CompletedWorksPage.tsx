@@ -141,7 +141,7 @@ export default function CompletedWorksPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05, duration: 0.3 }}
                 onClick={() => setSelectedWork(work)}
-                className="bg-card rounded-2xl border border-border/60 shadow-soft hover:-translate-y-1 hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden"
+                className="bg-card rounded-2xl border border-border/60 shadow-soft hover:shadow-lg transition-shadow duration-300 cursor-pointer overflow-hidden"
               >
                 <div className="relative aspect-[4/3] bg-muted">
                   {work.media_type === 'video' ? (

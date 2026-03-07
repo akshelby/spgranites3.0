@@ -284,7 +284,7 @@ export function TestimonialsSection() {
             {customerReviews.map((review) => (
               <div
                 key={review.id}
-                className="flex-shrink-0 w-[280px] sm:w-[320px] lg:w-[360px] bg-card p-3 sm:p-4 lg:p-6 rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col"
+                className="flex-shrink-0 w-[280px] sm:w-[320px] lg:w-[360px] bg-card p-3 sm:p-4 lg:p-6 rounded-2xl border border-border/60 shadow-soft hover:shadow-lg transition-shadow duration-300 relative flex flex-col"
               >
                 <div className="flex items-center justify-between mb-1 sm:mb-2">
                   <div className="flex gap-0.5">
@@ -338,7 +338,7 @@ export function TestimonialsSection() {
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.id}
-              className="flex-shrink-0 w-[280px] sm:w-[320px] lg:w-[360px] bg-card p-3 sm:p-4 lg:p-6 rounded-2xl border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1 transition-all duration-300 relative flex flex-col"
+              className="flex-shrink-0 w-[280px] sm:w-[320px] lg:w-[360px] bg-card p-3 sm:p-4 lg:p-6 rounded-2xl border border-border/60 shadow-soft hover:shadow-lg transition-shadow duration-300 relative flex flex-col"
               data-testid={`testimonial-card-${testimonial.id}`}
             >
               <Quote className="absolute top-2 right-2 h-3.5 w-3.5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-primary/15" />

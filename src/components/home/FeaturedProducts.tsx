@@ -175,7 +175,7 @@ export function FeaturedProducts() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="flex-shrink-0 w-[240px] sm:w-[300px] lg:w-[340px] group bg-card rounded-2xl overflow-hidden border border-border/60 shadow-soft hover:shadow-lg hover:-translate-y-1.5 transition-all duration-300 cursor-pointer"
+              className="flex-shrink-0 w-[240px] sm:w-[300px] lg:w-[340px] group bg-card rounded-2xl overflow-hidden border border-border/60 shadow-soft hover:shadow-lg transition-shadow duration-300 cursor-pointer"
               data-testid={`card-product-${product.id}`}
               onClick={() => window.location.href = `/products/${product.slug}`}
             >
@@ -184,7 +184,7 @@ export function FeaturedProducts() {
                   src={getProductImage(product)}
                   alt={product.name}
                   loading="lazy"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                   onError={(e) => { (e.target as HTMLImageElement).src = defaultProductImage; }}
                 />
                 {product.compare_price && product.compare_price > product.price && (
