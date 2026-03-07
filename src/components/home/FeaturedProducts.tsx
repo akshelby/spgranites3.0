@@ -237,7 +237,7 @@ export function FeaturedProducts() {
                           <Button
                             size="icon"
                             variant="outline"
-                            className="h-6 w-6 border-red-500 text-red-600"
+                            className="h-6 w-6 border-red-500 text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950 transition-colors"
                             onClick={(e) => { e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity + 1); }}
                           >
                             <Plus className="h-3 w-3" />
