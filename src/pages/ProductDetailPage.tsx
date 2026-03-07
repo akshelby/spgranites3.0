@@ -218,12 +218,17 @@ export default function ProductDetailPage() {
   }
 
   const resolvedMainImage = resolveProductImage(product);
-  const images = product.images?.length
+  const rawImages = product.images?.length
     ? product.images.map(img => {
         if (img.includes('unsplash') || img === '/placeholder.svg') return resolvedMainImage;
         return img;
       })
     : [resolvedMainImage];
+
+  // Ensure at least 3 thumbnail images for the vertical strip (pad with main image)
+  const images = rawImages.length < 3
+    ? [...rawImages, ...Array(3 - rawImages.length).fill(resolvedMainImage)]
+    : rawImages;
 
   const inStock = product.stock_quantity > 0;
 
