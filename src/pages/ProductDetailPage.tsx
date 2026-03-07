@@ -594,7 +594,7 @@ export default function ProductDetailPage() {
         {relatedProducts.length > 0 && (
           <section className="mt-12 sm:mt-16">
             <h2 className="text-xl sm:text-2xl font-bold mb-6">You may also like</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
               {relatedProducts.map((rp) => (
                 <Link
                   key={rp.id}
