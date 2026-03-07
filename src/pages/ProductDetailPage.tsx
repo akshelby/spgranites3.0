@@ -616,7 +616,7 @@ export default function ProductDetailPage() {
               </Link>
             </div>
             <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
-              {relatedProducts.map((rp) => (
+              {relatedProducts.slice(0, 5).map((rp) => (
                 <Link
                   key={rp.id}
                   to={`/products/${rp.slug || rp.id}`}
