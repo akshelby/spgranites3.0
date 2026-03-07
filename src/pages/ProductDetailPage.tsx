@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ShoppingCart, Heart, Minus, Plus, ChevronLeft, Star, Check, Send } from 'lucide-react';
+import { ShoppingCart, Heart, Minus, Plus, ChevronLeft, Star, Check, Send, ArrowRight } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { SPLoader } from '@/components/ui/SPLoader';
 import { Button } from '@/components/ui/button';
@@ -553,6 +553,38 @@ export default function ProductDetailPage() {
             </Tabs>
           </motion.div>
         </div>
+
+        {/* Related Products — "You may also like" */}
+        {relatedProducts.length > 0 && (
+          <section className="mt-12 sm:mt-16">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold">You may also like</h2>
+              <Link to="/products" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors">
+                <span>More</span>
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
+              {relatedProducts.slice(0, 5).map((rp) => (
+                <Link
+                  key={rp.id}
+                  to={`/products/${rp.slug || rp.id}`}
+                  className="group"
+                >
+                  <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-2">
+                    <img
+                      src={resolveProductImage(rp)}
+                      alt={rp.name}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
+                  <h3 className="text-sm font-semibold lowercase">{rp.name}</h3>
+                  <p className="text-sm text-muted-foreground">{formatPrice(rp.price)}</p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </MainLayout>
   );
