@@ -56,19 +56,20 @@ export default function ProductDetailPage() {
     setLoading(true);
     setError(null);
     try {
-      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug!);
-      let query = supabase.from('products').select('*, category:product_categories(*)');
-      if (isUUID) {
-        query = query.or(`slug.eq.${slug},id.eq.${slug}`);
-      } else {
-        query = query.eq('slug', slug!);
-      }
-      const { data, error: fetchError } = await query.single();
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug!);
+      const query = supabase
+        .from('products')
+        .select('*, category:product_categories(*)');
+
+      const { data, error: fetchError } = isUuid
+        ? await query.or(`slug.eq.${slug},id.eq.${slug}`).maybeSingle()
+        : await query.eq('slug', slug!).maybeSingle();
 
       if (fetchError) throw fetchError;
 
       if (data) {
         setProduct(data as any);
+        if (data.category_id) fetchRelatedProducts(data.category_id, data.id);
 
         // Fetch reviews separately
         const { data: reviewsData } = await supabase
@@ -99,20 +100,29 @@ export default function ProductDetailPage() {
     setLoading(false);
   };
 
-  const fetchRelatedProducts = async (categoryId: string) => {
+  const fetchRelatedProducts = async (categoryId: string, currentId: string) => {
     try {
-      const { data, error } = await supabase
+      const { data: sameCat } = await supabase
         .from('products')
         .select('*')
         .eq('category_id', categoryId)
-        .limit(4);
+        .neq('id', currentId)
+        .limit(10);
 
-      if (error) {
-        console.error('Failed to load related products:', error);
-      } else {
-        setRelatedProducts(data as any);
+      let results = (sameCat || []) as any[];
+
+      if (results.length < 5) {
+        const existingIds = [currentId, ...results.map((r: any) => r.id)];
+        const { data: otherProducts } = await supabase
+          .from('products')
+          .select('*')
+          .not('id', 'in', `(${existingIds.join(',')})`)
+          .limit(10 - results.length);
+        if (otherProducts) results = [...results, ...otherProducts] as any[];
       }
-    } catch (err: any) {
+
+      setRelatedProducts(results);
+    } catch (err) {
       console.error('Failed to load related products:', err);
     }
   };
@@ -239,19 +249,23 @@ export default function ProductDetailPage() {
 
         <div className="grid md:grid-cols-[55%_1fr] gap-4 sm:gap-8 lg:gap-12">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex gap-3"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="flex gap-3 sm:gap-4"
           >
+            {/* Vertical Thumbnails */}
             {images.length > 1 && (
-              <div className="flex flex-col gap-2 shrink-0">
+              <div className="hidden sm:flex flex-col gap-2 w-32 lg:w-36 shrink-0">
                 {images.map((img, i) => (
                   <button
                     key={i}
                     onClick={() => setSelectedImage(i)}
                     className={cn(
-                      'w-20 h-20 sm:w-24 sm:h-24 rounded-md overflow-hidden border-2 shrink-0 transition-colors',
-                      selectedImage === i ? 'border-primary' : 'border-muted hover:border-muted-foreground/40'
+                      'aspect-square rounded-md overflow-hidden border-2 transition-all duration-200',
+                      selectedImage === i
+                        ? 'border-primary ring-1 ring-primary/30'
+                        : 'border-border hover:border-muted-foreground/40'
                     )}
                     data-testid={`button-thumb-${i}`}
                   >
@@ -264,29 +278,52 @@ export default function ProductDetailPage() {
                 ))}
               </div>
             )}
-            <div
-              className="flex-1 aspect-[4/5] rounded-lg overflow-hidden bg-muted cursor-zoom-in"
-              onMouseMove={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const x = ((e.clientX - rect.left) / rect.width) * 100;
-                const y = ((e.clientY - rect.top) / rect.height) * 100;
-                setZoomStyle({ transformOrigin: `${x}% ${y}%`, transform: 'scale(2.5)' });
-              }}
-              onMouseLeave={() => setZoomStyle({})}
-            >
-              <img
-                src={images[selectedImage]}
-                alt={product.name}
-                className="w-full h-full object-cover transition-transform duration-200 ease-out"
-                style={zoomStyle}
-                data-testid="img-product-main"
-              />
+
+            {/* Main Image */}
+            <div className="flex-1 relative">
+              <div
+                className="aspect-[4/5] sm:aspect-square lg:aspect-[3/4] rounded-lg overflow-hidden bg-muted cursor-zoom-in max-h-[60vh] sm:max-h-none"
+                onMouseMove={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const x = ((e.clientX - rect.left) / rect.width) * 100;
+                  const y = ((e.clientY - rect.top) / rect.height) * 100;
+                  setZoomStyle({ transformOrigin: `${x}% ${y}%`, transform: 'scale(2.5)' });
+                }}
+                onMouseLeave={() => setZoomStyle({})}
+              >
+                <img
+                  src={images[selectedImage]}
+                  alt={product.name}
+                  className="w-full h-full object-cover transition-transform duration-200 ease-out"
+                  style={zoomStyle}
+                  data-testid="img-product-main"
+                />
+              </div>
+
+              {/* Mobile horizontal thumbnails */}
+              {images.length > 1 && (
+                <div className="flex sm:hidden gap-2 mt-3 overflow-x-auto pb-2">
+                  {images.map((img, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setSelectedImage(i)}
+                      className={cn(
+                        'w-20 h-20 rounded-md overflow-hidden border-2 shrink-0 transition-all',
+                        selectedImage === i ? 'border-primary ring-1 ring-primary/30' : 'border-border hover:border-muted-foreground/40'
+                      )}
+                    >
+                      <img src={img} alt={`${product.name} ${i + 1}`} className="w-full h-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
           >
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold mb-1.5 sm:mb-2" data-testid="text-product-name">
               {product.name}
