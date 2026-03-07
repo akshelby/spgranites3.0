@@ -67,7 +67,7 @@ export function MiniCart() {
                     <Link
                       to={`/products/${item.productId}`}
                       onClick={() => setMiniCartOpen(false)}
-                      className="w-20 h-20 bg-muted rounded-lg overflow-hidden shrink-0"
+                      className="w-16 h-16 bg-muted rounded-lg overflow-hidden shrink-0 aspect-square"
                     >
                       {item.image ? (
                         <img
