@@ -106,13 +106,28 @@ export default function ProductDetailPage() {
 
   const fetchRelatedProducts = async (categoryId: string, currentId: string) => {
     try {
-      const { data } = await supabase
+      // First fetch from same category
+      const { data: sameCat } = await supabase
         .from('products')
         .select('*')
         .eq('category_id', categoryId)
         .neq('id', currentId)
         .limit(10);
-      if (data) setRelatedProducts(data as any);
+      
+      let results = (sameCat || []) as any[];
+      
+      // If not enough, fill with products from other categories
+      if (results.length < 5) {
+        const existingIds = [currentId, ...results.map((r: any) => r.id)];
+        const { data: otherProducts } = await supabase
+          .from('products')
+          .select('*')
+          .not('id', 'in', `(${existingIds.join(',')})`)
+          .limit(10 - results.length);
+        if (otherProducts) results = [...results, ...otherProducts] as any[];
+      }
+      
+      setRelatedProducts(results);
     } catch (err) {
       console.error('Failed to load related products:', err);
     }
