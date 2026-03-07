@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Filter, Grid, List, ShoppingCart, Heart, Search } from 'lucide-react';
+import { Filter, Grid, List, ShoppingCart, Heart, Search, Minus, Plus } from 'lucide-react';
 import { MainLayout } from '@/components/layout';
 import { SPLoader } from '@/components/ui/SPLoader';
 import { Button } from '@/components/ui/button';
@@ -37,7 +37,7 @@ export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   
   const categorySlug = searchParams.get('category');
-  const { addToCart } = useCart();
+  const { addToCart, items, updateQuantity } = useCart();
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const { user } = useAuth();
 
@@ -267,16 +267,44 @@ export default function ProductsPage() {
                       </span>
                     )}
                   </div>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="mt-1.5 self-start w-auto text-[10px] sm:text-xs px-6 border-red-500 text-red-600 hover-slide"
-                    onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
-                    data-testid={`button-add-cart-${product.id}`}
-                  >
-                    <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 flex-shrink-0" />
-                    <span className="whitespace-nowrap">{t('products.addToCart')}</span>
-                  </Button>
+                  {(() => {
+                    const cartItem = items.find(i => i.productId === product.id);
+                    if (cartItem) {
+                      return (
+                        <div className="mt-1.5 flex items-center gap-1 self-start">
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            className="h-6 w-6 border-red-500 text-red-600"
+                            onClick={(e) => { e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity - 1); }}
+                          >
+                            <Minus className="h-3 w-3" />
+                          </Button>
+                          <span className="text-xs font-bold w-6 text-center">{cartItem.quantity}</span>
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            className="h-6 w-6 border-red-500 text-red-600"
+                            onClick={(e) => { e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity + 1); }}
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      );
+                    }
+                    return (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="mt-1.5 self-start w-auto text-[10px] sm:text-xs px-6 border-red-500 text-red-600 hover-slide"
+                        onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
+                        data-testid={`button-add-cart-${product.id}`}
+                      >
+                        <ShoppingCart className="h-3 w-3 sm:h-3.5 sm:w-3.5 mr-1 flex-shrink-0" />
+                        <span className="whitespace-nowrap">{t('products.addToCart')}</span>
+                      </Button>
+                    );
+                  })()}
                 </div>
               </motion.div>
             ))}
