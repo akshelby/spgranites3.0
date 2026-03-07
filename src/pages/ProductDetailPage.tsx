@@ -55,12 +55,14 @@ export default function ProductDetailPage() {
     setLoading(true);
     setError(null);
     try {
-      // Fetch product by slug or id
-      const { data, error: fetchError } = await supabase
-        .from('products')
-        .select('*, category:product_categories(*)')
-        .or(`slug.eq.${slug},id.eq.${slug}`)
-        .single();
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug!);
+      let query = supabase.from('products').select('*, category:product_categories(*)');
+      if (isUUID) {
+        query = query.or(`slug.eq.${slug},id.eq.${slug}`);
+      } else {
+        query = query.eq('slug', slug!);
+      }
+      const { data, error: fetchError } = await query.single();
 
       if (fetchError) throw fetchError;
 
