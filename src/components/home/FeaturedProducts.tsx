@@ -24,7 +24,7 @@ const fallbackProducts: Product[] = [
 
 export function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>(fallbackProducts);
-  const { addToCart } = useCart();
+  const { addToCart, items, updateQuantity } = useCart();
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const { user } = useAuth();
   const { t } = useTranslation();

@@ -37,7 +37,7 @@ export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   
   const categorySlug = searchParams.get('category');
-  const { addToCart } = useCart();
+  const { addToCart, items, updateQuantity } = useCart();
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const { user } = useAuth();
 
