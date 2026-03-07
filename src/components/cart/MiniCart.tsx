@@ -175,17 +175,17 @@ export function MiniCart() {
                 {t('cart.shippingNote')}
               </p>
               {user ? (
-                <Button className="w-full" size="lg" asChild onClick={() => setMiniCartOpen(false)}>
+                <Button className="w-full hover:scale-[1.02] transition-transform" size="lg" asChild onClick={() => setMiniCartOpen(false)}>
                   <Link to="/cart">{t('cart.checkout')}</Link>
                 </Button>
               ) : (
-                <Button className="w-full" size="lg" asChild onClick={() => setMiniCartOpen(false)}>
+                <Button className="w-full hover:scale-[1.02] transition-transform" size="lg" asChild onClick={() => setMiniCartOpen(false)}>
                   <Link to="/auth?redirect=/cart">{t('cart.signInToCheckout')}</Link>
                 </Button>
               )}
               <Button
                 variant="outline"
-                className="w-full"
+                className="w-full hover:scale-[1.02] hover:bg-muted transition-all"
                 onClick={() => setMiniCartOpen(false)}
                 asChild
               >
