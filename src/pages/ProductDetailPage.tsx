@@ -34,6 +34,7 @@ interface ProductReview {
 }
 
 export default function ProductDetailPage() {
+  const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({});
   const { t } = useTranslation();
   const { slug } = useParams();
   const [product, setProduct] = useState<Product | null>(null);
