@@ -60,11 +60,15 @@ export default function ProductDetailPage() {
     setLoading(true);
     setError(null);
     try {
-      const { data, error: fetchError } = await supabase
+      // Try by slug first, fall back to id if slug looks like a UUID
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug!);
+      const query = supabase
         .from('products')
-        .select('*, category:product_categories(*)')
-        .or(`slug.eq.${slug},id.eq.${slug}`)
-        .single();
+        .select('*, category:product_categories(*)');
+
+      const { data, error: fetchError } = isUuid
+        ? await query.or(`slug.eq.${slug},id.eq.${slug}`).maybeSingle()
+        : await query.eq('slug', slug!).maybeSingle();
 
       if (fetchError) throw fetchError;
 
