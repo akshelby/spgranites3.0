@@ -255,7 +255,7 @@ export default function ProductDetailPage() {
           >
             {/* Vertical Thumbnails */}
             {images.length > 1 && (
-              <div className="hidden sm:flex flex-col gap-2 w-16 lg:w-20 shrink-0">
+              <div className="hidden sm:flex flex-col gap-2 w-24 lg:w-28 shrink-0">
                 {images.map((img, i) => (
                   <button
                     key={i}
