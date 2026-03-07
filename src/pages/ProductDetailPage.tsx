@@ -29,6 +29,7 @@ interface ProductReview {
 }
 
 export default function ProductDetailPage() {
+  const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({});
   const { t } = useTranslation();
   const { slug } = useParams();
   const [product, setProduct] = useState<Product | null>(null);
@@ -263,11 +264,21 @@ export default function ProductDetailPage() {
                 ))}
               </div>
             )}
-            <div className="flex-1 aspect-square rounded-lg overflow-hidden bg-muted">
+            <div
+              className="flex-1 aspect-square rounded-lg overflow-hidden bg-muted cursor-zoom-in"
+              onMouseMove={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                setZoomStyle({ transformOrigin: `${x}% ${y}%`, transform: 'scale(2.5)' });
+              }}
+              onMouseLeave={() => setZoomStyle({})}
+            >
               <img
                 src={images[selectedImage]}
                 alt={product.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover transition-transform duration-200 ease-out"
+                style={zoomStyle}
                 data-testid="img-product-main"
               />
             </div>
