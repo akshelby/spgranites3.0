@@ -245,7 +245,7 @@ export default function ProductDetailPage() {
           <span className="text-foreground font-medium truncate max-w-[200px]">{product.name}</span>
         </nav>
 
-        <div className="grid lg:grid-cols-2 gap-6 lg:gap-12">
+        <div className="grid lg:grid-cols-[55%_1fr] gap-6 lg:gap-10">
           {/* LEFT: Image Gallery — vertical thumbnails + main image */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
