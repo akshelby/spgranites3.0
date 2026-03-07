@@ -16,6 +16,7 @@ interface MainLayoutProps {
 export function MainLayout({ children, hideFooter = false }: MainLayoutProps) {
   const { pathname } = useLocation();
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
+  const isHomePage = pathname === '/';
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -33,8 +34,8 @@ export function MainLayout({ children, hideFooter = false }: MainLayoutProps) {
         {children}
       </main>
       {!hideFooter && <Footer />}
-      <AIChatPanel isOpen={isAIChatOpen} onClose={() => setIsAIChatOpen(false)} />
-      <FloatingActionButton isAIChatOpen={isAIChatOpen} onToggle={() => setIsAIChatOpen(prev => !prev)} />
+      {isHomePage && <AIChatPanel isOpen={isAIChatOpen} onClose={() => setIsAIChatOpen(false)} />}
+      <FloatingActionButton isAIChatOpen={isAIChatOpen} onToggle={() => setIsAIChatOpen(prev => !prev)} showAI={isHomePage} />
       <MiniCart />
     </div>
   );
