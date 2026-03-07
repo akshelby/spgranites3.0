@@ -316,14 +316,14 @@ export default function ProductDetailPage() {
 
               {/* Mobile horizontal thumbnails */}
               {images.length > 1 && (
-                <div className="flex sm:hidden gap-1.5 mt-2 overflow-x-auto pb-1">
+                <div className="flex sm:hidden gap-2 mt-3 overflow-x-auto pb-2">
                   {images.map((img, i) => (
                     <button
                       key={i}
                       onClick={() => setSelectedImage(i)}
                       className={cn(
-                        'w-14 h-14 rounded-md overflow-hidden border-2 shrink-0',
-                        selectedImage === i ? 'border-primary' : 'border-border'
+                        'w-20 h-20 rounded-md overflow-hidden border-2 shrink-0 transition-all',
+                        selectedImage === i ? 'border-primary ring-1 ring-primary/30' : 'border-border hover:border-muted-foreground/40'
                       )}
                     >
                       <img src={img} alt={`${product.name} ${i + 1}`} className="w-full h-full object-cover" />
