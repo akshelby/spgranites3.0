@@ -253,7 +253,7 @@ export default function ProductsPage() {
                     </button>
                   )}
                 </div>
-                <div className={cn("p-2 sm:p-2.5 flex-1", viewMode === 'list' && 'flex flex-col justify-center')}>
+                <div className={cn("p-2 sm:p-2.5 flex-1", viewMode === 'list' && 'flex flex-col items-start justify-center')}>
                   <h3 className="text-xs sm:text-sm font-medium line-clamp-2 leading-tight" data-testid={`link-product-${product.id}`}>
                     {product.name}
                   </h3>
@@ -270,7 +270,7 @@ export default function ProductsPage() {
                   <Button
                     size="sm"
                     variant="outline"
-                    className="mt-1.5 text-[10px] sm:text-xs px-6 border-red-500 text-red-600 hover-slide"
+                    className="mt-1.5 self-start w-auto text-[10px] sm:text-xs px-6 border-red-500 text-red-600 hover-slide"
                     onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
                     data-testid={`button-add-cart-${product.id}`}
                   >
