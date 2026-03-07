@@ -287,12 +287,20 @@ export default function ProductDetailPage() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.25 }}
-                  className="aspect-[3/4] sm:aspect-square lg:aspect-[3/4] rounded-lg overflow-hidden bg-muted"
+                  className="aspect-[3/4] sm:aspect-square lg:aspect-[3/4] rounded-lg overflow-hidden bg-muted cursor-zoom-in"
+                  onMouseMove={(e) => {
+                    const rect = e.currentTarget.getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 100;
+                    const y = ((e.clientY - rect.top) / rect.height) * 100;
+                    setZoomStyle({ transformOrigin: `${x}% ${y}%`, transform: 'scale(2)' });
+                  }}
+                  onMouseLeave={() => setZoomStyle({})}
                 >
                   <img
                     src={images[selectedImage]}
                     alt={product.name}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-200 ease-out"
+                    style={zoomStyle}
                     data-testid="img-product-main"
                   />
                 </motion.div>
