@@ -324,6 +324,7 @@ export default function ProductDetailPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
+            className="rounded-xl border border-border bg-card p-4 sm:p-6 transition-shadow duration-300 hover:shadow-lg"
           >
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold mb-1.5 sm:mb-2" data-testid="text-product-name">
               {product.name}
