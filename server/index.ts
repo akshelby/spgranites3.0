@@ -18,7 +18,16 @@ app.get("/health", (_req, res) => {
 });
 
 if (hasDistFolder) {
-  app.use(express.static(distPath));
+  app.use(express.static(distPath, {
+    maxAge: '1y',
+    setHeaders: (res, filePath) => {
+      if (filePath.endsWith('.html')) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+      }
+    }
+  }));
 }
 
 app.use(cors());
@@ -40,6 +49,9 @@ registerRoutes(app);
 
 if (hasDistFolder) {
   app.get("/{*splat}", (_req, res) => {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     res.sendFile(path.join(distPath, "index.html"));
   });
 }
