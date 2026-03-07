@@ -34,7 +34,6 @@
     <meta name="twitter:image" content="/images/sp-logo.png" />
 
     <style>
-      [class*="replit"], [id*="replit"], [data-replit], iframe[src*="replit"], #replit-badge, .replit-ui-theme-root, a[href*="replit"], div[class*="repl-auth"], button[class*="replit"], [style*="replit"] { display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important; width: 0 !important; height: 0 !important; max-width: 0 !important; max-height: 0 !important; position: fixed !important; top: -9999px !important; left: -9999px !important; overflow: hidden !important; z-index: -1 !important; }
       #splash-loader {
         position: fixed;
         inset: 0;
@@ -189,18 +188,6 @@
         window.__hideSplash = hideSplash;
         setTimeout(hideSplash, 1200);
         window.addEventListener('load', function() { setTimeout(hideSplash, 300); });
-      })();
-    </script>
-    <script>
-      (function hideReplitBadge() {
-        function remove() {
-          document.querySelectorAll('[class*="replit"],[id*="replit"],iframe[src*="replit"],[data-replit],a[href*="replit"]').forEach(function(el) { el.remove(); });
-        }
-        remove();
-        setTimeout(remove, 1000);
-        setTimeout(remove, 3000);
-        setTimeout(remove, 5000);
-        new MutationObserver(function() { remove(); }).observe(document.body, { childList: true, subtree: true });
       })();
     </script>
   </body>
