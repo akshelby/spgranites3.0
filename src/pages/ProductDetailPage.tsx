@@ -240,24 +240,17 @@ export default function ProductDetailPage() {
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
+            className="flex gap-3"
           >
-            <div className="aspect-square rounded-lg overflow-hidden bg-muted mb-2 sm:mb-3">
-              <img
-                src={images[selectedImage]}
-                alt={product.name}
-                className="w-full h-full object-cover"
-                data-testid="img-product-main"
-              />
-            </div>
             {images.length > 1 && (
-              <div className="flex gap-1.5 sm:gap-2 overflow-x-auto">
+              <div className="flex flex-col gap-2 shrink-0">
                 {images.map((img, i) => (
                   <button
                     key={i}
                     onClick={() => setSelectedImage(i)}
                     className={cn(
-                      'w-14 h-14 sm:w-16 sm:h-16 rounded-md overflow-hidden border-2 shrink-0',
-                      selectedImage === i ? 'border-primary' : 'border-transparent'
+                      'w-20 h-20 sm:w-24 sm:h-24 rounded-md overflow-hidden border-2 shrink-0 transition-colors',
+                      selectedImage === i ? 'border-primary' : 'border-muted hover:border-muted-foreground/40'
                     )}
                     data-testid={`button-thumb-${i}`}
                   >
@@ -270,6 +263,14 @@ export default function ProductDetailPage() {
                 ))}
               </div>
             )}
+            <div className="flex-1 aspect-square rounded-lg overflow-hidden bg-muted">
+              <img
+                src={images[selectedImage]}
+                alt={product.name}
+                className="w-full h-full object-cover"
+                data-testid="img-product-main"
+              />
+            </div>
           </motion.div>
 
           <motion.div
