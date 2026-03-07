@@ -40,10 +40,10 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
           <div className="space-y-3 sm:space-y-4 col-span-2 sm:col-span-1">
             <div className="flex items-center gap-3">
-              <img src="/images/sp-logo-dark.png" alt={settings.company_name} className="w-10 h-10 sm:w-12 sm:h-12 object-contain" />
+              <img src="/images/sp-logo-dark.png" alt={settings.company_name} className="w-12 h-12 sm:w-16 sm:h-16 object-contain" />
               <div className="flex flex-col">
-                <h3 className="brand-name-white text-lg sm:text-xl leading-none">{settings.company_name}</h3>
-                <span className="brand-tagline text-xs sm:text-sm text-red-400 font-medium tracking-widest uppercase mt-1">{settings.company_tagline}</span>
+                <h3 className="brand-name-white text-xl sm:text-2xl leading-none">{settings.company_name}</h3>
+                <span className="brand-tagline text-sm sm:text-base text-red-400 font-medium tracking-widest uppercase mt-1">{settings.company_tagline}</span>
                 <span className="brand-divider-white" />
               </div>
             </div>
