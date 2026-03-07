@@ -426,7 +426,8 @@ export default function ProductDetailPage() {
               </button>
             </div>
 
-              {user && (
+            {user && (
+              <div className="mb-6">
                 <Button
                   variant="outline"
                   size="icon"
@@ -441,8 +442,8 @@ export default function ProductDetailPage() {
                     )}
                   />
                 </Button>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Accordion Details */}
             <Accordion type="multiple" className="w-full border-t border-border">
