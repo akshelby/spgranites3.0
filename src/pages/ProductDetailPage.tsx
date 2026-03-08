@@ -397,31 +397,34 @@ export default function ProductDetailPage() {
                   <Plus className="h-3.5 w-3.5" />
                 </Button>
               </div>
-              <Button
-                size="lg"
-                onClick={handleAddToCart}
-                disabled={product.stock_quantity === 0}
-                className="w-full sm:w-auto text-sm hover-slide border-2 border-transparent h-12"
-                data-testid="button-add-to-cart"
-              >
-                <ShoppingCart className="h-4 w-4 mr-2" />
-                {t('products.addToCart')}
-              </Button>
-              {user && (
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleWishlistToggle}
-                  data-testid="button-wishlist-toggle"
+                  size="lg"
+                  onClick={handleAddToCart}
+                  disabled={product.stock_quantity === 0}
+                  className="flex-1 text-sm hover-slide border-2 border-transparent h-12"
+                  data-testid="button-add-to-cart"
                 >
-                  <Heart
-                    className={cn(
-                      'h-4 w-4',
-                      isInWishlist(product.id) && 'fill-destructive text-destructive'
-                    )}
-                  />
+                  <ShoppingCart className="h-4 w-4 mr-2" />
+                  {t('products.addToCart')}
                 </Button>
-              )}
+                {user && (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-12 w-12 shrink-0"
+                    onClick={handleWishlistToggle}
+                    data-testid="button-wishlist-toggle"
+                  >
+                    <Heart
+                      className={cn(
+                        'h-5 w-5',
+                        isInWishlist(product.id) && 'fill-destructive text-destructive'
+                      )}
+                    />
+                  </Button>
+                )}
+              </div>
             </div>
 
             <Tabs defaultValue="description">
