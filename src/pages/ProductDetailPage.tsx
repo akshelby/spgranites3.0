@@ -375,20 +375,22 @@ export default function ProductDetailPage() {
               {product.short_description || product.description}
             </p>
 
-            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-              <div className="flex items-center border border-border rounded-md">
+            <div className="flex flex-col gap-3 mb-4 sm:mb-6">
+              <div className="flex items-center border border-border rounded-full w-fit">
                 <Button
                   variant="ghost"
                   size="icon"
+                  className="rounded-full"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   data-testid="button-qty-minus"
                 >
                   <Minus className="h-3.5 w-3.5" />
                 </Button>
-                <span className="w-8 text-center text-sm font-medium" data-testid="text-quantity">{quantity}</span>
+                <span className="w-10 text-center text-sm font-medium" data-testid="text-quantity">{quantity}</span>
                 <Button
                   variant="ghost"
                   size="icon"
+                  className="rounded-full"
                   onClick={() => setQuantity(quantity + 1)}
                   data-testid="button-qty-plus"
                 >
@@ -396,13 +398,13 @@ export default function ProductDetailPage() {
                 </Button>
               </div>
               <Button
-                size="default"
+                size="lg"
                 onClick={handleAddToCart}
                 disabled={product.stock_quantity === 0}
-                className="flex-1 sm:flex-none text-sm hover-slide border-2 border-transparent"
+                className="w-full sm:w-auto text-sm hover-slide border-2 border-transparent h-12"
                 data-testid="button-add-to-cart"
               >
-                <ShoppingCart className="h-4 w-4 mr-1.5" />
+                <ShoppingCart className="h-4 w-4 mr-2" />
                 {t('products.addToCart')}
               </Button>
               {user && (
