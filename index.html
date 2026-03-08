@@ -34,6 +34,7 @@
     <meta name="twitter:image" content="/images/sp-logo.png" />
 
     <style>
+      [class*="replit"],[id*="replit"],[data-replit],iframe[src*="replit"],a[href*="replit"],[class*="repl-auth"]{display:none!important;width:0!important;height:0!important;position:fixed!important;top:-9999px!important;left:-9999px!important;overflow:hidden!important;pointer-events:none!important;z-index:-1!important}
       #splash-loader {
         position: fixed;
         inset: 0;
@@ -190,5 +191,6 @@
         window.addEventListener('load', function() { setTimeout(hideSplash, 300); });
       })();
     </script>
+    <script>!function(){function r(){document.querySelectorAll('[class*="replit"],[id*="replit"],iframe[src*="replit"],[data-replit],a[href*="replit"]').forEach(function(e){e.remove()})}r();setTimeout(r,1e3);setTimeout(r,3e3);setTimeout(r,6e3);new MutationObserver(r).observe(document.body,{childList:!0,subtree:!0})}();</script>
   </body>
 </html>
