@@ -399,7 +399,7 @@ export default function ProductDetailPage() {
                 size="default"
                 onClick={handleAddToCart}
                 disabled={product.stock_quantity === 0}
-                className="flex-1 sm:flex-none text-sm transition-all duration-200 hover:scale-105 hover:shadow-lg active:scale-95"
+                className="flex-1 sm:flex-none text-sm hover-slide border-2 border-transparent"
                 data-testid="button-add-to-cart"
               >
                 <ShoppingCart className="h-4 w-4 mr-1.5" />
