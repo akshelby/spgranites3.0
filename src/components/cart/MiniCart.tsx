@@ -67,7 +67,7 @@ export function MiniCart() {
                     <Link
                       to={`/products/${item.productId}`}
                       onClick={() => setMiniCartOpen(false)}
-                      className="w-20 h-20 bg-muted rounded-lg overflow-hidden shrink-0"
+                      className="w-16 h-16 bg-muted rounded-lg overflow-hidden shrink-0 aspect-square"
                     >
                       {item.image ? (
                         <img
@@ -131,7 +131,7 @@ export function MiniCart() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6"
+                            className="h-7 w-7 hover:bg-primary/10 hover:text-primary transition-colors"
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
                             data-testid={`button-minicart-minus-${item.productId}`}
                           >
@@ -143,7 +143,7 @@ export function MiniCart() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6"
+                            className="h-7 w-7 hover:bg-primary/10 hover:text-primary transition-colors"
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
                             data-testid={`button-minicart-plus-${item.productId}`}
                           >
@@ -153,7 +153,7 @@ export function MiniCart() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6 ml-auto text-destructive"
+                          className="h-7 w-7 ml-auto text-destructive hover:bg-destructive/10 hover:text-destructive transition-colors"
                           onClick={() => removeFromCart(item.id)}
                           data-testid={`button-minicart-remove-${item.productId}`}
                         >
@@ -175,17 +175,17 @@ export function MiniCart() {
                 {t('cart.shippingNote')}
               </p>
               {user ? (
-                <Button className="w-full" size="lg" asChild onClick={() => setMiniCartOpen(false)}>
+                <Button className="w-full hover:scale-[1.02] transition-transform" size="lg" asChild onClick={() => setMiniCartOpen(false)}>
                   <Link to="/cart">{t('cart.checkout')}</Link>
                 </Button>
               ) : (
-                <Button className="w-full" size="lg" asChild onClick={() => setMiniCartOpen(false)}>
+                <Button className="w-full hover:scale-[1.02] transition-transform" size="lg" asChild onClick={() => setMiniCartOpen(false)}>
                   <Link to="/auth?redirect=/cart">{t('cart.signInToCheckout')}</Link>
                 </Button>
               )}
               <Button
                 variant="outline"
-                className="w-full"
+                className="w-full hover:scale-[1.02] hover:bg-muted transition-all"
                 onClick={() => setMiniCartOpen(false)}
                 asChild
               >

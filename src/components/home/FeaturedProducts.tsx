@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ArrowRight, ShoppingCart, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, ShoppingCart, Heart, ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -24,7 +24,7 @@ const fallbackProducts: Product[] = [
 
 export function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>(fallbackProducts);
-  const { addToCart } = useCart();
+  const { addToCart, items, updateQuantity } = useCart();
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
   const { user } = useAuth();
   const { t } = useTranslation();
@@ -220,15 +220,43 @@ export function FeaturedProducts() {
                       </span>
                     )}
                   </div>
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
-                    className="h-7 w-7 sm:h-8 sm:w-8 border-red-500 text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950"
-                    data-testid={`button-add-cart-${product.id}`}
-                  >
-                    <ShoppingCart className="h-3.5 w-3.5" />
-                  </Button>
+                  {(() => {
+                    const cartItem = items.find(i => i.productId === product.id);
+                    if (cartItem) {
+                      return (
+                        <div className="flex items-center gap-1">
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            className="h-6 w-6 border-red-500 text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950 transition-colors"
+                            onClick={(e) => { e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity - 1); }}
+                          >
+                            <Minus className="h-3 w-3" />
+                          </Button>
+                          <span className="text-xs font-bold w-5 text-center">{cartItem.quantity}</span>
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            className="h-6 w-6 border-red-500 text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950 transition-colors"
+                            onClick={(e) => { e.stopPropagation(); updateQuantity(cartItem.id, cartItem.quantity + 1); }}
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      );
+                    }
+                    return (
+                      <Button
+                        size="icon"
+                        variant="outline"
+                        onClick={(e) => { e.stopPropagation(); handleAddToCart(product); }}
+                        className="h-7 w-7 sm:h-8 sm:w-8 border-red-500 text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-950"
+                        data-testid={`button-add-cart-${product.id}`}
+                      >
+                        <ShoppingCart className="h-3.5 w-3.5" />
+                      </Button>
+                    );
+                  })()}
                 </div>
               </div>
             </motion.div>
