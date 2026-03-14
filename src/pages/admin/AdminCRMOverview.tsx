@@ -14,6 +14,7 @@ import {
   AlertTriangle,
   ArrowRight,
   Phone,
+  Plus,
 } from 'lucide-react';
 import { isPast, isToday } from 'date-fns';
 
@@ -206,11 +207,14 @@ export default function AdminCRMOverview() {
                 ))}
               </div>
             ) : recentLeads.length === 0 ? (
-              <div className="flex flex-col items-center gap-2 py-8 text-center text-muted-foreground">
+              <div className="flex flex-col items-center gap-3 py-8 text-center text-muted-foreground">
                 <UserPlus className="h-8 w-8" />
                 <p className="text-sm">No leads yet</p>
                 <Link to="/admin/crm/leads">
-                  <Button variant="outline" size="sm">Add your first lead</Button>
+                  <Button variant="outline" size="sm">
+                    <Plus className="mr-1 h-3.5 w-3.5" />
+                    Add your first lead
+                  </Button>
                 </Link>
               </div>
             ) : (

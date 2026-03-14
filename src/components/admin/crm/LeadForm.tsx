@@ -145,11 +145,11 @@ export function LeadForm({ lead, onSaved, onCancel }: LeadFormProps) {
           rows={3}
         />
       </div>
-      <div className="flex gap-2 pt-2">
-        <Button type="submit" disabled={saving} className="flex-1">
+      <div className="flex gap-3 pt-2">
+        <Button type="submit" disabled={saving} className="flex-1" size="sm">
           {saving ? 'Saving...' : lead ? 'Update Lead' : 'Add Lead'}
         </Button>
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button type="button" variant="outline" onClick={onCancel} size="sm">
           Cancel
         </Button>
       </div>

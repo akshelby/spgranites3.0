@@ -288,7 +288,7 @@ export default function AdminLeads() {
       <div className="fixed bottom-6 right-6 sm:hidden z-50">
         <Button
           size="icon"
-          className="h-14 w-14 rounded-full shadow-lg"
+          className="h-14 w-14 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200"
           onClick={() => openForm()}
         >
           <Plus className="h-6 w-6" />

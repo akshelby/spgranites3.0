@@ -18,7 +18,7 @@ html {
   position: relative;
   overflow: hidden;
   z-index: 0;
-  transition: color 0.3s ease, border-color 0.3s ease;
+  transition: color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 .hover-slide::before {
   content: '';
@@ -27,18 +27,25 @@ html {
   left: 0;
   width: 100%;
   height: 100%;
-  background: black;
+  background: #1a1a1a;
   transform: translateX(-100%);
   transition: transform 0.35s ease;
   z-index: -1;
   border-radius: inherit;
+}
+:is(.dark) .hover-slide::before {
+  background: rgba(255, 255, 255, 0.15);
 }
 .hover-slide:hover::before {
   transform: translateX(0);
 }
 .hover-slide:hover {
   color: white !important;
-  border-color: #ef4444 !important;
+  border-color: hsl(var(--primary)) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+:is(.dark) .hover-slide:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* Stylish Section/Page Headings */
