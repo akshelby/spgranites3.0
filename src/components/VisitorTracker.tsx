@@ -2,27 +2,51 @@ import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 
+const SESSION_KEY = 'spg_visit_session';
 const SESSION_DURATION = 30 * 60 * 1000;
+const PAGE_COOLDOWN = 5 * 60 * 1000;
+
+function getSession(): Record<string, number> {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function setSession(data: Record<string, number>) {
+  try {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(data));
+  } catch {}
+}
 
 export function VisitorTracker() {
   const location = useLocation();
-  const lastTracked = useRef<{ page: string; time: number } | null>(null);
+  const pendingRef = useRef(false);
 
   useEffect(() => {
     const pageUrl = location.pathname;
 
     if (pageUrl.startsWith('/admin')) return;
+    if (pendingRef.current) return;
 
     const now = Date.now();
-    if (
-      lastTracked.current &&
-      lastTracked.current.page === pageUrl &&
-      now - lastTracked.current.time < SESSION_DURATION
-    ) {
-      return;
+    const session = getSession();
+    const lastTime = session[pageUrl] || 0;
+
+    if (now - lastTime < PAGE_COOLDOWN) return;
+
+    const sessionStart = session['__start'] || 0;
+    if (sessionStart && now - sessionStart < SESSION_DURATION) {
+      if (Object.keys(session).filter(k => k !== '__start').length > 0 && pageUrl === '/') return;
     }
 
-    lastTracked.current = { page: pageUrl, time: now };
+    session[pageUrl] = now;
+    if (!session['__start']) session['__start'] = now;
+    setSession(session);
+
+    pendingRef.current = true;
 
     void (async () => {
       try {
@@ -32,6 +56,7 @@ export function VisitorTracker() {
           visited_at: new Date().toISOString(),
         });
       } catch {}
+      pendingRef.current = false;
     })();
   }, [location.pathname]);
 

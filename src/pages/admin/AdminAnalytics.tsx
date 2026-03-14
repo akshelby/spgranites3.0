@@ -41,7 +41,8 @@ export default function AdminAnalytics() {
   const fetchAnalytics = async () => {
     try {
       const now = new Date();
-      const visitorList = await api.get('/api/admin/analytics') || [];
+      const response = await api.get('/api/admin/analytics') || {};
+      const visitorList = Array.isArray(response) ? response : (response.visitors || []);
 
       const todayStart = startOfDay(now);
       const weekStart = startOfDay(subDays(now, 7));

@@ -1250,7 +1250,7 @@ export function registerRoutes(app: Express) {
 
   app.get("/api/admin/analytics", requireAuth, requireAdmin, async (_req: Request, res: Response) => {
     try {
-      const { data: visitors, error } = await supabase.from('site_visitors').select('*').order('visited_at', { ascending: false }).limit(100);
+      const { data: visitors, error } = await supabase.from('site_visitors').select('*').order('visited_at', { ascending: false }).limit(1000);
       if (error) throw error;
       res.json({ visitors });
     } catch (error: any) {
