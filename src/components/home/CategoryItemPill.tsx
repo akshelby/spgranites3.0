@@ -84,7 +84,7 @@ export function CategoryItemPill({
           />
           <span
             className={cn(
-              'text-[10px] sm:text-[11px] font-bold uppercase tracking-widest leading-tight whitespace-nowrap transition-colors duration-200',
+              'text-xs sm:text-sm font-bold uppercase tracking-widest leading-tight whitespace-nowrap transition-colors duration-200',
               prominent
                 ? 'text-white'
                 : 'text-foreground group-hover/pill:text-white'

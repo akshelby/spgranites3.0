@@ -262,7 +262,7 @@ export function PremiumCollection() {
           <h3 className="text-lg sm:text-2xl md:text-3xl font-display font-bold text-red-600">
             Premium Collection
           </h3>
-          <p className="mt-1 sm:mt-1.5 text-[11px] sm:text-xs text-muted-foreground">
+          <p className="mt-1 sm:mt-1.5 text-xs sm:text-sm text-muted-foreground">
             {isMobile ? 'Swipe to rotate' : 'Scroll to rotate'}
           </p>
         </ScrollReveal>
@@ -341,7 +341,7 @@ export function PremiumCollection() {
                           {product.name}
                         </h3>
                         {product.price && (
-                          <p className="text-white/90 text-[10px] sm:text-sm mt-0.5 sm:mt-1">
+                          <p className="text-white/90 text-xs sm:text-sm mt-0.5 sm:mt-1">
                             ₹{Number(product.price).toLocaleString('en-IN')}
                           </p>
                         )}

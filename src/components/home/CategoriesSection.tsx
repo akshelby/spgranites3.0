@@ -202,7 +202,7 @@ export function CategoriesSection() {
           <h3 className="text-xl sm:text-2xl md:text-3xl font-display font-bold leading-tight heading-stylish" data-testid="text-categories-title">
             {t('categories.title')}
           </h3>
-          <p className="mt-1 text-[11px] sm:text-xs md:text-sm text-muted-foreground">
+          <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
             {t('categories.subtitle')}
           </p>
         </ScrollReveal>

@@ -69,7 +69,7 @@ export function StatsSection() {
               <div className="text-base sm:text-xl lg:text-3xl font-bold font-display mb-0.5 sm:mb-1 text-white">
                 <Counter value={stat.value} suffix={stat.suffix} />
               </div>
-              <p className="text-[11px] sm:text-[11px] lg:text-sm text-white/70 leading-tight">{stat.label}</p>
+              <p className="text-xs sm:text-xs lg:text-sm text-white/70 leading-tight">{stat.label}</p>
             </motion.div>
           ))}
         </div>

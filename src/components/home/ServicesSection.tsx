@@ -54,11 +54,11 @@ export function ServicesSection() {
     <section className="py-8 sm:py-10 lg:py-14 bg-background" data-testid="services-section">
       <div className="container mx-auto px-4">
         <ScrollReveal className="text-center mb-3 sm:mb-6 lg:mb-8" distance={30}>
-          <span className="text-[11px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-services-label">{t('services.label')}</span>
+          <span className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-services-label">{t('services.label')}</span>
           <h3 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold mt-1 sm:mt-1.5 mb-1.5 sm:mb-3 leading-tight heading-stylish" data-testid="text-services-title">
             {t('services.title')}
           </h3>
-          <p className="text-muted-foreground text-[11px] sm:text-xs lg:text-sm max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-xs sm:text-sm max-w-2xl mx-auto">
             {t('services.subtitle')}
           </p>
         </ScrollReveal>
@@ -82,7 +82,7 @@ export function ServicesSection() {
                   <h3 className="text-xs sm:text-sm lg:text-base font-semibold mb-1 sm:mb-1.5 lg:mb-2">
                     {service.name}
                   </h3>
-                  <p className="text-[11px] sm:text-xs lg:text-sm text-muted-foreground line-clamp-2 lg:line-clamp-3">
+                  <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 lg:line-clamp-3">
                     {service.short_description}
                   </p>
                 </div>

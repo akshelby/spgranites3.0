@@ -133,11 +133,11 @@ export function FeaturedProducts() {
     <section className="py-8 sm:py-10 lg:py-14 bg-muted/30" data-testid="featured-products-section">
       <div className="container mx-auto px-4">
         <ScrollReveal className="text-center mb-3 sm:mb-6 lg:mb-8" distance={30}>
-          <span className="text-[11px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-featured-label">{t('featured.label')}</span>
+          <span className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-featured-label">{t('featured.label')}</span>
           <h3 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold mt-1 sm:mt-1.5 mb-1.5 sm:mb-3 leading-tight heading-stylish" data-testid="text-featured-title">
             {t('featured.title')}
           </h3>
-          <p className="text-muted-foreground text-[11px] sm:text-xs lg:text-sm max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-xs sm:text-sm max-w-2xl mx-auto">
             {t('featured.subtitle')}
           </p>
         </ScrollReveal>
@@ -186,7 +186,7 @@ export function FeaturedProducts() {
                   onError={(e) => { (e.target as HTMLImageElement).src = defaultProductImage; }}
                 />
                 {product.compare_price && product.compare_price > product.price && (
-                  <span className="absolute top-2 left-2 px-1.5 py-0.5 bg-destructive text-destructive-foreground text-[10px] sm:text-xs font-semibold rounded" data-testid={`badge-discount-${product.id}`}>
+                  <span className="absolute top-2 left-2 px-1.5 py-0.5 bg-destructive text-destructive-foreground text-xs font-semibold rounded" data-testid={`badge-discount-${product.id}`}>
                     {Math.round((1 - product.price / product.compare_price) * 100)}% {t('featured.off')}
                   </span>
                 )}
@@ -204,7 +204,7 @@ export function FeaturedProducts() {
                 )}
               </div>
               <div className="p-2 sm:p-3">
-                <h3 className="text-[11px] sm:text-xs lg:text-sm font-semibold line-clamp-1" data-testid={`text-product-name-${product.id}`}>
+                <h3 className="text-xs sm:text-sm font-semibold line-clamp-1" data-testid={`text-product-name-${product.id}`}>
                   {product.name}
                 </h3>
                 <div className="flex items-center justify-between gap-1 mt-1 sm:mt-2">
@@ -213,7 +213,7 @@ export function FeaturedProducts() {
                       {formatPrice(product.price)}
                     </span>
                     {product.compare_price && product.compare_price > product.price && (
-                      <span className="text-[10px] sm:text-[11px] text-muted-foreground line-through ml-1">
+                      <span className="text-xs sm:text-sm text-muted-foreground line-through ml-1">
                         {formatPrice(product.compare_price)}
                       </span>
                     )}

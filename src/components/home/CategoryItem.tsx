@@ -110,7 +110,7 @@ export function CategoryItem({
 
       <span
         className={cn(
-          'text-[10px] sm:text-[11px] md:text-xs font-semibold text-center leading-tight',
+          'text-xs sm:text-sm font-semibold text-center leading-tight',
           'max-w-[5rem] sm:max-w-[6rem] tracking-wide',
           'transition-colors duration-300',
           prominent ? 'text-foreground font-bold' : 'text-muted-foreground group-hover:text-foreground'

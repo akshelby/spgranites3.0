@@ -265,11 +265,11 @@ export function TestimonialsSection() {
     <section className="py-8 sm:py-10 lg:py-14 bg-muted/30" data-testid="testimonials-section">
       <div className="container mx-auto px-4">
         <ScrollReveal className="text-center mb-3 sm:mb-6 lg:mb-8" distance={30}>
-          <span className="text-[11px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-testimonials-label">{t('testimonials.label')}</span>
+          <span className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-testimonials-label">{t('testimonials.label')}</span>
           <h3 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold mt-1 sm:mt-1.5 mb-1.5 sm:mb-3 leading-tight heading-stylish" data-testid="text-testimonials-title">
             {t('testimonials.title')}
           </h3>
-          <p className="text-muted-foreground text-[11px] sm:text-xs lg:text-sm max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-xs sm:text-sm max-w-2xl mx-auto">
             {t('testimonials.subtitle')}
           </p>
         </ScrollReveal>
@@ -298,27 +298,27 @@ export function TestimonialsSection() {
                     ))}
                   </div>
                   {review.created_at && (
-                    <span className="flex items-center gap-1 text-[10px] sm:text-[11px] text-muted-foreground/70">
-                      <Calendar className="h-2.5 w-2.5" />
+                    <span className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground/70">
+                      <Calendar className="h-3 w-3" />
                       {format(new Date(review.created_at), 'MMM d, yyyy')}
                     </span>
                   )}
                 </div>
 
-                <p className="text-[10px] sm:text-xs lg:text-sm text-muted-foreground mb-2 sm:mb-3 line-clamp-4 flex-1">
+                <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3 line-clamp-4 flex-1">
                   "{review.review_text}"
                 </p>
 
                 <MediaGallery photos={review.photos} videoUrl={review.video_url} />
 
                 <div className="flex items-center gap-1.5 sm:gap-2.5 mt-auto pt-1.5 sm:pt-2 border-t border-border/40">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-[10px] sm:text-xs lg:text-sm">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-xs sm:text-sm">
                     {review.customer_name.charAt(0)}
                   </div>
                   <div className="min-w-0">
-                    <h4 className="text-[10px] sm:text-xs lg:text-sm font-semibold truncate">{review.customer_name}</h4>
+                    <h4 className="text-xs sm:text-sm font-semibold truncate">{review.customer_name}</h4>
                     {review.city && (
-                      <p className="text-[10px] sm:text-[10px] lg:text-xs text-muted-foreground truncate">
+                      <p className="text-xs sm:text-xs lg:text-sm text-muted-foreground truncate">
                         {review.city}
                       </p>
                     )}
@@ -366,14 +366,14 @@ export function TestimonialsSection() {
                   ))}
                 </div>
                 {testimonial.created_at && (
-                  <span className="flex items-center gap-1 text-[10px] sm:text-[11px] text-muted-foreground/70">
-                    <Calendar className="h-2.5 w-2.5" />
+                  <span className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground/70">
+                    <Calendar className="h-3 w-3" />
                     {format(new Date(testimonial.created_at), 'MMM d, yyyy')}
                   </span>
                 )}
               </div>
 
-              <p className="text-[10px] sm:text-xs lg:text-sm text-muted-foreground mb-2 sm:mb-3 line-clamp-3 sm:line-clamp-4 lg:line-clamp-none flex-1">
+              <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3 line-clamp-3 sm:line-clamp-4 lg:line-clamp-none flex-1">
                 "{testimonial.review_text}"
               </p>
 
@@ -385,14 +385,14 @@ export function TestimonialsSection() {
                     className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-full object-cover ring-2 ring-primary/20"
                   />
                 ) : (
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-[10px] sm:text-xs lg:text-sm">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-xs sm:text-sm">
                     {testimonial.customer_name.charAt(0)}
                   </div>
                 )}
                 <div className="min-w-0">
-                  <h4 className="text-[10px] sm:text-xs lg:text-sm font-semibold truncate">{testimonial.customer_name}</h4>
+                  <h4 className="text-xs sm:text-sm font-semibold truncate">{testimonial.customer_name}</h4>
                   {testimonial.company && (
-                    <p className="text-[10px] sm:text-[10px] lg:text-xs text-muted-foreground truncate">
+                    <p className="text-xs lg:text-sm text-muted-foreground truncate">
                       {testimonial.designation && `${testimonial.designation}, `}
                       {testimonial.company}
                     </p>
@@ -473,8 +473,8 @@ export function TestimonialsSection() {
                           ))}
                         </div>
                         {review.created_at && (
-                          <span className="flex items-center gap-1 text-[10px] text-muted-foreground/70">
-                            <Calendar className="h-2.5 w-2.5" />
+                          <span className="flex items-center gap-1 text-xs text-muted-foreground/70">
+                            <Calendar className="h-3 w-3" />
                             {format(new Date(review.created_at), 'MMM d, yyyy')}
                           </span>
                         )}
@@ -484,12 +484,12 @@ export function TestimonialsSection() {
                       </p>
                       <MediaGallery photos={review.photos} videoUrl={review.video_url} />
                       <div className="flex items-center gap-1.5 mt-auto pt-1.5 border-t border-border/40">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-[10px]">
+                        <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-xs">
                           {review.customer_name.charAt(0)}
                         </div>
                         <div className="min-w-0">
                           <span className="text-xs font-semibold">{review.customer_name}</span>
-                          {review.city && <span className="text-[10px] text-muted-foreground ml-1.5">{review.city}</span>}
+                          {review.city && <span className="text-xs text-muted-foreground ml-1.5">{review.city}</span>}
                         </div>
                       </div>
                     </div>
