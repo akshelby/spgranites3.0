@@ -1,12 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-<<<<<<< HEAD
-import { motion } from 'framer-motion';
-import { ShoppingCart, Heart, Minus, Plus, ChevronLeft, Star, Check, Send, ArrowRight } from 'lucide-react';
-=======
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingCart, Heart, Minus, Plus, ChevronRight, Star, Send, ArrowRight } from 'lucide-react';
->>>>>>> b8dab11a4e86488314aaa7b7deea180905a2aa90
 import { MainLayout } from '@/components/layout';
 import { SPLoader } from '@/components/ui/SPLoader';
 import { Button } from '@/components/ui/button';
@@ -66,10 +61,6 @@ export default function ProductDetailPage() {
     setLoading(true);
     setError(null);
     try {
-<<<<<<< HEAD
-=======
-      // Try by slug first, fall back to id if slug looks like a UUID
->>>>>>> b8dab11a4e86488314aaa7b7deea180905a2aa90
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(slug!);
       const query = supabase
         .from('products')
@@ -114,26 +105,15 @@ export default function ProductDetailPage() {
 
   const fetchRelatedProducts = async (categoryId: string, currentId: string) => {
     try {
-<<<<<<< HEAD
-=======
-      // First fetch from same category
->>>>>>> b8dab11a4e86488314aaa7b7deea180905a2aa90
       const { data: sameCat } = await supabase
         .from('products')
         .select('*')
         .eq('category_id', categoryId)
         .neq('id', currentId)
         .limit(10);
-<<<<<<< HEAD
 
       let results = (sameCat || []) as any[];
 
-=======
-      
-      let results = (sameCat || []) as any[];
-      
-      // If not enough, fill with products from other categories
->>>>>>> b8dab11a4e86488314aaa7b7deea180905a2aa90
       if (results.length < 5) {
         const existingIds = [currentId, ...results.map((r: any) => r.id)];
         const { data: otherProducts } = await supabase
@@ -143,11 +123,7 @@ export default function ProductDetailPage() {
           .limit(10 - results.length);
         if (otherProducts) results = [...results, ...otherProducts] as any[];
       }
-<<<<<<< HEAD
 
-=======
-      
->>>>>>> b8dab11a4e86488314aaa7b7deea180905a2aa90
       setRelatedProducts(results);
     } catch (err) {
       console.error('Failed to load related products:', err);
@@ -262,7 +238,6 @@ export default function ProductDetailPage() {
       })
     : [resolvedMainImage];
 
-  // Ensure at least 3 thumbnail images for the vertical strip (pad with main image)
   const images = rawImages.length < 3
     ? [...rawImages, ...Array(3 - rawImages.length).fill(resolvedMainImage)]
     : rawImages;
@@ -272,7 +247,6 @@ export default function ProductDetailPage() {
   return (
     <MainLayout>
       <div className="container mx-auto px-3 sm:px-4 lg:px-8 py-3 sm:py-6">
-        {/* Breadcrumb */}
         <nav className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground mb-4 sm:mb-6">
           <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
           <ChevronRight className="h-3 w-3" />
@@ -281,19 +255,13 @@ export default function ProductDetailPage() {
           <span className="text-foreground font-medium truncate max-w-[200px]">{product.name}</span>
         </nav>
 
-<<<<<<< HEAD
         <div className="grid md:grid-cols-[55%_1fr] gap-4 sm:gap-8 lg:gap-12">
-=======
-        <div className="grid lg:grid-cols-[55%_1fr] gap-6 lg:gap-10">
-          {/* LEFT: Image Gallery — vertical thumbnails + main image */}
->>>>>>> b8dab11a4e86488314aaa7b7deea180905a2aa90
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
             className="flex gap-3 sm:gap-4"
           >
-            {/* Vertical Thumbnails */}
             {images.length > 1 && (
               <div className="hidden sm:flex flex-col gap-2 w-32 lg:w-36 shrink-0">
                 {images.map((img, i) => (
@@ -317,9 +285,7 @@ export default function ProductDetailPage() {
                 ))}
               </div>
             )}
-<<<<<<< HEAD
 
-            {/* Main Image */}
             <div className="flex-1 relative w-full">
               <div
                 className="w-full aspect-square sm:aspect-square lg:aspect-[3/4] rounded-lg overflow-hidden bg-muted cursor-zoom-in"
@@ -340,7 +306,6 @@ export default function ProductDetailPage() {
                 />
               </div>
 
-              {/* Mobile horizontal thumbnails */}
               {images.length > 1 && (
                 <div className="flex sm:hidden gap-2 mt-3 overflow-x-auto pb-2">
                   {images.map((img, i) => (
@@ -366,71 +331,6 @@ export default function ProductDetailPage() {
             transition={{ duration: 0.4, delay: 0.1 }}
             className="rounded-xl border border-border bg-card p-4 sm:p-6 transition-shadow duration-300 hover:shadow-lg"
           >
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold mb-1.5 sm:mb-2" data-testid="text-product-name">
-              {product.name}
-            </h1>
-            
-            <div className="flex items-center gap-3 mb-2 sm:mb-3">
-              <div className="flex items-center gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className={cn(
-                      'h-3.5 w-3.5',
-                      i < Math.round(avgRating) ? 'text-primary fill-primary' : 'text-muted'
-                    )}
-=======
-
-            {/* Main Image */}
-            <div className="flex-1 relative">
-              <div
-                className="aspect-[4/5] sm:aspect-square lg:aspect-[3/4] rounded-lg overflow-hidden bg-muted cursor-zoom-in max-h-[60vh] sm:max-h-none"
-                  onMouseMove={(e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const x = ((e.clientX - rect.left) / rect.width) * 100;
-                    const y = ((e.clientY - rect.top) / rect.height) * 100;
-                    setZoomStyle({ transformOrigin: `${x}% ${y}%`, transform: 'scale(2.5)' });
-                  }}
-                  onMouseLeave={() => setZoomStyle({})}
-                >
-                  <img
-                    src={images[selectedImage]}
-                    alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-200 ease-out"
-                    style={zoomStyle}
-                    data-testid="img-product-main"
->>>>>>> b8dab11a4e86488314aaa7b7deea180905a2aa90
-                  />
-              </div>
-
-              {/* Mobile horizontal thumbnails */}
-              {images.length > 1 && (
-                <div className="flex sm:hidden gap-2 mt-3 overflow-x-auto pb-2">
-                  {images.map((img, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setSelectedImage(i)}
-                      className={cn(
-                        'w-20 h-20 rounded-md overflow-hidden border-2 shrink-0 transition-all',
-                        selectedImage === i ? 'border-primary ring-1 ring-primary/30' : 'border-border hover:border-muted-foreground/40'
-                      )}
-                    >
-                      <img src={img} alt={`${product.name} ${i + 1}`} className="w-full h-full object-cover" />
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </motion.div>
-
-          {/* RIGHT: Product Info */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            className="flex flex-col"
-          >
-            {/* Product Name */}
             <h1
               className="font-display text-2xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight mb-3"
               data-testid="text-product-name"
@@ -438,51 +338,8 @@ export default function ProductDetailPage() {
               {product.name}
             </h1>
 
-            {/* Price */}
-            <div className="flex items-baseline gap-3 mb-4">
-              <span className="text-lg sm:text-xl font-medium text-foreground" data-testid="text-product-price">
-                {formatPrice(product.price)}
-              </span>
-              {product.compare_price && product.compare_price > product.price && (
-                <>
-                  <span className="text-sm text-muted-foreground line-through">
-                    {formatPrice(product.compare_price)}
-                  </span>
-                  <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded-full">
-                    {Math.round((1 - product.price / product.compare_price) * 100)}% OFF
-                  </span>
-                </>
-              )}
-            </div>
-
-            {/* Description */}
-            <p className="text-sm text-muted-foreground leading-relaxed mb-4" data-testid="text-product-desc">
-              {product.short_description || product.description}
-            </p>
-
-<<<<<<< HEAD
-            <div className="flex flex-col gap-3 mb-4 sm:mb-6">
-              <div className="flex items-center border border-border rounded-full w-fit">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full"
-=======
-            {/* Bullet features from specifications */}
-            {product.specifications && Object.keys(product.specifications).length > 0 && (
-              <ul className="space-y-1.5 mb-6 text-sm text-foreground">
-                {Object.entries(product.specifications).slice(0, 4).map(([key, value]) => (
-                  <li key={key} className="flex items-start gap-2">
-                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-foreground shrink-0" />
-                    <span>{key}: {value}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {/* Rating */}
             {reviews.length > 0 && (
-              <div className="flex items-center gap-2 mb-5">
+              <div className="flex items-center gap-2 mb-3">
                 <div className="flex items-center gap-0.5">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
@@ -500,16 +357,46 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-            {/* Quantity + Add to Cart — MKBHD style */}
-            <div className="flex items-center gap-3 mb-6">
-              <div className="flex items-center border border-border rounded-none overflow-hidden">
-                <button
->>>>>>> b8dab11a4e86488314aaa7b7deea180905a2aa90
+            <div className="flex items-baseline gap-3 mb-4">
+              <span className="text-lg sm:text-xl font-medium text-foreground" data-testid="text-product-price">
+                {formatPrice(product.price)}
+              </span>
+              {product.compare_price && product.compare_price > product.price && (
+                <>
+                  <span className="text-sm text-muted-foreground line-through">
+                    {formatPrice(product.compare_price)}
+                  </span>
+                  <span className="px-2 py-0.5 bg-primary/10 text-primary text-xs font-semibold rounded-full">
+                    {Math.round((1 - product.price / product.compare_price) * 100)}% OFF
+                  </span>
+                </>
+              )}
+            </div>
+
+            <p className="text-sm text-muted-foreground leading-relaxed mb-4" data-testid="text-product-desc">
+              {product.short_description || product.description}
+            </p>
+
+            {product.specifications && Object.keys(product.specifications).length > 0 && (
+              <ul className="space-y-1.5 mb-6 text-sm text-foreground">
+                {Object.entries(product.specifications).slice(0, 4).map(([key, value]) => (
+                  <li key={key} className="flex items-start gap-2">
+                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-foreground shrink-0" />
+                    <span>{key}: {value}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <div className="flex flex-col gap-3 mb-4 sm:mb-6">
+              <div className="flex items-center border border-border rounded-full w-fit">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-3 py-2.5 hover:bg-muted transition-colors"
                   data-testid="button-qty-minus"
                 >
-<<<<<<< HEAD
                   <Minus className="h-3.5 w-3.5" />
                 </Button>
                 <span className="w-10 text-center text-sm font-medium" data-testid="text-quantity">{quantity}</span>
@@ -517,22 +404,12 @@ export default function ProductDetailPage() {
                   variant="ghost"
                   size="icon"
                   className="rounded-full"
-=======
-                  <Minus className="h-4 w-4" />
-                </button>
-                <span className="w-10 text-center text-sm font-medium border-x border-border py-2.5" data-testid="text-quantity">
-                  {quantity}
-                </span>
-                <button
->>>>>>> b8dab11a4e86488314aaa7b7deea180905a2aa90
                   onClick={() => setQuantity(quantity + 1)}
-                  className="px-3 py-2.5 hover:bg-muted transition-colors"
                   data-testid="button-qty-plus"
                 >
-                  <Plus className="h-4 w-4" />
-                </button>
+                  <Plus className="h-3.5 w-3.5" />
+                </Button>
               </div>
-<<<<<<< HEAD
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <Button
                   size="lg"
@@ -562,50 +439,7 @@ export default function ProductDetailPage() {
                 )}
               </div>
             </div>
-=======
 
-              <Button
-                size="lg"
-                onClick={handleAddToCart}
-                disabled={!inStock}
-                className={cn(
-                  'h-11 px-12 text-sm border-2 border-transparent hover-slide',
-                  !inStock && 'opacity-60'
-                )}
-                data-testid="button-add-to-cart"
-              >
-                {inStock ? (
-                  <>
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    {t('products.addToCart')}
-                  </>
-                ) : (
-                  t('products.outOfStock')
-                )}
-              </Button>
-            </div>
-
-            {user && (
-              <div className="mb-6">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-11 w-11 shrink-0"
-                  onClick={handleWishlistToggle}
-                  data-testid="button-wishlist-toggle"
-                >
-                  <Heart
-                    className={cn(
-                      'h-5 w-5 transition-colors',
-                      isInWishlist(product.id) && 'fill-destructive text-destructive'
-                    )}
-                  />
-                </Button>
-              </div>
-            )}
->>>>>>> b8dab11a4e86488314aaa7b7deea180905a2aa90
-
-            {/* Accordion Details */}
             <Accordion type="multiple" className="w-full border-t border-border">
               <AccordionItem value="details">
                 <AccordionTrigger className="text-sm font-semibold py-4">
@@ -745,7 +579,6 @@ export default function ProductDetailPage() {
           </motion.div>
         </div>
 
-        {/* Related Products — "You may also like" */}
         {relatedProducts.length > 0 && (
           <section className="mt-12 sm:mt-16">
             <div className="flex items-center justify-between mb-6">

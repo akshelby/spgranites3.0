@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { CategoryItem } from './CategoryItem';
 import { CategoryItemPill } from './CategoryItemPill';
 import { BhrundhavanIcon } from './BhrundhavanIcon';
@@ -197,20 +198,14 @@ export function CategoriesSection() {
   return (
     <section className="py-8 sm:py-10 md:py-14 bg-background" data-testid="categories-section">
       <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-3 sm:mb-6 md:mb-8"
-        >
+        <ScrollReveal className="text-center mb-3 sm:mb-6 md:mb-8" distance={30}>
           <h3 className="text-xl sm:text-2xl md:text-3xl font-display font-bold leading-tight heading-stylish" data-testid="text-categories-title">
             {t('categories.title')}
           </h3>
           <p className="mt-1 text-[11px] sm:text-xs md:text-sm text-muted-foreground">
             {t('categories.subtitle')}
           </p>
-        </motion.div>
+        </ScrollReveal>
 
         <motion.div
           variants={containerVariants}

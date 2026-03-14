@@ -34,6 +34,8 @@ const defaultCards: CarouselCard[] = [
   { id: '5', title: 'Stone Staircases', image_url: staircasesImg },
 ];
 
+const smoothEase = [0.25, 0.1, 0.25, 1] as const;
+
 export function HeroSection() {
   const [cards, setCards] = useState<CarouselCard[]>(defaultCards);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -80,15 +82,15 @@ export function HeroSection() {
       <div className="container mx-auto px-4 py-8 sm:py-14 lg:py-12 relative z-10">
         <div className="grid lg:grid-cols-2 gap-6 sm:gap-10 lg:gap-16 items-center">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{ duration: 0.7, ease: smoothEase }}
             className="text-center lg:text-left"
           >
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
+              transition={{ delay: 0.15, duration: 0.6, ease: smoothEase }}
               className="mb-2 sm:mb-3"
             >
               <h1 className="brand-name-hero text-5xl sm:text-6xl lg:text-7xl leading-none">SP Granites</h1>
@@ -100,9 +102,9 @@ export function HeroSection() {
             </motion.div>
 
             <motion.span
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
+              transition={{ delay: 0.25, duration: 0.5, ease: smoothEase }}
               className="inline-block px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-primary/10 text-primary text-xs sm:text-sm font-semibold mb-3 sm:mb-5 tracking-wide"
               data-testid="text-hero-badge"
             >
@@ -110,9 +112,9 @@ export function HeroSection() {
             </motion.span>
 
             <motion.h2
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25, duration: 0.5 }}
+              transition={{ delay: 0.35, duration: 0.6, ease: smoothEase }}
               className="text-3xl sm:text-5xl lg:text-6xl font-display font-bold leading-[1.15] mb-3 sm:mb-6"
               data-testid="text-hero-title"
             >
@@ -122,9 +124,9 @@ export function HeroSection() {
             </motion.h2>
 
             <motion.p
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.35 }}
+              transition={{ delay: 0.45, duration: 0.5, ease: smoothEase }}
               className="text-sm sm:text-base lg:text-lg text-muted-foreground mb-4 sm:mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed"
               data-testid="text-hero-subtitle"
             >
@@ -132,9 +134,9 @@ export function HeroSection() {
             </motion.p>
 
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.45 }}
+              transition={{ delay: 0.55, duration: 0.5, ease: smoothEase }}
               className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3 justify-center lg:justify-start items-center sm:items-start"
             >
               <Link to="/products" className="cta-ribbon-btn cta-ribbon-btn-red group w-full sm:w-auto" data-testid="button-browse-products">
@@ -158,9 +160,9 @@ export function HeroSection() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+            initial={{ opacity: 0, scale: 0.92, y: 30 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3, ease: smoothEase }}
             className="relative h-[250px] sm:h-[350px] lg:h-[500px]"
             data-testid="hero-carousel"
           >
@@ -169,10 +171,10 @@ export function HeroSection() {
                 {cards.length > 0 && (
                   <motion.div
                     key={currentIndex}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.6, ease: 'easeInOut' }}
+                    initial={{ opacity: 0, scale: 1.05 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.98 }}
+                    transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
                     className="absolute inset-0"
                   >
                     <img
@@ -184,9 +186,9 @@ export function HeroSection() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6">
                       <motion.h3
-                        initial={{ opacity: 0, y: 10 }}
+                        initial={{ opacity: 0, y: 15 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
+                        transition={{ delay: 0.3, duration: 0.5, ease: smoothEase }}
                         className="text-white text-lg sm:text-2xl font-display font-bold"
                       >
                         {cards[currentIndex]?.title}

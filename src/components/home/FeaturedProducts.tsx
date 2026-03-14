@@ -2,16 +2,19 @@ import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, ShoppingCart, Heart, ChevronLeft, ChevronRight, Minus, Plus } from 'lucide-react';
+import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { Product } from '@/types/database';
 import { useCart } from '@/contexts/CartContext';
 import { useWishlist } from '@/contexts/WishlistContext';
+
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
-
 import { productImageMap, resolveProductImage, defaultProductImage } from '@/lib/productImages';
+
+const smoothEase = [0.25, 0.1, 0.25, 1] as const;
 
 const fallbackProducts: Product[] = [
   { id: 'fb-1', name: 'Black Galaxy Granite', slug: 'black-galaxy-granite', description: 'Premium black granite with golden flecks', short_description: 'Premium black granite', price: 4500, compare_price: 5500, images: [productImageMap['black-galaxy-granite'] || defaultProductImage], stock_quantity: 100, is_active: true, is_featured: true, category: { name: 'Granite' } } as Product,
@@ -129,12 +132,7 @@ export function FeaturedProducts() {
   return (
     <section className="py-8 sm:py-10 lg:py-14 bg-muted/30" data-testid="featured-products-section">
       <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-3 sm:mb-6 lg:mb-8"
-        >
+        <ScrollReveal className="text-center mb-3 sm:mb-6 lg:mb-8" distance={30}>
           <span className="text-[11px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-featured-label">{t('featured.label')}</span>
           <h3 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold mt-1 sm:mt-1.5 mb-1.5 sm:mb-3 leading-tight heading-stylish" data-testid="text-featured-title">
             {t('featured.title')}
@@ -142,7 +140,7 @@ export function FeaturedProducts() {
           <p className="text-muted-foreground text-[11px] sm:text-xs lg:text-sm max-w-2xl mx-auto">
             {t('featured.subtitle')}
           </p>
-        </motion.div>
+        </ScrollReveal>
       </div>
 
       <div className="relative group/scroll">
@@ -171,10 +169,10 @@ export function FeaturedProducts() {
           {products.map((product, index) => (
             <motion.div
               key={product.id}
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, x: 30, scale: 0.95 }}
+              whileInView={{ opacity: 1, x: 0, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
+              transition={{ duration: 0.5, delay: index * 0.06, ease: smoothEase }}
               className="flex-shrink-0 w-[240px] sm:w-[300px] lg:w-[340px] group bg-card rounded-2xl overflow-hidden border border-border/60 shadow-soft hover:shadow-lg transition-shadow duration-300 cursor-pointer"
               data-testid={`card-product-${product.id}`}
               onClick={() => window.location.href = `/products/${product.slug}`}
@@ -265,19 +263,14 @@ export function FeaturedProducts() {
       </div>
 
       <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="text-center mt-6 sm:mt-8"
-        >
+        <ScrollReveal className="text-center mt-6 sm:mt-8" direction="none" delay={0.15}>
           <Button asChild size="default" className="hover-slide border-2 border-transparent" data-testid="button-view-all-products">
             <Link to="/products">
               {t('featured.viewAll')}
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
-        </motion.div>
+        </ScrollReveal>
       </div>
     </section>
   );

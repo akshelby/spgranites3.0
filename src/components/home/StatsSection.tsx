@@ -3,6 +3,8 @@ import { motion, useInView } from 'framer-motion';
 import { Award, Users, Briefcase, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
+const smoothEase = [0.25, 0.1, 0.25, 1] as const;
+
 function Counter({ value, suffix }: { value: number; suffix: string }) {
   const [count, setCount] = useState(0);
   const ref = useRef<HTMLSpanElement>(null);
@@ -54,10 +56,10 @@ export function StatsSection() {
           {stats.map((stat, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 8 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-20px' }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
+              initial={{ opacity: 0, y: 30, scale: 0.95 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, margin: '-40px' }}
+              transition={{ duration: 0.5, delay: index * 0.1, ease: smoothEase }}
               className="text-center"
               data-testid={`stat-${index}`}
             >

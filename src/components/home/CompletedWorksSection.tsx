@@ -5,6 +5,9 @@ import { api } from '@/lib/api';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { ScrollReveal } from '@/components/ui/ScrollReveal';
+
+const smoothEase = [0.25, 0.1, 0.25, 1] as const;
 
 interface CompletedWork {
   id: string;
@@ -70,19 +73,13 @@ export function CompletedWorksSection() {
   return (
     <section className="py-12 md:py-16 bg-background">
       <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-8"
-        >
+        <ScrollReveal className="text-center mb-8" distance={30}>
           <span className="text-primary font-medium tracking-wider uppercase text-sm">Portfolio</span>
           <h2 className="text-3xl md:text-4xl font-bold mt-2 mb-3">Our Completed Works</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-sm md:text-base">
             Explore our recent granite and marble installations crafted with precision and care
           </p>
-        </motion.div>
+        </ScrollReveal>
       </div>
 
       <div className="relative group/scroll">
@@ -111,10 +108,10 @@ export function CompletedWorksSection() {
           {works.map((work, index) => (
             <motion.div
               key={work.id}
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, x: 40, scale: 0.95 }}
+              whileInView={{ opacity: 1, x: 0, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.08 }}
+              transition={{ duration: 0.5, delay: index * 0.08, ease: smoothEase }}
               className="flex-shrink-0 w-[280px] sm:w-[320px] group rounded-xl overflow-hidden bg-card border border-border/60 shadow-sm hover:shadow-lg transition-all duration-300"
             >
               <div className="relative aspect-[4/3] overflow-hidden">
@@ -172,20 +169,14 @@ export function CompletedWorksSection() {
       </div>
 
       <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-center mt-6"
-        >
+        <ScrollReveal className="text-center mt-6" delay={0.2} direction="up" distance={20}>
           <Button asChild size="default" className="hover-slide border-2 border-transparent">
             <Link to="/completed-works">
               View All Works
               <ArrowRight className="ml-2 h-4 w-4" />
             </Link>
           </Button>
-        </motion.div>
+        </ScrollReveal>
       </div>
     </section>
   );

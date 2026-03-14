@@ -8,6 +8,9 @@ import { Testimonial, CustomerReview } from '@/types/database';
 import { ReviewForm } from '@/components/reviews/ReviewForm';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
+import { ScrollReveal } from '@/components/ui/ScrollReveal';
+
+const smoothEase = [0.25, 0.1, 0.25, 1] as const;
 
 const defaultTestimonials: Testimonial[] = [
   { id: '1', customer_name: 'Rajesh Kumar', company: 'Home Owner', designation: null, review_text: 'Excellent quality granite and professional installation. The team was punctual and the work was completed perfectly.', rating: 5, image_url: null, is_active: true, display_order: 1, created_at: '', updated_at: '' },
@@ -261,12 +264,7 @@ export function TestimonialsSection() {
   return (
     <section className="py-8 sm:py-10 lg:py-14 bg-muted/30" data-testid="testimonials-section">
       <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-3 sm:mb-6 lg:mb-8"
-        >
+        <ScrollReveal className="text-center mb-3 sm:mb-6 lg:mb-8" distance={30}>
           <span className="text-[11px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-testimonials-label">{t('testimonials.label')}</span>
           <h3 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold mt-1 sm:mt-1.5 mb-1.5 sm:mb-3 leading-tight heading-stylish" data-testid="text-testimonials-title">
             {t('testimonials.title')}
@@ -274,7 +272,7 @@ export function TestimonialsSection() {
           <p className="text-muted-foreground text-[11px] sm:text-xs lg:text-sm max-w-2xl mx-auto">
             {t('testimonials.subtitle')}
           </p>
-        </motion.div>
+        </ScrollReveal>
 
         {customerReviews.length > 0 && (
           <div
@@ -405,12 +403,7 @@ export function TestimonialsSection() {
           ))}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="mt-5 sm:mt-8 flex justify-center gap-4 sm:gap-5"
-        >
+        <ScrollReveal className="mt-5 sm:mt-8 flex justify-center gap-4 sm:gap-5" distance={20} delay={0.1}>
           <button
             onClick={() => { setShowReviewForm(!showReviewForm); if (!showReviewForm) setShowMyReviews(false); }}
             className={`cta-ribbon-btn ${showReviewForm ? 'cta-ribbon-btn-outline' : 'cta-ribbon-btn-red'}`}
@@ -449,7 +442,7 @@ export function TestimonialsSection() {
               </span>
             </button>
           )}
-        </motion.div>
+        </ScrollReveal>
 
         <AnimatePresence>
           {showMyReviews && myReviews.length > 0 && (

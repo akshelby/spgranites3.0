@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { productImageMap, resolveProductImage, defaultProductImage } from '@/lib/productImages';
+import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
 interface CollectionProduct {
   id: string;
@@ -257,20 +258,14 @@ export function PremiumCollection() {
   return (
     <section className="py-8 sm:py-12 md:py-16 bg-muted/30 overflow-hidden">
       <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-3 sm:mb-5"
-        >
+        <ScrollReveal className="text-center mb-3 sm:mb-5" distance={25}>
           <h3 className="text-lg sm:text-2xl md:text-3xl font-display font-bold text-red-600">
             Premium Collection
           </h3>
           <p className="mt-1 sm:mt-1.5 text-[11px] sm:text-xs text-muted-foreground">
             {isMobile ? 'Swipe to rotate' : 'Scroll to rotate'}
           </p>
-        </motion.div>
+        </ScrollReveal>
 
         <div
           ref={containerRef}

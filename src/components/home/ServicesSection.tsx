@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Wrench, Settings, Sparkles, Hammer, MessageCircle, Ruler } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Service } from '@/types/database';
+import { ScrollReveal, StaggerContainer, StaggerItem } from '@/components/ui/ScrollReveal';
 
 const serviceIconMap: Record<string, typeof Wrench> = {
   installation: Wrench,
@@ -53,12 +53,7 @@ export function ServicesSection() {
   return (
     <section className="py-8 sm:py-10 lg:py-14 bg-background" data-testid="services-section">
       <div className="container mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-3 sm:mb-6 lg:mb-8"
-        >
+        <ScrollReveal className="text-center mb-3 sm:mb-6 lg:mb-8" distance={30}>
           <span className="text-[11px] sm:text-xs font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-services-label">{t('services.label')}</span>
           <h3 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold mt-1 sm:mt-1.5 mb-1.5 sm:mb-3 leading-tight heading-stylish" data-testid="text-services-title">
             {t('services.title')}
@@ -66,42 +61,37 @@ export function ServicesSection() {
           <p className="text-muted-foreground text-[11px] sm:text-xs lg:text-sm max-w-2xl mx-auto">
             {t('services.subtitle')}
           </p>
-        </motion.div>
+        </ScrollReveal>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-2.5 sm:gap-3 lg:gap-5">
-          {services.map((service, index) => {
+        <StaggerContainer
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-6 gap-2.5 sm:gap-3 lg:gap-5"
+          staggerDelay={0.06}
+        >
+          {services.map((service) => {
             const IconComponent = serviceIconMap[service.icon || service.slug] || Wrench;
             return (
-              <motion.div
-                key={service.id}
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-20px' }}
-                transition={{ duration: 0.3, delay: index * 0.04 }}
-                className="group p-2.5 sm:p-3 lg:p-6 bg-card rounded-2xl border border-border/60 shadow-soft hover:shadow-lg transition-shadow duration-300 cursor-pointer"
-                data-testid={`service-card-${service.id}`}
-                onClick={() => window.location.href = '/services'}
-              >
-                <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full bg-primary/10 flex items-center justify-center mb-2 sm:mb-3">
-                  <IconComponent className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-primary group-hover:text-black dark:group-hover:text-white transition-colors duration-300" />
+              <StaggerItem key={service.id} scale>
+                <div
+                  className="group p-2.5 sm:p-3 lg:p-6 bg-card rounded-2xl border border-border/60 shadow-soft hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+                  data-testid={`service-card-${service.id}`}
+                  onClick={() => window.location.href = '/services'}
+                >
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-full bg-primary/10 flex items-center justify-center mb-2 sm:mb-3">
+                    <IconComponent className="h-3.5 w-3.5 sm:h-4 sm:w-4 lg:h-5 lg:w-5 text-primary group-hover:text-black dark:group-hover:text-white transition-colors duration-300" />
+                  </div>
+                  <h3 className="text-xs sm:text-sm lg:text-base font-semibold mb-1 sm:mb-1.5 lg:mb-2">
+                    {service.name}
+                  </h3>
+                  <p className="text-[11px] sm:text-xs lg:text-sm text-muted-foreground line-clamp-2 lg:line-clamp-3">
+                    {service.short_description}
+                  </p>
                 </div>
-                <h3 className="text-xs sm:text-sm lg:text-base font-semibold mb-1 sm:mb-1.5 lg:mb-2">
-                  {service.name}
-                </h3>
-                <p className="text-[11px] sm:text-xs lg:text-sm text-muted-foreground line-clamp-2 lg:line-clamp-3">
-                  {service.short_description}
-                </p>
-              </motion.div>
+              </StaggerItem>
             );
           })}
-        </div>
+        </StaggerContainer>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="text-center mt-6 sm:mt-10"
-        >
+        <ScrollReveal className="text-center mt-6 sm:mt-10" delay={0.2} direction="none">
           <Link
             to="/services"
             className="inline-flex items-center gap-2 text-primary font-semibold text-sm hover:gap-3 transition-all"
@@ -110,7 +100,7 @@ export function ServicesSection() {
             {t('services.viewAll')}
             <ArrowRight className="h-4 w-4" />
           </Link>
-        </motion.div>
+        </ScrollReveal>
       </div>
     </section>
   );

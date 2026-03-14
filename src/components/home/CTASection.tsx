@@ -1,8 +1,8 @@
-import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Phone } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useSiteSettings } from '@/contexts/SiteSettingsContext';
+import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
 
 export function CTASection() {
@@ -19,12 +19,7 @@ export function CTASection() {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center max-w-3xl mx-auto"
-        >
+        <ScrollReveal className="text-center max-w-3xl mx-auto" distance={30} scale>
           <h2 className="text-lg sm:text-2xl lg:text-3xl font-display font-bold mb-2 sm:mb-4 text-black" data-testid="text-cta-title">
             {t('cta.title')}
           </h2>
@@ -53,7 +48,7 @@ export function CTASection() {
               </span>
             </a>
           </div>
-        </motion.div>
+        </ScrollReveal>
       </div>
     </section>
   );
