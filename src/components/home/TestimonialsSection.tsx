@@ -298,7 +298,7 @@ export function TestimonialsSection() {
                     ))}
                   </div>
                   {review.created_at && (
-                    <span className="flex items-center gap-1 text-[9px] sm:text-[10px] text-muted-foreground/70">
+                    <span className="flex items-center gap-1 text-[10px] sm:text-[11px] text-muted-foreground/70">
                       <Calendar className="h-2.5 w-2.5" />
                       {format(new Date(review.created_at), 'MMM d, yyyy')}
                     </span>
@@ -366,7 +366,7 @@ export function TestimonialsSection() {
                   ))}
                 </div>
                 {testimonial.created_at && (
-                  <span className="flex items-center gap-1 text-[9px] sm:text-[10px] text-muted-foreground/70">
+                  <span className="flex items-center gap-1 text-[10px] sm:text-[11px] text-muted-foreground/70">
                     <Calendar className="h-2.5 w-2.5" />
                     {format(new Date(testimonial.created_at), 'MMM d, yyyy')}
                   </span>
