@@ -266,7 +266,7 @@ export function TestimonialsSection() {
       <div className="container mx-auto px-4">
         <ScrollReveal className="text-center mb-3 sm:mb-6 lg:mb-8" distance={30}>
           <span className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider" data-testid="text-testimonials-label">{t('testimonials.label')}</span>
-          <h3 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold mt-1 sm:mt-1.5 mb-1.5 sm:mb-3 leading-tight heading-stylish" data-testid="text-testimonials-title">
+          <h3 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold mt-1 sm:mt-1.5 mb-1.5 sm:mb-3 leading-tight heading-stylish" data-testid="text-testimonials-title">
             {t('testimonials.title')}
           </h3>
           <p className="text-muted-foreground text-xs sm:text-sm max-w-2xl mx-auto">

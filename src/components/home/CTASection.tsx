@@ -20,7 +20,7 @@ export function CTASection() {
 
       <div className="container mx-auto px-4 relative z-10">
         <ScrollReveal className="text-center max-w-3xl mx-auto" distance={30} scale>
-          <h2 className="text-lg sm:text-2xl lg:text-3xl font-display font-bold mb-2 sm:mb-4 text-black" data-testid="text-cta-title">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold mb-2 sm:mb-4 text-black" data-testid="text-cta-title">
             {t('cta.title')}
           </h2>
           <p className="text-xs sm:text-sm lg:text-base opacity-85 mb-3 sm:mb-6">

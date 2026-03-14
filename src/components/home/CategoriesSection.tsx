@@ -199,7 +199,7 @@ export function CategoriesSection() {
     <section className="py-8 sm:py-10 md:py-14 bg-background" data-testid="categories-section">
       <div className="container mx-auto px-4">
         <ScrollReveal className="text-center mb-3 sm:mb-6 md:mb-8" distance={30}>
-          <h3 className="text-xl sm:text-2xl md:text-3xl font-display font-bold leading-tight heading-stylish" data-testid="text-categories-title">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold leading-tight heading-stylish" data-testid="text-categories-title">
             {t('categories.title')}
           </h3>
           <p className="mt-1 text-xs sm:text-sm text-muted-foreground">

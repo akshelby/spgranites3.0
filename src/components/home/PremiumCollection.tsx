@@ -259,7 +259,7 @@ export function PremiumCollection() {
     <section className="py-8 sm:py-12 md:py-16 bg-muted/30 overflow-hidden">
       <div className="container mx-auto px-4">
         <ScrollReveal className="text-center mb-3 sm:mb-5" distance={25}>
-          <h3 className="text-lg sm:text-2xl md:text-3xl font-display font-bold text-red-600">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-red-600">
             Premium Collection
           </h3>
           <p className="mt-1 sm:mt-1.5 text-xs sm:text-sm text-muted-foreground">
