@@ -47,6 +47,14 @@ export function HeroSection() {
 
   useEffect(() => {
     if (cards.length === 0) return;
+    cards.forEach((card) => {
+      const img = new Image();
+      img.src = card.image_url;
+    });
+  }, [cards]);
+
+  useEffect(() => {
+    if (cards.length === 0) return;
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % cards.length);
     }, 4000);
@@ -167,15 +175,15 @@ export function HeroSection() {
             data-testid="hero-carousel"
           >
             <div className="relative w-full h-full rounded-none sm:rounded-3xl overflow-hidden shadow-lg">
-              <AnimatePresence initial={false}>
+              <AnimatePresence mode="sync" initial={false}>
                 {cards.length > 0 && (
                   <motion.div
                     key={currentIndex}
                     initial={{ opacity: 0, scale: 1.05 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.98 }}
+                    exit={{ opacity: 0 }}
                     transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
-                    className="absolute inset-0"
+                    className="absolute inset-0 z-[1]"
                   >
                     <img
                       src={cards[currentIndex]?.image_url}
