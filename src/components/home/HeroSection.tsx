@@ -163,10 +163,10 @@ export function HeroSection() {
             initial={{ opacity: 0, scale: 0.92, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3, ease: smoothEase }}
-            className="relative h-[250px] sm:h-[350px] lg:h-[500px]"
+            className="relative h-[280px] sm:h-[350px] lg:h-[500px] -mx-4 sm:mx-0"
             data-testid="hero-carousel"
           >
-            <div className="relative w-full h-full rounded-3xl overflow-hidden shadow-lg">
+            <div className="relative w-full h-full rounded-none sm:rounded-3xl overflow-hidden shadow-lg">
               <AnimatePresence initial={false}>
                 {cards.length > 0 && (
                   <motion.div
