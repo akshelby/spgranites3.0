@@ -1250,9 +1250,30 @@ export function registerRoutes(app: Express) {
 
   app.get("/api/admin/analytics", requireAuth, requireAdmin, async (_req: Request, res: Response) => {
     try {
-      const { data: visitors, error } = await supabase.from('site_visitors').select('*').order('visited_at', { ascending: false });
-      if (error) throw error;
-      res.json({ visitors });
+      const now = new Date();
+      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+      const weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const monthStart = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
+
+      const [totalRes, todayRes, weekRes, monthRes, recentRes] = await Promise.all([
+        supabase.from('site_visitors').select('*', { count: 'exact', head: true }),
+        supabase.from('site_visitors').select('*', { count: 'exact', head: true }).gte('visited_at', todayStart),
+        supabase.from('site_visitors').select('*', { count: 'exact', head: true }).gte('visited_at', weekStart),
+        supabase.from('site_visitors').select('*', { count: 'exact', head: true }).gte('visited_at', monthStart),
+        supabase.from('site_visitors').select('*').order('visited_at', { ascending: false }).limit(500),
+      ]);
+
+      if (recentRes.error) throw recentRes.error;
+
+      res.json({
+        counts: {
+          total: totalRes.count || 0,
+          today: todayRes.count || 0,
+          thisWeek: weekRes.count || 0,
+          thisMonth: monthRes.count || 0,
+        },
+        visitors: recentRes.data,
+      });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }

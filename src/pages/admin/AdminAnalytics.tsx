@@ -43,23 +43,13 @@ export default function AdminAnalytics() {
       const now = new Date();
       const response = await api.get('/api/admin/analytics') || {};
       const visitorList = Array.isArray(response) ? response : (response.visitors || []);
+      const serverCounts = response.counts || null;
 
-      const todayStart = startOfDay(now);
-      const weekStart = startOfDay(subDays(now, 7));
-      const monthStart = startOfDay(subDays(now, 30));
-
-      let total = visitorList.length;
-      let today = 0;
-      let thisWeek = 0;
-      let thisMonth = 0;
       const dailyMap = new Map<string, number>();
       const pageMap = new Map<string, number>();
 
       visitorList.forEach((v: any) => {
         const visitDate = new Date(v.visited_at);
-        if (visitDate >= todayStart) today++;
-        if (visitDate >= weekStart) thisWeek++;
-        if (visitDate >= monthStart) thisMonth++;
 
         const date = format(visitDate, 'MMM d');
         dailyMap.set(date, (dailyMap.get(date) || 0) + 1);
@@ -69,7 +59,26 @@ export default function AdminAnalytics() {
         }
       });
 
-      setStats({ total, today, thisWeek, thisMonth });
+      if (serverCounts) {
+        setStats({
+          total: serverCounts.total,
+          today: serverCounts.today,
+          thisWeek: serverCounts.thisWeek,
+          thisMonth: serverCounts.thisMonth,
+        });
+      } else {
+        const todayStart = startOfDay(now);
+        const weekStart = startOfDay(subDays(now, 7));
+        const monthStart = startOfDay(subDays(now, 30));
+        let today = 0, thisWeek = 0, thisMonth = 0;
+        visitorList.forEach((v: any) => {
+          const visitDate = new Date(v.visited_at);
+          if (visitDate >= todayStart) today++;
+          if (visitDate >= weekStart) thisWeek++;
+          if (visitDate >= monthStart) thisMonth++;
+        });
+        setStats({ total: visitorList.length, today, thisWeek, thisMonth });
+      }
 
       const last7Days: DailyVisitor[] = [];
       for (let i = 6; i >= 0; i--) {
