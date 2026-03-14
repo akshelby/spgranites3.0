@@ -109,29 +109,29 @@ export default function AdminAnalytics() {
       />
 
       {/* Stats Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4">
         <StatsCard
           title="Total Visitors"
           value={stats.total}
-          icon={<Eye className="h-6 w-6" />}
+          icon={<Eye className="h-4 w-4 sm:h-5 sm:w-5" />}
           description="All time"
         />
         <StatsCard
           title="Today"
           value={stats.today}
-          icon={<TrendingUp className="h-6 w-6" />}
+          icon={<TrendingUp className="h-4 w-4 sm:h-5 sm:w-5" />}
           description="Visitors today"
         />
         <StatsCard
           title="This Week"
           value={stats.thisWeek}
-          icon={<Globe className="h-6 w-6" />}
+          icon={<Globe className="h-4 w-4 sm:h-5 sm:w-5" />}
           description="Last 7 days"
         />
         <StatsCard
           title="This Month"
           value={stats.thisMonth}
-          icon={<Monitor className="h-6 w-6" />}
+          icon={<Monitor className="h-4 w-4 sm:h-5 sm:w-5" />}
           description="Last 30 days"
         />
       </div>
