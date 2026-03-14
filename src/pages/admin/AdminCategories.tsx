@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { AdminLayout, DataTable, PageHeader } from '@/components/admin';
+import { AdminLayout, PageHeader } from '@/components/admin';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -15,7 +16,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Image as ImageIcon } from 'lucide-react';
 
 interface Category {
   id: string;
@@ -129,55 +130,6 @@ export default function AdminCategories() {
     setFormData({ name: '', slug: '', description: '', is_active: true });
   };
 
-  const columns = [
-    {
-      key: 'name',
-      header: 'Category',
-      render: (category: Category) => (
-        <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-lg bg-muted" />
-          <div>
-            <p className="font-medium">{category.name}</p>
-            <p className="text-sm text-muted-foreground">{category.slug}</p>
-          </div>
-        </div>
-      ),
-    },
-    {
-      key: 'description',
-      header: 'Description',
-      render: (category: Category) => (
-        <p className="max-w-xs truncate text-sm text-muted-foreground">
-          {category.description || '-'}
-        </p>
-      ),
-    },
-    {
-      key: 'is_active',
-      header: 'Status',
-      render: (category: Category) => (
-        <Badge variant={category.is_active ? 'default' : 'secondary'}>
-          {category.is_active ? 'Active' : 'Inactive'}
-        </Badge>
-      ),
-    },
-    {
-      key: 'actions',
-      header: '',
-      className: 'w-24',
-      render: (category: Category) => (
-        <div className="flex gap-1">
-          <Button variant="ghost" size="icon" onClick={() => handleEdit(category)}>
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="icon" onClick={() => handleDelete(category.id)}>
-            <Trash2 className="h-4 w-4 text-destructive" />
-          </Button>
-        </div>
-      ),
-    },
-  ];
-
   return (
     <AdminLayout>
       <PageHeader
@@ -189,7 +141,7 @@ export default function AdminCategories() {
             if (!open) resetForm();
           }}>
             <DialogTrigger asChild>
-              <Button>
+              <Button size="sm">
                 <Plus className="mr-2 h-4 w-4" />
                 Add Category
               </Button>
@@ -238,12 +190,12 @@ export default function AdminCategories() {
                   <Label htmlFor="is_active">Active</Label>
                 </div>
 
-                <div className="flex justify-end gap-2 pt-4">
-                  <Button type="button" variant="outline" onClick={() => setDialogOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button type="submit">
+                <div className="flex gap-3 pt-4">
+                  <Button type="submit" className="flex-1" size="sm">
                     {editingCategory ? 'Update' : 'Create'}
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" onClick={() => setDialogOpen(false)}>
+                    Cancel
                   </Button>
                 </div>
               </form>
@@ -252,12 +204,66 @@ export default function AdminCategories() {
         }
       />
 
-      <DataTable
-        columns={columns}
-        data={categories}
-        loading={loading}
-        emptyMessage="No categories found"
-      />
+      {loading ? (
+        <div className="space-y-3">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-20 animate-pulse rounded-lg bg-muted" />
+          ))}
+        </div>
+      ) : categories.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center gap-3 py-12 text-center">
+            <ImageIcon className="h-10 w-10 text-muted-foreground" />
+            <p className="text-muted-foreground">No categories found</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-2">
+          {categories.map((category) => (
+            <Card key={category.id} className="overflow-hidden">
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-12 w-12 shrink-0 rounded-lg bg-muted overflow-hidden">
+                    {category.image_url ? (
+                      <img
+                        src={category.image_url}
+                        alt={category.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center">
+                        <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-medium text-sm truncate">{category.name}</p>
+                      <Badge variant={category.is_active ? 'default' : 'secondary'} className="text-[10px] shrink-0">
+                        {category.is_active ? 'Active' : 'Inactive'}
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{category.slug}</p>
+                    {category.description && (
+                      <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+                        {category.description}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex shrink-0 items-center gap-1">
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleEdit(category)}>
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(category.id)}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </AdminLayout>
   );
 }
