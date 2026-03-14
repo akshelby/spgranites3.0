@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SP Granites - Premium Business Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:#0a0a0a}
+.deck{width:100%;height:100%;position:relative}
+.slide{width:100vw;height:100vh;position:absolute;top:0;left:0;display:none;overflow:hidden}
+.slide.active{display:flex}
+.nav{position:fixed;bottom:2vh;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:100;background:rgba(0,0,0,0.6);backdrop-filter:blur(10px);padding:8px 16px;border-radius:40px;align-items:center}
+.nav button{border:none;cursor:pointer;background:rgba(255,255,255,0.15);color:#fff;width:36px;height:36px;border-radius:50%;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.nav button:hover{background:rgba(255,255,255,0.3)}
+.nav .counter{color:rgba(255,255,255,0.7);font-size:13px;padding:0 8px;min-width:60px;text-align:center}
+.nav .progress{position:absolute;bottom:0;left:16px;height:2px;background:linear-gradient(90deg,#dc2626,#991b1b);border-radius:2px;transition:width .3s}
+h1,h2,h3,.display{font-family:'Playfair Display',Georgia,serif}
+.slide-1{background:linear-gradient(135deg,#1a0a0a 0%,#0a0a0a 40%,#1a0f0f 100%);flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.slide-1 .bg-pattern{position:absolute;inset:0;background:radial-gradient(circle at 20% 80%,rgba(220,38,38,0.08) 0%,transparent 50%),radial-gradient(circle at 80% 20%,rgba(220,38,38,0.05) 0%,transparent 50%);pointer-events:none}
+.slide-1 .accent-line{width:80px;height:3px;background:linear-gradient(90deg,#dc2626,#991b1b);margin-bottom:3vh;border-radius:2px}
+.slide-1 h1{font-size:7vw;font-weight:900;color:#fff;letter-spacing:-0.03em;line-height:1.05;margin-bottom:2vh}
+.slide-1 h1 span{background:linear-gradient(135deg,#dc2626,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.slide-1 .subtitle{font-size:2vw;color:rgba(255,255,255,0.6);font-weight:300;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:1vh}
+.slide-1 .tagline{font-size:1.6vw;color:rgba(255,255,255,0.4);font-weight:300;max-width:60vw;line-height:1.6;margin-top:2vh}
+.slide-1 .stone-texture{position:absolute;bottom:0;left:0;right:0;height:30vh;background:linear-gradient(to top,rgba(220,38,38,0.03),transparent);pointer-events:none}
+
+.slide-2{background:linear-gradient(160deg,#faf9f7 0%,#f5f0eb 100%);flex-direction:column;padding:6vh 6vw}
+.slide-2 .top-bar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4vh}
+.slide-2 h2{font-size:4.5vw;font-weight:900;color:#1a1a1a;letter-spacing:-0.02em}
+.slide-2 .label{font-size:1.2vw;color:#dc2626;font-weight:600;text-transform:uppercase;letter-spacing:0.15em}
+.slide-2 .problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:3vw;flex:1;align-content:center}
+.slide-2 .problem-card{background:#fff;border-radius:12px;padding:3vh 2.5vw;box-shadow:0 1px 3px rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.06);position:relative;overflow:hidden}
+.slide-2 .problem-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:#dc2626}
+.slide-2 .problem-card .num{font-size:3vw;font-weight:900;color:rgba(220,38,38,0.1);font-family:'Playfair Display',serif;position:absolute;top:1vh;right:1.5vw}
+.slide-2 .problem-card h3{font-size:1.8vw;font-weight:700;color:#1a1a1a;margin-bottom:1vh}
+.slide-2 .problem-card p{font-size:1.3vw;color:#666;line-height:1.5}
+
+.slide-3{background:linear-gradient(160deg,#0f0f0f 0%,#1a1010 100%);flex-direction:column;padding:6vh 6vw}
+.slide-3 .label{font-size:1.2vw;color:#dc2626;font-weight:600;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:1vh}
+.slide-3 h2{font-size:4.5vw;font-weight:900;color:#fff;letter-spacing:-0.02em;margin-bottom:4vh}
+.slide-3 .features{display:grid;grid-template-columns:repeat(3,1fr);gap:2vw;flex:1;align-content:center}
+.slide-3 .feature{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:3vh 2vw;transition:all .3s}
+.slide-3 .feature .icon{width:3.5vw;height:3.5vw;background:linear-gradient(135deg,#dc2626,#991b1b);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:2vh;font-size:1.8vw}
+.slide-3 .feature h3{font-size:1.6vw;font-weight:700;color:#fff;margin-bottom:1vh}
+.slide-3 .feature p{font-size:1.2vw;color:rgba(255,255,255,0.5);line-height:1.5}
+
+.slide-4{background:linear-gradient(160deg,#faf9f7 0%,#f5f0eb 100%);flex-direction:column;padding:6vh 6vw}
+.slide-4 .label{font-size:1.2vw;color:#dc2626;font-weight:600;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:1vh}
+.slide-4 h2{font-size:4.5vw;font-weight:900;color:#1a1a1a;letter-spacing:-0.02em;margin-bottom:4vh}
+.slide-4 .modules{display:grid;grid-template-columns:repeat(2,1fr);gap:2vw;flex:1;align-content:center}
+.slide-4 .module{display:flex;gap:1.5vw;align-items:flex-start;background:#fff;border-radius:12px;padding:2.5vh 2vw;border:1px solid rgba(0,0,0,0.06)}
+.slide-4 .module .dot{width:1vw;height:1vw;border-radius:50%;background:#dc2626;margin-top:0.6vw;flex-shrink:0}
+.slide-4 .module h3{font-size:1.6vw;font-weight:700;color:#1a1a1a;margin-bottom:0.5vh}
+.slide-4 .module p{font-size:1.2vw;color:#666;line-height:1.5}
+
+.slide-5{background:linear-gradient(160deg,#0f0f0f 0%,#1a1010 100%);flex-direction:column;padding:6vh 6vw}
+.slide-5 .label{font-size:1.2vw;color:#dc2626;font-weight:600;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:1vh}
+.slide-5 h2{font-size:4.5vw;font-weight:900;color:#fff;letter-spacing:-0.02em;margin-bottom:4vh}
+.slide-5 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:2vw;margin-bottom:4vh}
+.slide-5 .stat{text-align:center;padding:3vh 1vw;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px}
+.slide-5 .stat .number{font-size:4vw;font-weight:900;font-family:'Playfair Display',serif;background:linear-gradient(135deg,#dc2626,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.slide-5 .stat .desc{font-size:1.2vw;color:rgba(255,255,255,0.5);margin-top:1vh}
+
+.slide-6{background:linear-gradient(160deg,#faf9f7 0%,#f5f0eb 100%);flex-direction:column;padding:6vh 6vw}
+.slide-6 .label{font-size:1.2vw;color:#dc2626;font-weight:600;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:1vh}
+.slide-6 h2{font-size:4.5vw;font-weight:900;color:#1a1a1a;letter-spacing:-0.02em;margin-bottom:4vh}
+.slide-6 .stack{display:grid;grid-template-columns:repeat(3,1fr);gap:2vw;flex:1;align-content:center}
+.slide-6 .stack-item{background:#fff;border-radius:12px;padding:3vh 2vw;border:1px solid rgba(0,0,0,0.06);text-align:center}
+.slide-6 .stack-item .tag{display:inline-block;background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;font-size:1vw;font-weight:600;padding:0.5vh 1.2vw;border-radius:20px;margin-bottom:2vh;text-transform:uppercase;letter-spacing:0.1em}
+.slide-6 .stack-item h3{font-size:1.8vw;font-weight:700;color:#1a1a1a;margin-bottom:1vh}
+.slide-6 .stack-item ul{list-style:none;padding:0}
+.slide-6 .stack-item li{font-size:1.2vw;color:#666;padding:0.5vh 0;border-bottom:1px solid rgba(0,0,0,0.04)}
+.slide-6 .stack-item li:last-child{border:none}
+
+.slide-7{background:linear-gradient(160deg,#0f0f0f 0%,#1a1010 100%);flex-direction:column;padding:6vh 6vw}
+.slide-7 .label{font-size:1.2vw;color:#dc2626;font-weight:600;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:1vh}
+.slide-7 h2{font-size:4.5vw;font-weight:900;color:#fff;letter-spacing:-0.02em;margin-bottom:4vh}
+.slide-7 .compare{display:grid;grid-template-columns:1fr 1fr;gap:3vw;flex:1;align-content:center}
+.slide-7 .compare-col{border-radius:12px;padding:3vh 2.5vw}
+.slide-7 .compare-col.without{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)}
+.slide-7 .compare-col.with{background:linear-gradient(135deg,rgba(220,38,38,0.1),rgba(220,38,38,0.05));border:1px solid rgba(220,38,38,0.2)}
+.slide-7 .compare-col h3{font-size:2vw;font-weight:700;margin-bottom:2vh}
+.slide-7 .compare-col.without h3{color:rgba(255,255,255,0.4)}
+.slide-7 .compare-col.with h3{color:#ef4444}
+.slide-7 .compare-col li{font-size:1.3vw;color:rgba(255,255,255,0.6);padding:1vh 0;list-style:none;display:flex;align-items:center;gap:0.8vw}
+.slide-7 .compare-col.with li{color:rgba(255,255,255,0.8)}
+.slide-7 .x-mark{color:#ef4444;font-weight:700}
+.slide-7 .check{color:#22c55e;font-weight:700}
+
+.slide-8{background:linear-gradient(160deg,#faf9f7 0%,#f5f0eb 100%);flex-direction:column;padding:6vh 6vw}
+.slide-8 .label{font-size:1.2vw;color:#dc2626;font-weight:600;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:1vh}
+.slide-8 h2{font-size:4.5vw;font-weight:900;color:#1a1a1a;letter-spacing:-0.02em;margin-bottom:4vh}
+.slide-8 .pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:2.5vw;flex:1;align-content:center}
+.slide-8 .price-card{background:#fff;border-radius:12px;padding:3vh 2vw;border:1px solid rgba(0,0,0,0.06);text-align:center}
+.slide-8 .price-card.featured{background:linear-gradient(135deg,#1a1a1a,#2a2020);border:1px solid rgba(220,38,38,0.3);color:#fff}
+.slide-8 .price-card h3{font-size:1.6vw;font-weight:700;margin-bottom:1vh}
+.slide-8 .price-card.featured h3{color:#ef4444}
+.slide-8 .price-card .price{font-size:3.5vw;font-weight:900;font-family:'Playfair Display',serif;margin-bottom:0.5vh}
+.slide-8 .price-card.featured .price{color:#fff}
+.slide-8 .price-card .period{font-size:1.1vw;color:#999;margin-bottom:2vh}
+.slide-8 .price-card ul{list-style:none;padding:0;text-align:left}
+.slide-8 .price-card li{font-size:1.1vw;color:#666;padding:0.6vh 0;display:flex;align-items:center;gap:0.5vw}
+.slide-8 .price-card.featured li{color:rgba(255,255,255,0.7)}
+
+.slide-9{background:linear-gradient(160deg,#0f0f0f 0%,#1a1010 100%);flex-direction:column;padding:6vh 6vw}
+.slide-9 .label{font-size:1.2vw;color:#dc2626;font-weight:600;text-transform:uppercase;letter-spacing:0.15em;margin-bottom:1vh}
+.slide-9 h2{font-size:4.5vw;font-weight:900;color:#fff;letter-spacing:-0.02em;margin-bottom:4vh}
+.slide-9 .reasons{display:grid;grid-template-columns:repeat(2,1fr);gap:2vw;flex:1;align-content:center}
+.slide-9 .reason{display:flex;gap:1.5vw;align-items:flex-start;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:2.5vh 2vw}
+.slide-9 .reason .num{font-size:2.5vw;font-weight:900;font-family:'Playfair Display',serif;color:rgba(220,38,38,0.6);flex-shrink:0;line-height:1}
+.slide-9 .reason h3{font-size:1.5vw;font-weight:700;color:#fff;margin-bottom:0.5vh}
+.slide-9 .reason p{font-size:1.1vw;color:rgba(255,255,255,0.5);line-height:1.5}
+
+.slide-10{background:linear-gradient(135deg,#1a0a0a 0%,#0a0a0a 40%,#1a0f0f 100%);flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.slide-10 .bg-glow{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(220,38,38,0.08) 0%,transparent 60%);pointer-events:none}
+.slide-10 .accent-line{width:80px;height:3px;background:linear-gradient(90deg,#dc2626,#991b1b);margin-bottom:3vh;border-radius:2px}
+.slide-10 h2{font-size:5vw;font-weight:900;color:#fff;letter-spacing:-0.02em;margin-bottom:2vh}
+.slide-10 h2 span{background:linear-gradient(135deg,#dc2626,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.slide-10 .cta{font-size:2vw;color:rgba(255,255,255,0.5);font-weight:300;margin-bottom:4vh}
+.slide-10 .contact-row{display:flex;gap:3vw;align-items:center;justify-content:center}
+.slide-10 .contact-item{font-size:1.4vw;color:rgba(255,255,255,0.6);display:flex;align-items:center;gap:0.5vw}
+.slide-10 .contact-item span{color:#ef4444;font-weight:600}
+
+@media print{
+  .nav{display:none!important}
+  .slide{display:flex!important;position:relative!important;page-break-after:always;height:100vh}
+}
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+<!-- Slide 1: Title -->
+<div class="slide slide-1 active" data-slide="1">
+  <div class="bg-pattern"></div>
+  <div class="stone-texture"></div>
+  <div class="accent-line" style="position:relative;z-index:1"></div>
+  <h1 style="position:relative;z-index:1"><span>SP Granites</span></h1>
+  <div class="subtitle" style="position:relative;z-index:1">Premium Stone Business Platform</div>
+  <div class="tagline" style="position:relative;z-index:1">A complete digital storefront, CRM, and business management solution built for the stone and granite industry</div>
+</div>
+
+<!-- Slide 2: The Problem -->
+<div class="slide slide-2" data-slide="2">
+  <div class="top-bar">
+    <div>
+      <div class="label">The Problem</div>
+      <h2>What Stone Businesses<br>Struggle With</h2>
+    </div>
+  </div>
+  <div class="problem-grid">
+    <div class="problem-card">
+      <div class="num">01</div>
+      <h3>No Online Presence</h3>
+      <p>Most stone businesses still rely on word-of-mouth with no professional website to showcase their products</p>
+    </div>
+    <div class="problem-card">
+      <div class="num">02</div>
+      <h3>Manual Estimates</h3>
+      <p>Cost calculations done on paper or spreadsheets, leading to errors and slow response times to customers</p>
+    </div>
+    <div class="problem-card">
+      <div class="num">03</div>
+      <h3>Lost Leads</h3>
+      <p>No system to track inquiries, follow-ups, or convert potential customers into paying clients</p>
+    </div>
+    <div class="problem-card">
+      <div class="num">04</div>
+      <h3>Scattered Tools</h3>
+      <p>Using separate tools for website, CRM, estimates, and orders creates chaos and data silos</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 3: The Solution -->
+<div class="slide slide-3" data-slide="3">
+  <div class="label">The Solution</div>
+  <h2>One Platform.<br>Everything You Need.</h2>
+  <div class="features">
+    <div class="feature">
+      <div class="icon">&#x1F3E0;</div>
+      <h3>Product Catalog</h3>
+      <p>Beautiful showcase of granite, marble, and stone products with categories, images, and detailed specs</p>
+    </div>
+    <div class="feature">
+      <div class="icon">&#x1F4CA;</div>
+      <h3>Admin Dashboard</h3>
+      <p>Full control over products, orders, customers, and site analytics from a powerful admin panel</p>
+    </div>
+    <div class="feature">
+      <div class="icon">&#x1F4B0;</div>
+      <h3>Smart Estimates</h3>
+      <p>Customers get instant cost calculations for stone work directly on the site</p>
+    </div>
+    <div class="feature">
+      <div class="icon">&#x1F465;</div>
+      <h3>Built-in CRM</h3>
+      <p>Track leads through the pipeline from first inquiry to conversion with follow-up reminders</p>
+    </div>
+    <div class="feature">
+      <div class="icon">&#x1F916;</div>
+      <h3>AI Chat Assistant</h3>
+      <p>24/7 AI-powered chat that answers customer questions about products and pricing automatically</p>
+    </div>
+    <div class="feature">
+      <div class="icon">&#x1F30D;</div>
+      <h3>Multi-Language</h3>
+      <p>Reach a wider audience with built-in internationalization support for multiple languages</p>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 4: Key Modules -->
+<div class="slide slide-4" data-slide="4">
+  <div class="label">Platform Modules</div>
+  <h2>Everything Under<br>One Roof</h2>
+  <div class="modules">
+    <div class="module">
+      <div class="dot"></div>
+      <div>
+        <h3>Product Management</h3>
+        <p>Add, edit, and organize products by category with images, pricing, dimensions, and stock levels</p>
+      </div>
+    </div>
+    <div class="module">
+      <div class="dot"></div>
+      <div>
+        <h3>Order System</h3>
+        <p>End-to-end order tracking from customer inquiry to delivery with status updates</p>
+      </div>
+    </div>
+    <div class="module">
+      <div class="dot"></div>
+      <div>
+        <h3>Lead Pipeline</h3>
+        <p>New &rarr; Contacted &rarr; Interested &rarr; Quoted &rarr; Converted stages with full tracking</p>
+      </div>
+    </div>
+    <div class="module">
+      <div class="dot"></div>
+      <div>
+        <h3>Follow-up Scheduler</h3>
+        <p>Never miss a customer follow-up with reminders and overdue alerts built right in</p>
+      </div>
+    </div>
+    <div class="module">
+      <div class="dot"></div>
+      <div>
+        <h3>Visitor Analytics</h3>
+        <p>Real-time traffic tracking with daily, weekly, and monthly visitor counts and top pages</p>
+      </div>
+    </div>
+    <div class="module">
+      <div class="dot"></div>
+      <div>
+        <h3>User Management</h3>
+        <p>Customer accounts with authentication, order history, and saved preferences</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 5: By The Numbers -->
+<div class="slide slide-5" data-slide="5">
+  <div class="label">By The Numbers</div>
+  <h2>Built for Scale</h2>
+  <div class="stats">
+    <div class="stat">
+      <div class="number">1,760+</div>
+      <div class="desc">Tracked Visitors</div>
+    </div>
+    <div class="stat">
+      <div class="number">6+</div>
+      <div class="desc">Admin Modules</div>
+    </div>
+    <div class="stat">
+      <div class="number">24/7</div>
+      <div class="desc">AI Chat Support</div>
+    </div>
+    <div class="stat">
+      <div class="number">100%</div>
+      <div class="desc">Mobile Responsive</div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 6: Tech Stack -->
+<div class="slide slide-6" data-slide="6">
+  <div class="label">Technology</div>
+  <h2>Modern, Scalable<br>Architecture</h2>
+  <div class="stack">
+    <div class="stack-item">
+      <div class="tag">Frontend</div>
+      <h3>React + TypeScript</h3>
+      <ul>
+        <li>Vite build system</li>
+        <li>Tailwind CSS styling</li>
+        <li>Framer Motion animations</li>
+        <li>i18next translations</li>
+      </ul>
+    </div>
+    <div class="stack-item">
+      <div class="tag">Backend</div>
+      <h3>Node.js + Express</h3>
+      <ul>
+        <li>RESTful API</li>
+        <li>Authentication system</li>
+        <li>OpenAI integration</li>
+        <li>Admin middleware</li>
+      </ul>
+    </div>
+    <div class="stack-item">
+      <div class="tag">Database</div>
+      <h3>Supabase (PostgreSQL)</h3>
+      <ul>
+        <li>Real-time capabilities</li>
+        <li>Row-level security</li>
+        <li>File storage</li>
+        <li>Auto-scaling</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 7: Comparison -->
+<div class="slide slide-7" data-slide="7">
+  <div class="label">Comparison</div>
+  <h2>Before vs After</h2>
+  <div class="compare">
+    <div class="compare-col without">
+      <h3>Without SP Granites</h3>
+      <ul>
+        <li><span class="x-mark">&#x2717;</span> No online presence</li>
+        <li><span class="x-mark">&#x2717;</span> Manual paper estimates</li>
+        <li><span class="x-mark">&#x2717;</span> Leads lost in notebooks</li>
+        <li><span class="x-mark">&#x2717;</span> Paying for separate CRM</li>
+        <li><span class="x-mark">&#x2717;</span> No visitor insights</li>
+        <li><span class="x-mark">&#x2717;</span> Customers wait for replies</li>
+      </ul>
+    </div>
+    <div class="compare-col with">
+      <h3>With SP Granites</h3>
+      <ul>
+        <li><span class="check">&#x2713;</span> Professional web presence</li>
+        <li><span class="check">&#x2713;</span> Instant online estimates</li>
+        <li><span class="check">&#x2713;</span> Full CRM pipeline tracking</li>
+        <li><span class="check">&#x2713;</span> All-in-one platform</li>
+        <li><span class="check">&#x2713;</span> Real-time analytics</li>
+        <li><span class="check">&#x2713;</span> 24/7 AI chat assistant</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 8: Pricing -->
+<div class="slide slide-8" data-slide="8">
+  <div class="label">Investment</div>
+  <h2>Cost to Build vs Buy</h2>
+  <div class="pricing">
+    <div class="price-card">
+      <h3>Build from Scratch</h3>
+      <div class="price">$25K+</div>
+      <div class="period">3-6 months development</div>
+      <ul>
+        <li>&#x23F3; Long development time</li>
+        <li>&#x23F3; Team of 3-5 developers</li>
+        <li>&#x23F3; Ongoing maintenance</li>
+        <li>&#x23F3; Risk of delays</li>
+      </ul>
+    </div>
+    <div class="price-card featured">
+      <h3>SP Granites Platform</h3>
+      <div class="price">Ready Now</div>
+      <div class="period" style="color:rgba(255,255,255,0.4)">Instant deployment</div>
+      <ul>
+        <li>&#x2713; Production-ready code</li>
+        <li>&#x2713; All features included</li>
+        <li>&#x2713; Easy to customize</li>
+        <li>&#x2713; Cloud deployment ready</li>
+      </ul>
+    </div>
+    <div class="price-card">
+      <h3>SaaS Alternative</h3>
+      <div class="price">$200+</div>
+      <div class="period">per month (CRM alone)</div>
+      <ul>
+        <li>&#x23F3; Recurring costs forever</li>
+        <li>&#x23F3; Limited customization</li>
+        <li>&#x23F3; No website included</li>
+        <li>&#x23F3; Vendor lock-in</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 9: Why Buy -->
+<div class="slide slide-9" data-slide="9">
+  <div class="label">Why This Platform</div>
+  <h2>Top Reasons to Buy</h2>
+  <div class="reasons">
+    <div class="reason">
+      <div class="num">1</div>
+      <div>
+        <h3>Production Ready</h3>
+        <p>Not a template or prototype. This is a working, deployed application with real users and data.</p>
+      </div>
+    </div>
+    <div class="reason">
+      <div class="num">2</div>
+      <div>
+        <h3>Replaces 3+ Tools</h3>
+        <p>Website + CRM + Analytics in one. Saves hundreds per month in SaaS subscriptions.</p>
+      </div>
+    </div>
+    <div class="reason">
+      <div class="num">3</div>
+      <div>
+        <h3>Easy to Rebrand</h3>
+        <p>Swap the logo, colors, and content to sell this to any stone, marble, or construction business.</p>
+      </div>
+    </div>
+    <div class="reason">
+      <div class="num">4</div>
+      <div>
+        <h3>Modern Tech Stack</h3>
+        <p>React, TypeScript, Node.js, PostgreSQL. Any developer can maintain and extend it.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Slide 10: Closing -->
+<div class="slide slide-10" data-slide="10">
+  <div class="bg-glow"></div>
+  <div class="accent-line" style="position:relative;z-index:1"></div>
+  <h2 style="position:relative;z-index:1">Ready to <span>Own It?</span></h2>
+  <div class="cta" style="position:relative;z-index:1">A complete business platform, built and ready to deploy</div>
+  <div class="contact-row" style="position:relative;z-index:1">
+    <div class="contact-item"><span>SP Granites</span> Premium Stone Platform</div>
+  </div>
+</div>
+
+</div>
+
+<!-- Navigation -->
+<div class="nav" id="nav">
+  <button onclick="prevSlide()" title="Previous">&#9664;</button>
+  <span class="counter" id="counter">1 / 10</span>
+  <button onclick="nextSlide()" title="Next">&#9654;</button>
+</div>
+
+<script>
+let current = 1;
+const total = 10;
+
+function showSlide(n) {
+  document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+  const target = document.querySelector(`[data-slide="${n}"]`);
+  if (target) target.classList.add('active');
+  document.getElementById('counter').textContent = `${n} / ${total}`;
+  current = n;
+}
+
+function nextSlide() { if (current < total) showSlide(current + 1); }
+function prevSlide() { if (current > 1) showSlide(current - 1); }
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+  if (e.key === 'Home') showSlide(1);
+  if (e.key === 'End') showSlide(total);
+});
+
+let touchStartX = 0;
+document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', (e) => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 50) { diff > 0 ? nextSlide() : prevSlide(); }
+});
+</script>
+</body>
+</html>
