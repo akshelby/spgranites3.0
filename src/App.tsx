@@ -12,6 +12,7 @@ import { SiteSettingsProvider } from "@/contexts/SiteSettingsContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { VisitorTracker } from "@/components/VisitorTracker";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { Preloader } from "@/components/Preloader";
 import { toast } from "sonner";
 import '@/i18n';
 
@@ -100,6 +101,7 @@ function AppContent() {
       <AuthProvider>
         <CartProvider>
           <WishlistProvider>
+            <Preloader />
             <Toaster />
             <Sonner />
             <BrowserRouter>

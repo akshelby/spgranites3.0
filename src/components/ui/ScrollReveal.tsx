@@ -13,6 +13,7 @@ interface ScrollRevealProps {
   once?: boolean;
   margin?: string;
   scale?: boolean;
+  rotate?: number;
 }
 
 const easing = [0.25, 0.1, 0.25, 1] as const;
@@ -22,11 +23,12 @@ export function ScrollReveal({
   className = '',
   direction = 'up',
   delay = 0,
-  duration = 0.6,
-  distance = 40,
+  duration = 0.7,
+  distance = 50,
   once = true,
   margin = '-80px',
   scale = false,
+  rotate = 0,
 }: ScrollRevealProps) {
   const directionMap: Record<RevealDirection, { x?: number; y?: number }> = {
     up: { y: distance },
@@ -43,13 +45,15 @@ export function ScrollReveal({
       initial={{
         opacity: 0,
         ...offset,
-        ...(scale ? { scale: 0.95 } : {}),
+        ...(scale ? { scale: 0.92 } : {}),
+        ...(rotate ? { rotate } : {}),
       }}
       whileInView={{
         opacity: 1,
         x: 0,
         y: 0,
         ...(scale ? { scale: 1 } : {}),
+        ...(rotate ? { rotate: 0 } : {}),
       }}
       viewport={{ once, margin }}
       transition={{
@@ -75,7 +79,7 @@ interface StaggerContainerProps {
 export function StaggerContainer({
   children,
   className = '',
-  staggerDelay = 0.08,
+  staggerDelay = 0.1,
   once = true,
   margin = '-60px',
 }: StaggerContainerProps) {
@@ -112,8 +116,8 @@ export function StaggerItem({
   children,
   className = '',
   direction = 'up',
-  distance = 30,
-  duration = 0.5,
+  distance = 40,
+  duration = 0.6,
   scale = false,
 }: StaggerItemProps) {
   const directionMap: Record<RevealDirection, { x?: number; y?: number }> = {
@@ -132,7 +136,7 @@ export function StaggerItem({
         hidden: {
           opacity: 0,
           ...offset,
-          ...(scale ? { scale: 0.95 } : {}),
+          ...(scale ? { scale: 0.92 } : {}),
         },
         visible: {
           opacity: 1,

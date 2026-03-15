@@ -13,6 +13,11 @@ html {
 
 /* SP Granites Design System - Premium Stone-Inspired Theme */
 
+/* Smooth scroll for the entire page */
+html {
+  scroll-behavior: smooth;
+}
+
 /* Slide-in hover effect for buttons and nav links */
 .hover-slide {
   position: relative;
